@@ -1,8 +1,11 @@
 # Schema bazy danych dla WordRepeater
 
-### 1. Tabele i kolumny
+## 1. Tabele i kolumny
 
 #### users
+
+This table is managed by Supabase Auth
+
 - **id**: UUID, Primary Key, domyślnie generowany (np. przy użyciu `uuid_generate_v4()`).
 - **email**: CITEXT, not null, unikalny, z ograniczeniem CHECK walidującym format (wyrażenie regularne może być użyte).
 - **hashed_password**: TEXT, not null.
@@ -26,12 +29,12 @@
 - **action**: TEXT, not null — opis akcji logowanej.
 - **occurred_at**: TIMESTAMPTZ, not null, domyślnie ustawiane na `now()` — używane do partycjonowania według czasu.
 
-### 2. Relacje między tabelami
+## 2. Relacje między tabelami
 
 - **users** ↔ **flashcards**: relacja 1 do wielu (jeden użytkownik może posiadać wiele fiszek).
 - **users** ↔ **audit_logs**: relacja 1 do wielu (jeden użytkownik może mieć wiele wpisów w logach audytu).
 
-### 3. Indeksy i ograniczenia
+## 3. Indeksy i ograniczenia
 
 - **Tabela `users`:**
   - Unikalny indeks na kolumnie `email` (używając typu CITEXT dla nieczułości na wielkość liter).
@@ -48,7 +51,7 @@
   - Indeks na kolumnie `user_id` w przypadku częstego filtrowania według użytkownika.
   - Dla dużych ilości danych: implementacja partycjonowania tabeli (np. partycje miesięczne) w oparciu o `occurred_at`.
 
-### 4. Zasady PostgreSQL – Row-Level Security (RLS)
+## 4. Zasady PostgreSQL – Row-Level Security (RLS)
 
 - **Tabela `flashcards`:**
   - Włączenie RLS z polityką dla standardowych użytkowników: umożliwienie dostępu tylko do wierszy, gdzie `flashcards.user_id = current_setting('app.current_user_id')::uuid` (lub wykorzystanie podobnego mechanizmu opartego na zmiennych sesyjnych).
@@ -57,7 +60,7 @@
 - **Tabela `users`:**
   - Możliwość włączenia RLS, jeżeli jest potrzebne do interfejsów administracyjnych.
 
-### 5. Dodatkowe uwagi projektowe
+## 5. Dodatkowe uwagi projektowe
 
 - Wszystkie identyfikatory są typu UUID, co zapewnia spójność i skalowalność.
 - Soft delete jest realizowane przez kolumnę `deleted_at` w tabelach `users` i `flashcards`.
