@@ -1,7 +1,7 @@
 # API Endpoint Implementation Plan: Generate AI Flashcards
 
 ## 1. Endpoint Overview
-This endpoint is responsible for processing a user's input text (up to 5000 characters) and returning a list of AI-generated flashcard suggestions. The endpoint will validate the input, trigger the flashcard generation logic, and respond with either a success payload containing suggested flashcards or an appropriate error message.
+This endpoint is responsible for processing a user's input text (up to 5000 characters) and returning a list of AI-generated flashcard suggestions. The endpoint will validate the input, trigger the flashcard generation logic, persist the generated flashcards to the database, and respond with either a success payload containing the flashcards or an appropriate error message.
 
 ## 2. Request Details
 - **HTTP Method**: POST
@@ -42,11 +42,12 @@ This endpoint is responsible for processing a user's input text (up to 5000 char
 2. **Authentication**: Middleware validates the JWT token. The authenticated user context is passed via the request (e.g., `context.locals.supabase`).
 3. **Input Validation**: 
    - Validate that `text` is provided and its length does not exceed 5000 characters.
-4. **Business Logic**: Pass the validated input to the flashcard generation service:
-   - The service encapsulates the interaction with the AI (e.g., calling an external AI API through Openrouter.ai).
-   - The service may process the text sequentially to generate multiple flashcard suggestions.
+4. **Business Logic & Persistence**: 
+   - Validate the input and pass to a dedicated flashcard generation service.
+   - **Development Phase Note**: Instead of calling the external AI service, a mocked service is used to simulate AI flashcard generation.
+   - Generate flashcard suggestions (using the mocked service during development) and persist these generated flashcards to the database immediately.
 5. **Response Composition**: 
-   - Assemble and return the flashcard suggestions along with a success message if processing completes without issues.
+   - After successfully storing the generated flashcards, the service returns the flashcard suggestions alongside a success message.
    - In case of errors, an appropriate HTTP error status along with an error message is returned.
 6. **Logging**: Any unexpected errors or validation failures should be logged appropriately (e.g., in an audit log).
 
@@ -57,9 +58,9 @@ This endpoint is responsible for processing a user's input text (up to 5000 char
 - **Input Sanitization**: 
   - Validate and sanitize the `text` input to prevent injection attacks.
 - **Rate Limiting**: 
-  - To mitigate abuse, consider implementing rate limiting especially given potential heavy processing on input.
+  - To mitigate abuse, consider implementing rate limiting given the potential heavy processing.
 - **Data Exposure**: 
-  - Only return necessary flashcard details and avoid exposing internal processing details.
+  - Only return necessary flashcard details and avoid exposing internal processing logic.
 
 ## 7. Error Handling
 - **Validation Errors**: Return 400 Bad Request if:
@@ -71,11 +72,12 @@ This endpoint is responsible for processing a user's input text (up to 5000 char
 
 ## 8. Performance Considerations
 - **Asynchronous Processing**: 
-  - Use asynchronous operations when calling the AI flashcard generation service.
+  - Use asynchronous operations when invoking the flashcard generation and DB persistence services.
 - **Resource Management**: 
   - Validate input lengths early to prevent unnecessary load.
+  - Leverage caching or connection pooling if similar requests occur frequently.
 - **Timeouts and Retries**: 
-  - Implement sensible timeout and retry mechanisms when interacting with external AI services. 
+  - Implement sensible timeout and retry mechanisms when interacting with external services (in production, when switching from mocked service to actual AI API).
 
 ## 9. Implementation Steps
 1. **Endpoint Setup**: 
@@ -83,18 +85,18 @@ This endpoint is responsible for processing a user's input text (up to 5000 char
 2. **Middleware Integration**: 
    - Ensure that authentication middleware is applied to this endpoint.
 3. **Input Validation**: 
-   - use `zod` for request validation 
-   - Parse the request body.
-   - Validate that `text` is present and length is more than 500 character but less than 5000.
+   - Use `zod` for request validation.
+   - Parse the request body and validate that both `text` is present and within allowed limits (e.g., `text` must be more than 500 characters but less than 5000 characters).
    - Return a 400 error if validation fails.
-4. **Invoke Business Logic**: 
-   - Extract the flashcard generation logic into a dedicated service (e.g., `src/lib/services/flashcardService.ts`).
-   - Call the service function with the validated inputs.
+4. **Invoke Business Logic & Persistence**: 
+   - Extract the flashcard generation and persistence logic into a dedicated service (e.g., `src/lib/services/flashcardService.ts`).
+   - **Development Phase Note**: Use a mocked service to simulate AI flashcard generation instead of calling an external API.
+   - After generating the flashcards, persist them to the database.
 5. **Error Handling and Logging**: 
    - Handle any exceptions from the service.
    - Log errors to an audit log (if applicable) to capture failures.
 6. **Response Assembly**: 
-   - On success, format the response using `GenerateAIFlashcardsResponseDTO` and return a 200 status with generated flashcards.
+   - On success, format the response using `GenerateAIFlashcardsResponseDTO` and return a 200 status with the stored flashcards.
 7. **Testing and Documentation**: 
-   - Write unit and integration tests covering successful processing, validation failures, and error scenarios.
+   - Write unit tests covering successful processing, validation failures, and error scenarios.
    - Update API documentation to reflect the endpoint specification and expected behaviors.
