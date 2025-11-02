@@ -1,6 +1,6 @@
 // src/lib/services/flashcardService.ts
 import type { SupabaseClient } from "../../db/supabase.client";
-import type { FlashcardSuggestionDTO } from "../../types";
+import type { FlashcardSuggestionDTO, FlashcardSummaryDTO } from "../../types";
 import type { TablesInsert } from "../../db/database.types";
 
 /**
@@ -154,6 +154,108 @@ export async function generateFlashcardsFromText(params: GenerateFlashcardsParam
     return {
       success: false,
       error: "An unexpected error occurred during flashcard generation",
+      statusCode: 500,
+    };
+  }
+}
+
+/**
+ * Interface for the parameters required to list user flashcards.
+ */
+interface ListUserFlashcardsParams {
+  userId: string;
+  page: number;
+  limit: number;
+  source?: "ai" | "manual";
+  status: "active" | "deleted";
+  supabase: SupabaseClient;
+}
+
+/**
+ * Interface for the result of the list user flashcards operation.
+ */
+interface ListUserFlashcardsResult {
+  success: boolean;
+  data?: FlashcardSummaryDTO[];
+  total?: number;
+  error?: string;
+  statusCode?: number;
+}
+
+/**
+ * Lists flashcards for a specific user with pagination and filtering.
+ *
+ * This function:
+ * 1. Builds a database query with filters for user_id, status, and source
+ * 2. Applies pagination (offset and limit)
+ * 3. Retrieves the total count for pagination metadata
+ * 4. Returns flashcard summaries
+ *
+ * @param params - Parameters including userId, pagination, filters, and supabase client
+ * @returns Result object containing success status, flashcard data, total count
+ */
+export async function listUserFlashcards(
+  params: ListUserFlashcardsParams
+): Promise<ListUserFlashcardsResult> {
+  const { userId, page, limit, source, status, supabase } = params;
+
+  try {
+    // Calculate offset for pagination
+    const offset = (page - 1) * limit;
+
+    // Build base query for flashcards
+    let query = supabase.from("flashcards").select("id, content, created_at", { count: "exact" }).eq("user_id", userId);
+
+    // Apply status filter (active = deleted_at is null, deleted = deleted_at is not null)
+    if (status === "active") {
+      query = query.is("deleted_at", null);
+    } else {
+      query = query.not("deleted_at", "is", null);
+    }
+
+    // Apply source filter if provided
+    // Source is stored in metadata.source as "ai_generated" or "manual"
+    if (source === "ai") {
+      query = query.eq("metadata->>source", "ai_generated");
+    } else if (source === "manual") {
+      query = query.eq("metadata->>source", "manual");
+    }
+
+    // Apply pagination and ordering
+    query = query.order("created_at", { ascending: false }).range(offset, offset + limit - 1);
+
+    // Execute query
+    const { data, error, count } = await query;
+
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("Database error while listing flashcards:", error);
+      return {
+        success: false,
+        error: "Failed to retrieve flashcards from database",
+        statusCode: 500,
+      };
+    }
+
+    // Transform data to FlashcardSummaryDTO format
+    const flashcards: FlashcardSummaryDTO[] =
+      data?.map((record) => ({
+        id: record.id,
+        content: record.content,
+        created_at: record.created_at,
+      })) || [];
+
+    return {
+      success: true,
+      data: flashcards,
+      total: count || 0,
+    };
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Unexpected error in listUserFlashcards:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred while retrieving flashcards",
       statusCode: 500,
     };
   }
