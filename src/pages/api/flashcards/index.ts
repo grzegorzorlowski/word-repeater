@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { ListUserFlashcardsResponseDTO } from "../../../types";
 import { listUserFlashcards } from "../../../lib/services/flashcardService";
 import { DEFAULT_USER } from "../../../db/supabase.client";
+import { logFlashcardListFailure, logValidationError } from "../../../lib/services/auditLogService";
 
 // Disable prerendering for this API route
 export const prerender = false;
@@ -73,6 +74,9 @@ export const GET: APIRoute = async (context) => {
         message: err.message,
       }));
 
+      // Log validation error to audit log
+      await logValidationError(supabase, errors);
+
       return new Response(
         JSON.stringify({
           error: "Invalid query parameters",
@@ -103,6 +107,14 @@ export const GET: APIRoute = async (context) => {
 
     // Handle service-level errors
     if (!result.success) {
+      // Log the failure to audit log
+      await logFlashcardListFailure(supabase, userId, result.error || "Unknown error", {
+        page,
+        limit,
+        source,
+        status,
+      });
+
       return new Response(
         JSON.stringify({
           error: result.error || "Failed to retrieve flashcards",
@@ -127,9 +139,21 @@ export const GET: APIRoute = async (context) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    // Log unexpected errors to console
+    // Log unexpected errors to console and audit log
     // eslint-disable-next-line no-console
     console.error("Unexpected error in /api/flashcards:", error);
+
+    // Try to log to audit log if supabase is available
+    try {
+      const supabase = context.locals.supabase;
+      if (supabase) {
+        await logFlashcardListFailure(supabase, null, error instanceof Error ? error.message : "Unknown error");
+      }
+    } catch (logError) {
+      // If audit logging fails, just log to console
+      // eslint-disable-next-line no-console
+      console.error("Failed to log error to audit log:", logError);
+    }
 
     return new Response(
       JSON.stringify({

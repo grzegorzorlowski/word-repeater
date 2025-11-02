@@ -4,6 +4,7 @@ import {
   logAuditEntry,
   logFlashcardGeneration,
   logFlashcardGenerationFailure,
+  logFlashcardListFailure,
   logValidationError,
 } from "../auditLogService";
 import type { SupabaseClient } from "../../../db/supabase.client";
@@ -200,6 +201,60 @@ describe("auditLogService", () => {
       expect(mockInsert).toHaveBeenCalledWith({
         user_id: null,
         action: expect.stringContaining("Text is required"),
+      });
+    });
+  });
+
+  describe("logFlashcardListFailure", () => {
+    it("should log flashcard list retrieval failure with query params", async () => {
+      // Arrange
+      const mockInsert = vi.fn().mockResolvedValue({
+        error: null,
+      });
+
+      (mockSupabaseClient.from as any) = vi.fn().mockReturnValue({
+        insert: mockInsert,
+      });
+
+      const queryParams = {
+        page: 1,
+        limit: 10,
+        source: "ai",
+        status: "active",
+      };
+
+      // Act
+      await logFlashcardListFailure(mockSupabaseClient, "user-123", "Database error", queryParams);
+
+      // Assert
+      expect(mockSupabaseClient.from).toHaveBeenCalledWith("audit_logs");
+      expect(mockInsert).toHaveBeenCalledWith({
+        user_id: "user-123",
+        action: expect.stringContaining("flashcard_list_failure"),
+      });
+      expect(mockInsert).toHaveBeenCalledWith({
+        user_id: "user-123",
+        action: expect.stringContaining("Database error"),
+      });
+    });
+
+    it("should log flashcard list retrieval failure without query params", async () => {
+      // Arrange
+      const mockInsert = vi.fn().mockResolvedValue({
+        error: null,
+      });
+
+      (mockSupabaseClient.from as any) = vi.fn().mockReturnValue({
+        insert: mockInsert,
+      });
+
+      // Act
+      await logFlashcardListFailure(mockSupabaseClient, null, "Unexpected error");
+
+      // Assert
+      expect(mockInsert).toHaveBeenCalledWith({
+        user_id: null,
+        action: expect.stringContaining("flashcard_list_failure"),
       });
     });
   });

@@ -96,3 +96,22 @@ export async function logValidationError(
     },
   });
 }
+
+/**
+ * Logs a failed flashcard list retrieval operation
+ */
+export async function logFlashcardListFailure(
+  supabase: SupabaseClient,
+  userId: string | null,
+  error: string,
+  queryParams?: Record<string, unknown>
+): Promise<void> {
+  await logAuditEntry(supabase, {
+    userId,
+    action: "flashcard_list_failure",
+    details: {
+      error,
+      query_params: queryParams,
+    },
+  });
+}

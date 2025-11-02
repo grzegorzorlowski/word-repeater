@@ -194,9 +194,7 @@ interface ListUserFlashcardsResult {
  * @param params - Parameters including userId, pagination, filters, and supabase client
  * @returns Result object containing success status, flashcard data, total count
  */
-export async function listUserFlashcards(
-  params: ListUserFlashcardsParams
-): Promise<ListUserFlashcardsResult> {
+export async function listUserFlashcards(params: ListUserFlashcardsParams): Promise<ListUserFlashcardsResult> {
   const { userId, page, limit, source, status, supabase } = params;
 
   try {
