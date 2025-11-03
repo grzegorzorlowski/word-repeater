@@ -1,9 +1,13 @@
 // src/pages/api/flashcards/[id].ts
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import { updateFlashcard } from "../../../lib/services/flashcardService";
+import { updateFlashcard, deleteFlashcard } from "../../../lib/services/flashcardService";
 import { DEFAULT_USER } from "../../../db/supabase.client";
-import { logFlashcardUpdateFailure, logValidationError } from "../../../lib/services/auditLogService";
+import {
+  logFlashcardUpdateFailure,
+  logFlashcardDeleteFailure,
+  logValidationError,
+} from "../../../lib/services/auditLogService";
 
 // Disable prerendering for this API route
 export const prerender = false;
@@ -200,6 +204,141 @@ export const PUT: APIRoute = async (context) => {
     return new Response(
       JSON.stringify({
         error: "An unexpected error occurred while updating flashcard",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+};
+
+/**
+ * DELETE /api/flashcards/{id}
+ *
+ * Soft deletes an existing flashcard.
+ * Only the owner can delete their flashcard.
+ *
+ * @param context - Astro API context containing locals (supabase client), request, and params
+ * @returns JSON response with success message or error
+ */
+export const DELETE: APIRoute = async (context) => {
+  try {
+    // Get the Supabase client from context.locals
+    const supabase = context.locals.supabase;
+
+    if (!supabase) {
+      return new Response(
+        JSON.stringify({
+          error: "Database connection not available",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Extract and validate the flashcard ID from path parameters
+    const flashcardId = context.params.id;
+
+    if (!flashcardId) {
+      return new Response(
+        JSON.stringify({
+          error: "Flashcard ID is required",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Validate UUID format
+    const idValidationResult = UUIDSchema.safeParse(flashcardId);
+
+    if (!idValidationResult.success) {
+      const errors = idValidationResult.error.errors.map((err) => ({
+        field: "id",
+        message: err.message,
+      }));
+
+      await logValidationError(supabase, errors);
+
+      return new Response(
+        JSON.stringify({
+          error: "Invalid flashcard ID format",
+          details: errors,
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Using DEFAULT_USER for development
+    // This will be replaced with authenticated user ID when auth is implemented
+    const userId = DEFAULT_USER;
+
+    // Call the flashcard service to delete the flashcard
+    const result = await deleteFlashcard({
+      flashcardId,
+      userId,
+      supabase,
+    });
+
+    // Handle service-level errors
+    if (!result.success) {
+      // Log the failure to audit log
+      await logFlashcardDeleteFailure(supabase, userId, result.error || "Unknown error", flashcardId);
+
+      return new Response(
+        JSON.stringify({
+          error: result.error || "Failed to delete flashcard",
+        }),
+        {
+          status: result.statusCode || 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Return success response
+    return new Response(
+      JSON.stringify({
+        message: result.message || "Flashcard deleted successfully",
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  } catch (error) {
+    // Log unexpected errors to console and audit log
+    // eslint-disable-next-line no-console
+    console.error("Unexpected error in DELETE /api/flashcards/[id]:", error);
+
+    // Try to log to audit log if supabase is available
+    try {
+      const supabase = context.locals.supabase;
+      if (supabase) {
+        await logFlashcardDeleteFailure(
+          supabase,
+          null,
+          error instanceof Error ? error.message : "Unknown error",
+          context.params.id
+        );
+      }
+    } catch (logError) {
+      // If audit logging fails, just log to console
+      // eslint-disable-next-line no-console
+      console.error("Failed to log error to audit log:", logError);
+    }
+
+    return new Response(
+      JSON.stringify({
+        error: "An unexpected error occurred while deleting flashcard",
       }),
       {
         status: 500,

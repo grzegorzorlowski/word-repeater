@@ -462,3 +462,92 @@ export async function updateFlashcard(params: UpdateFlashcardParams): Promise<Up
     };
   }
 }
+
+/**
+ * Interface for the parameters required to delete a flashcard.
+ */
+interface DeleteFlashcardParams {
+  flashcardId: string;
+  userId: string;
+  supabase: SupabaseClient;
+}
+
+/**
+ * Interface for the result of the delete flashcard operation.
+ */
+interface DeleteFlashcardResult {
+  success: boolean;
+  message?: string;
+  error?: string;
+  statusCode?: number;
+}
+
+/**
+ * Soft deletes an existing flashcard by setting the deleted_at timestamp.
+ *
+ * This function:
+ * 1. Verifies that the flashcard exists and belongs to the user (ownership check)
+ * 2. Checks that the flashcard is not already soft-deleted (idempotency)
+ * 3. Sets the deleted_at timestamp to current time
+ * 4. Returns success message or appropriate error
+ *
+ * @param params - Parameters including flashcardId, userId, and supabase client
+ * @returns Result object containing success status and message
+ */
+export async function deleteFlashcard(params: DeleteFlashcardParams): Promise<DeleteFlashcardResult> {
+  const { flashcardId, userId, supabase } = params;
+
+  try {
+    // Soft delete flashcard with ownership check
+    // Only delete if: id matches, user_id matches, and not already deleted
+    const { data, error } = await supabase
+      .from("flashcards")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("id", flashcardId)
+      .eq("user_id", userId)
+      .is("deleted_at", null)
+      .select("id")
+      .single();
+
+    if (error) {
+      // Check if it's a "not found" error (no rows matched)
+      if (error.code === "PGRST116") {
+        return {
+          success: false,
+          error: "Flashcard not found",
+          statusCode: 404,
+        };
+      }
+
+      // eslint-disable-next-line no-console
+      console.error("Database error while deleting flashcard:", error);
+      return {
+        success: false,
+        error: "Failed to delete flashcard in database",
+        statusCode: 500,
+      };
+    }
+
+    if (!data) {
+      // No rows were updated (flashcard doesn't exist, doesn't belong to user, or already deleted)
+      return {
+        success: false,
+        error: "Flashcard not found",
+        statusCode: 404,
+      };
+    }
+
+    return {
+      success: true,
+      message: "Flashcard deleted successfully",
+    };
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Unexpected error in deleteFlashcard:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred while deleting flashcard",
+      statusCode: 500,
+    };
+  }
+}
