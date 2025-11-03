@@ -551,3 +551,154 @@ export async function deleteFlashcard(params: DeleteFlashcardParams): Promise<De
     };
   }
 }
+
+/**
+ * Interface for the parameters required to accept or reject an AI-generated flashcard.
+ */
+interface AcceptRejectFlashcardParams {
+  flashcardId: string;
+  userId: string;
+  decision: "accept" | "reject";
+  supabase: SupabaseClient;
+}
+
+/**
+ * Interface for the result of the accept/reject flashcard operation.
+ */
+interface AcceptRejectFlashcardResult {
+  success: boolean;
+  message?: string;
+  status?: "active" | "deleted";
+  error?: string;
+  statusCode?: number;
+}
+
+/**
+ * Accepts or rejects an AI-generated flashcard suggestion.
+ *
+ * This function:
+ * 1. Verifies that the flashcard exists and belongs to the user (ownership check)
+ * 2. Validates that the flashcard is AI-generated (source = 'ai_generated')
+ * 3. Validates that the flashcard is in pending status (status = 'pending')
+ * 4. If accept: Updates status from 'pending' to 'active'
+ * 5. If reject: Sets deleted_at timestamp (soft delete)
+ *
+ * @param params - Parameters including flashcardId, userId, decision, and supabase client
+ * @returns Result object containing success status, message, and new status
+ */
+export async function acceptRejectFlashcard(params: AcceptRejectFlashcardParams): Promise<AcceptRejectFlashcardResult> {
+  const { flashcardId, userId, decision, supabase } = params;
+
+  try {
+    // First, fetch the flashcard to validate it
+    const { data: flashcard, error: fetchError } = await supabase
+      .from("flashcards")
+      .select("id, user_id, source, status, deleted_at")
+      .eq("id", flashcardId)
+      .eq("user_id", userId)
+      .is("deleted_at", null)
+      .single();
+
+    if (fetchError) {
+      // Check if it's a "not found" error (no rows matched)
+      if (fetchError.code === "PGRST116") {
+        return {
+          success: false,
+          error: "Flashcard not found",
+          statusCode: 404,
+        };
+      }
+
+      // eslint-disable-next-line no-console
+      console.error("Database error while fetching flashcard:", fetchError);
+      return {
+        success: false,
+        error: "Failed to fetch flashcard from database",
+        statusCode: 500,
+      };
+    }
+
+    if (!flashcard) {
+      return {
+        success: false,
+        error: "Flashcard not found",
+        statusCode: 404,
+      };
+    }
+
+    // Validate that the flashcard is AI-generated
+    if (flashcard.source !== "ai_generated") {
+      return {
+        success: false,
+        error: "Only AI-generated flashcards can be accepted or rejected",
+        statusCode: 400,
+      };
+    }
+
+    // Validate that the flashcard is in pending status
+    if (flashcard.status !== "pending") {
+      return {
+        success: false,
+        error: "Only pending flashcards can be accepted or rejected",
+        statusCode: 400,
+      };
+    }
+
+    // Process the decision
+    if (decision === "accept") {
+      // Accept: Update status to 'active'
+      const { error: updateError } = await supabase
+        .from("flashcards")
+        .update({ status: "active" })
+        .eq("id", flashcardId)
+        .eq("user_id", userId);
+
+      if (updateError) {
+        // eslint-disable-next-line no-console
+        console.error("Database error while accepting flashcard:", updateError);
+        return {
+          success: false,
+          error: "Failed to accept flashcard in database",
+          statusCode: 500,
+        };
+      }
+
+      return {
+        success: true,
+        message: "Flashcard accepted successfully",
+        status: "active",
+      };
+    } else {
+      // Reject: Soft delete by setting deleted_at
+      const { error: deleteError } = await supabase
+        .from("flashcards")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("id", flashcardId)
+        .eq("user_id", userId);
+
+      if (deleteError) {
+        // eslint-disable-next-line no-console
+        console.error("Database error while rejecting flashcard:", deleteError);
+        return {
+          success: false,
+          error: "Failed to reject flashcard in database",
+          statusCode: 500,
+        };
+      }
+
+      return {
+        success: true,
+        message: "Flashcard rejected successfully",
+        status: "deleted",
+      };
+    }
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Unexpected error in acceptRejectFlashcard:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred while processing flashcard decision",
+      statusCode: 500,
+    };
+  }
+}

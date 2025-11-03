@@ -48,6 +48,8 @@ export interface Database {
           deleted_at: string | null;
           id: string;
           metadata: Json | null;
+          source: string;
+          status: string;
           updated_at: string;
           user_id: string;
         };
@@ -57,6 +59,8 @@ export interface Database {
           deleted_at?: string | null;
           id?: string;
           metadata?: Json | null;
+          source?: string;
+          status?: string;
           updated_at?: string;
           user_id: string;
         };
@@ -66,6 +70,8 @@ export interface Database {
           deleted_at?: string | null;
           id?: string;
           metadata?: Json | null;
+          source?: string;
+          status?: string;
           updated_at?: string;
           user_id?: string;
         };

@@ -187,3 +187,58 @@ export async function logFlashcardDeleteFailure(
     },
   });
 }
+
+/**
+ * Logs a successful flashcard acceptance (AI-generated flashcard accepted)
+ */
+export async function logFlashcardAcceptance(
+  supabase: SupabaseClient,
+  userId: string,
+  flashcardId: string
+): Promise<void> {
+  await logAuditEntry(supabase, {
+    userId,
+    action: "flashcard_accepted",
+    details: {
+      flashcard_id: flashcardId,
+    },
+  });
+}
+
+/**
+ * Logs a successful flashcard rejection (AI-generated flashcard rejected)
+ */
+export async function logFlashcardRejection(
+  supabase: SupabaseClient,
+  userId: string,
+  flashcardId: string
+): Promise<void> {
+  await logAuditEntry(supabase, {
+    userId,
+    action: "flashcard_rejected",
+    details: {
+      flashcard_id: flashcardId,
+    },
+  });
+}
+
+/**
+ * Logs a failed flashcard decision operation (accept/reject)
+ */
+export async function logFlashcardDecisionFailure(
+  supabase: SupabaseClient,
+  userId: string | null,
+  error: string,
+  flashcardId?: string,
+  decision?: string
+): Promise<void> {
+  await logAuditEntry(supabase, {
+    userId,
+    action: "flashcard_decision_failure",
+    details: {
+      error,
+      flashcard_id: flashcardId,
+      decision,
+    },
+  });
+}
