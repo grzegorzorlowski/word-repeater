@@ -103,8 +103,9 @@ export async function generateFlashcardsFromText(params: GenerateFlashcardsParam
         question: suggestion.question,
         answer: suggestion.answer,
       }),
+      source: "ai_generated", // Set source column to track AI-generated flashcards
+      status: "pending", // Set status to pending - requires user accept/reject
       metadata: {
-        source: "ai_generated",
         generated_at: new Date().toISOString(),
       },
     }));

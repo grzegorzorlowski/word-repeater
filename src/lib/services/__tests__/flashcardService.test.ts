@@ -170,9 +170,8 @@ describe("flashcardService - generate flashcards", () => {
         expect.arrayContaining([
           expect.objectContaining({
             user_id: "test-user-id",
-            metadata: expect.objectContaining({
-              source: "ai_generated",
-            }),
+            source: "ai_generated",
+            status: "pending",
           }),
         ])
       );
@@ -217,8 +216,9 @@ describe("flashcardService - generate flashcards", () => {
       expect(mockInsert).toHaveBeenCalledWith(
         expect.arrayContaining([
           expect.objectContaining({
+            source: "ai_generated",
+            status: "pending",
             metadata: expect.objectContaining({
-              source: "ai_generated",
               generated_at: expect.any(String),
             }),
           }),
