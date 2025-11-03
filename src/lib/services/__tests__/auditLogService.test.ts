@@ -7,6 +7,7 @@ import {
   logFlashcardListFailure,
   logFlashcardCreationFailure,
   logFlashcardUpdateFailure,
+  logFlashcardDeletion,
   logFlashcardDeleteFailure,
   logValidationError,
 } from "../auditLogService";
@@ -376,6 +377,53 @@ describe("auditLogService", () => {
       expect(mockInsert).toHaveBeenCalledWith({
         user_id: null,
         action: expect.stringContaining("flashcard_update_failure"),
+      });
+    });
+  });
+
+  describe("logFlashcardDeletion", () => {
+    it("should log successful flashcard deletion", async () => {
+      // Arrange
+      const mockInsert = vi.fn().mockResolvedValue({
+        error: null,
+      });
+
+      (mockSupabaseClient.from as any) = vi.fn().mockReturnValue({
+        insert: mockInsert,
+      });
+
+      // Act
+      await logFlashcardDeletion(mockSupabaseClient, "user-123", "flashcard-456");
+
+      // Assert
+      expect(mockSupabaseClient.from).toHaveBeenCalledWith("audit_logs");
+      expect(mockInsert).toHaveBeenCalledWith({
+        user_id: "user-123",
+        action: expect.stringContaining("flashcard_deleted"),
+      });
+      expect(mockInsert).toHaveBeenCalledWith({
+        user_id: "user-123",
+        action: expect.stringContaining("flashcard-456"),
+      });
+    });
+
+    it("should include flashcard id in audit log", async () => {
+      // Arrange
+      const mockInsert = vi.fn().mockResolvedValue({
+        error: null,
+      });
+
+      (mockSupabaseClient.from as any) = vi.fn().mockReturnValue({
+        insert: mockInsert,
+      });
+
+      // Act
+      await logFlashcardDeletion(mockSupabaseClient, "user-789", "flashcard-xyz");
+
+      // Assert
+      expect(mockInsert).toHaveBeenCalledWith({
+        user_id: "user-789",
+        action: expect.stringContaining("flashcard-xyz"),
       });
     });
   });

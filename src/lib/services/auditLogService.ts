@@ -153,6 +153,23 @@ export async function logFlashcardUpdateFailure(
 }
 
 /**
+ * Logs a successful flashcard deletion
+ */
+export async function logFlashcardDeletion(
+  supabase: SupabaseClient,
+  userId: string,
+  flashcardId: string
+): Promise<void> {
+  await logAuditEntry(supabase, {
+    userId,
+    action: "flashcard_deleted",
+    details: {
+      flashcard_id: flashcardId,
+    },
+  });
+}
+
+/**
  * Logs a failed flashcard delete operation
  */
 export async function logFlashcardDeleteFailure(

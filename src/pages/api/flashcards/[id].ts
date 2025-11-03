@@ -5,6 +5,7 @@ import { updateFlashcard, deleteFlashcard } from "../../../lib/services/flashcar
 import { DEFAULT_USER } from "../../../db/supabase.client";
 import {
   logFlashcardUpdateFailure,
+  logFlashcardDeletion,
   logFlashcardDeleteFailure,
   logValidationError,
 } from "../../../lib/services/auditLogService";
@@ -303,6 +304,9 @@ export const DELETE: APIRoute = async (context) => {
         }
       );
     }
+
+    // Log successful deletion to audit log
+    await logFlashcardDeletion(supabase, userId, flashcardId);
 
     // Return success response
     return new Response(
