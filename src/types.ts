@@ -70,7 +70,7 @@ export interface CreateManualFlashcardCommand {
   // The answer part of the flashcard.
   answer: string;
   // Optional metadata; may include tags or additional details.
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -100,6 +100,15 @@ export interface UpdateFlashcardCommand {
  */
 export interface AcceptRejectAIFlashcardCommand {
   decision: "accept" | "reject";
+}
+
+/**
+ * DTO for Accept/Reject Flashcard response.
+ */
+export interface AcceptRejectFlashcardResponseDTO {
+  message: string;
+  flashcard_id: string;
+  status: "active" | "deleted";
 }
 
 // Additional DTOs for other API endpoints (e.g. delete) can be added as needed.
