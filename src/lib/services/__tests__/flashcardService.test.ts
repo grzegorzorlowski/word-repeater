@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { generateFlashcardsFromText } from "../flashcardService";
 import type { SupabaseClient } from "../../../db/supabase.client";
 
-describe("flashcardService", () => {
+describe("flashcardService - generate flashcards", () => {
   // Mock Supabase client
   const mockSupabaseClient = {
     from: vi.fn(),
