@@ -258,3 +258,109 @@ export async function listUserFlashcards(params: ListUserFlashcardsParams): Prom
     };
   }
 }
+
+/**
+ * Interface for the parameters required to create a manual flashcard.
+ */
+interface CreateManualFlashcardParams {
+  question: string;
+  answer: string;
+  metadata?: Record<string, unknown>;
+  userId: string;
+  supabase: SupabaseClient;
+}
+
+/**
+ * Interface for the result of the create manual flashcard operation.
+ */
+interface CreateManualFlashcardResult {
+  success: boolean;
+  flashcard?: FlashcardSummaryDTO;
+  message?: string;
+  error?: string;
+  statusCode?: number;
+}
+
+/**
+ * Creates a manual flashcard with provided question and answer.
+ *
+ * This function:
+ * 1. Transforms question and answer into flashcard content format (JSON stringified)
+ * 2. Sets metadata source to "manual" to distinguish from AI-generated flashcards
+ * 3. Persists the flashcard to the database
+ * 4. Returns the created flashcard summary
+ *
+ * @param params - Parameters including question, answer, metadata, userId, and supabase client
+ * @returns Result object containing success status, flashcard summary, and message
+ */
+export async function createManualFlashcard(params: CreateManualFlashcardParams): Promise<CreateManualFlashcardResult> {
+  const { question, answer, metadata, userId, supabase } = params;
+
+  try {
+    // Transform question and answer into content format
+    const content = JSON.stringify({
+      question,
+      answer,
+    });
+
+    // Prepare metadata with source set to "manual"
+    const flashcardMetadata = {
+      ...metadata,
+      source: "manual",
+      created_at: new Date().toISOString(),
+    };
+
+    // Prepare flashcard for insertion
+    const flashcardToInsert: TablesInsert<"flashcards"> = {
+      user_id: userId,
+      content,
+      metadata: flashcardMetadata,
+    };
+
+    // Insert flashcard into database
+    const { data, error } = await supabase
+      .from("flashcards")
+      .insert(flashcardToInsert)
+      .select("id, content, created_at")
+      .single();
+
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("Database error while creating flashcard:", error);
+      return {
+        success: false,
+        error: "Failed to create flashcard in database",
+        statusCode: 500,
+      };
+    }
+
+    if (!data) {
+      return {
+        success: false,
+        error: "Failed to create flashcard in database",
+        statusCode: 500,
+      };
+    }
+
+    // Transform database record to FlashcardSummaryDTO format
+    const flashcard: FlashcardSummaryDTO = {
+      id: data.id,
+      content: data.content,
+      created_at: data.created_at,
+    };
+
+    return {
+      success: true,
+      flashcard,
+      message: "Flashcard created successfully",
+    };
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Unexpected error in createManualFlashcard:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred while creating flashcard",
+      statusCode: 500,
+    };
+  }
+}

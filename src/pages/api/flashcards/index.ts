@@ -1,10 +1,14 @@
 // src/pages/api/flashcards/index.ts
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import type { ListUserFlashcardsResponseDTO } from "../../../types";
-import { listUserFlashcards } from "../../../lib/services/flashcardService";
+import type { ListUserFlashcardsResponseDTO, CreateManualFlashcardResponseDTO } from "../../../types";
+import { listUserFlashcards, createManualFlashcard } from "../../../lib/services/flashcardService";
 import { DEFAULT_USER } from "../../../db/supabase.client";
-import { logFlashcardListFailure, logValidationError } from "../../../lib/services/auditLogService";
+import {
+  logFlashcardListFailure,
+  logFlashcardCreationFailure,
+  logValidationError,
+} from "../../../lib/services/auditLogService";
 
 // Disable prerendering for this API route
 export const prerender = false;
@@ -28,6 +32,24 @@ const ListFlashcardsQuerySchema = z.object({
     .refine((val) => val >= 1 && val <= 100, "Limit must be between 1 and 100"),
   source: z.enum(["ai", "manual"]).optional(),
   status: z.enum(["active", "deleted"]).optional().default("active"),
+});
+
+/**
+ * Zod schema for validating create flashcard request body.
+ * Validates question, answer, and optional metadata.
+ */
+const CreateFlashcardBodySchema = z.object({
+  question: z
+    .string()
+    .min(1, "Question is required")
+    .max(300, "Question must not exceed 300 characters")
+    .transform((val) => val.trim()),
+  answer: z
+    .string()
+    .min(1, "Answer is required")
+    .max(500, "Answer must not exceed 500 characters")
+    .transform((val) => val.trim()),
+  metadata: z.record(z.unknown()).optional(),
 });
 
 /**
@@ -158,6 +180,153 @@ export const GET: APIRoute = async (context) => {
     return new Response(
       JSON.stringify({
         error: "An unexpected error occurred while retrieving flashcards",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+};
+
+/**
+ * POST /api/flashcards
+ *
+ * Creates a new manual flashcard with provided question and answer.
+ *
+ * @param context - Astro API context containing locals (supabase client) and request
+ * @returns JSON response with created flashcard
+ */
+export const POST: APIRoute = async (context) => {
+  try {
+    // Get the Supabase client from context.locals
+    const supabase = context.locals.supabase;
+
+    if (!supabase) {
+      return new Response(
+        JSON.stringify({
+          error: "Database connection not available",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Parse and validate request body
+    let requestBody;
+    try {
+      requestBody = await context.request.json();
+    } catch {
+      return new Response(
+        JSON.stringify({
+          error: "Invalid JSON in request body",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Validate the request body using Zod
+    const validationResult = CreateFlashcardBodySchema.safeParse(requestBody);
+
+    if (!validationResult.success) {
+      const errors = validationResult.error.errors.map((err) => ({
+        field: err.path.join("."),
+        message: err.message,
+      }));
+
+      // Log validation error to audit log
+      await logValidationError(supabase, errors);
+
+      return new Response(
+        JSON.stringify({
+          error: "Validation failed",
+          details: errors,
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const { question, answer, metadata } = validationResult.data;
+
+    // Using DEFAULT_USER for development
+    // This will be replaced with authenticated user ID when auth is implemented
+    const userId = DEFAULT_USER;
+
+    // Call the flashcard service to create the flashcard
+    const result = await createManualFlashcard({
+      question,
+      answer,
+      metadata,
+      userId,
+      supabase,
+    });
+
+    // Handle service-level errors
+    if (!result.success) {
+      // Log the failure to audit log
+      await logFlashcardCreationFailure(supabase, userId, result.error || "Unknown error");
+
+      return new Response(
+        JSON.stringify({
+          error: result.error || "Failed to create flashcard",
+        }),
+        {
+          status: result.statusCode || 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // Return success response
+    if (!result.flashcard) {
+      return new Response(
+        JSON.stringify({
+          error: "Failed to retrieve created flashcard",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const response: CreateManualFlashcardResponseDTO = {
+      message: result.message || "Flashcard created successfully",
+      flashcard: result.flashcard,
+    };
+
+    return new Response(JSON.stringify(response), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    // Log unexpected errors to console and audit log
+    // eslint-disable-next-line no-console
+    console.error("Unexpected error in POST /api/flashcards:", error);
+
+    // Try to log to audit log if supabase is available
+    try {
+      const supabase = context.locals.supabase;
+      if (supabase) {
+        await logFlashcardCreationFailure(supabase, null, error instanceof Error ? error.message : "Unknown error");
+      }
+    } catch (logError) {
+      // If audit logging fails, just log to console
+      // eslint-disable-next-line no-console
+      console.error("Failed to log error to audit log:", logError);
+    }
+
+    return new Response(
+      JSON.stringify({
+        error: "An unexpected error occurred while creating flashcard",
       }),
       {
         status: 500,

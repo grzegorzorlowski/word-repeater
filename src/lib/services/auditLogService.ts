@@ -115,3 +115,20 @@ export async function logFlashcardListFailure(
     },
   });
 }
+
+/**
+ * Logs a failed manual flashcard creation operation
+ */
+export async function logFlashcardCreationFailure(
+  supabase: SupabaseClient,
+  userId: string | null,
+  error: string
+): Promise<void> {
+  await logAuditEntry(supabase, {
+    userId,
+    action: "flashcard_creation_failure",
+    details: {
+      error,
+    },
+  });
+}
