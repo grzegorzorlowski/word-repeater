@@ -5,6 +5,7 @@ import {
   logFlashcardGeneration,
   logFlashcardGenerationFailure,
   logFlashcardListFailure,
+  logFlashcardCreationFailure,
   logValidationError,
 } from "../auditLogService";
 import type { SupabaseClient } from "../../../db/supabase.client";
@@ -255,6 +256,53 @@ describe("auditLogService", () => {
       expect(mockInsert).toHaveBeenCalledWith({
         user_id: null,
         action: expect.stringContaining("flashcard_list_failure"),
+      });
+    });
+  });
+
+  describe("logFlashcardCreationFailure", () => {
+    it("should log flashcard creation failure with user id", async () => {
+      // Arrange
+      const mockInsert = vi.fn().mockResolvedValue({
+        error: null,
+      });
+
+      (mockSupabaseClient.from as any) = vi.fn().mockReturnValue({
+        insert: mockInsert,
+      });
+
+      // Act
+      await logFlashcardCreationFailure(mockSupabaseClient, "user-123", "Validation failed");
+
+      // Assert
+      expect(mockSupabaseClient.from).toHaveBeenCalledWith("audit_logs");
+      expect(mockInsert).toHaveBeenCalledWith({
+        user_id: "user-123",
+        action: expect.stringContaining("flashcard_creation_failure"),
+      });
+      expect(mockInsert).toHaveBeenCalledWith({
+        user_id: "user-123",
+        action: expect.stringContaining("Validation failed"),
+      });
+    });
+
+    it("should log flashcard creation failure without user id", async () => {
+      // Arrange
+      const mockInsert = vi.fn().mockResolvedValue({
+        error: null,
+      });
+
+      (mockSupabaseClient.from as any) = vi.fn().mockReturnValue({
+        insert: mockInsert,
+      });
+
+      // Act
+      await logFlashcardCreationFailure(mockSupabaseClient, null, "System error");
+
+      // Assert
+      expect(mockInsert).toHaveBeenCalledWith({
+        user_id: null,
+        action: expect.stringContaining("flashcard_creation_failure"),
       });
     });
   });
