@@ -86,7 +86,7 @@ export async function logFlashcardGenerationFailure(
  */
 export async function logValidationError(
   supabase: SupabaseClient,
-  errors: Array<{ field: string; message: string }>
+  errors: { field: string; message: string }[]
 ): Promise<void> {
   await logAuditEntry(supabase, {
     userId: null,
@@ -129,6 +129,25 @@ export async function logFlashcardCreationFailure(
     action: "flashcard_creation_failure",
     details: {
       error,
+    },
+  });
+}
+
+/**
+ * Logs a failed flashcard update operation
+ */
+export async function logFlashcardUpdateFailure(
+  supabase: SupabaseClient,
+  userId: string | null,
+  error: string,
+  flashcardId?: string
+): Promise<void> {
+  await logAuditEntry(supabase, {
+    userId,
+    action: "flashcard_update_failure",
+    details: {
+      error,
+      flashcard_id: flashcardId,
     },
   });
 }

@@ -364,3 +364,101 @@ export async function createManualFlashcard(params: CreateManualFlashcardParams)
     };
   }
 }
+
+/**
+ * Interface for the parameters required to update a flashcard.
+ */
+interface UpdateFlashcardParams {
+  flashcardId: string;
+  question: string;
+  answer: string;
+  userId: string;
+  supabase: SupabaseClient;
+}
+
+/**
+ * Interface for the result of the update flashcard operation.
+ */
+interface UpdateFlashcardResult {
+  success: boolean;
+  message?: string;
+  error?: string;
+  statusCode?: number;
+}
+
+/**
+ * Updates an existing flashcard's question and answer.
+ *
+ * This function:
+ * 1. Verifies that the flashcard exists and belongs to the user (ownership check)
+ * 2. Checks that the flashcard is not soft-deleted
+ * 3. Transforms question and answer into flashcard content format (JSON stringified)
+ * 4. Updates the flashcard in the database
+ * 5. Returns success message or appropriate error
+ *
+ * @param params - Parameters including flashcardId, question, answer, userId, and supabase client
+ * @returns Result object containing success status and message
+ */
+export async function updateFlashcard(params: UpdateFlashcardParams): Promise<UpdateFlashcardResult> {
+  const { flashcardId, question, answer, userId, supabase } = params;
+
+  try {
+    // Transform question and answer into content format
+    const content = JSON.stringify({
+      question,
+      answer,
+    });
+
+    // Update flashcard with ownership check
+    // Only update if: id matches, user_id matches, and not soft-deleted
+    const { data, error } = await supabase
+      .from("flashcards")
+      .update({ content })
+      .eq("id", flashcardId)
+      .eq("user_id", userId)
+      .is("deleted_at", null)
+      .select("id")
+      .single();
+
+    if (error) {
+      // Check if it's a "not found" error (no rows matched)
+      if (error.code === "PGRST116") {
+        return {
+          success: false,
+          error: "Flashcard not found",
+          statusCode: 404,
+        };
+      }
+
+      // eslint-disable-next-line no-console
+      console.error("Database error while updating flashcard:", error);
+      return {
+        success: false,
+        error: "Failed to update flashcard in database",
+        statusCode: 500,
+      };
+    }
+
+    if (!data) {
+      // No rows were updated (flashcard doesn't exist or doesn't belong to user)
+      return {
+        success: false,
+        error: "Flashcard not found",
+        statusCode: 404,
+      };
+    }
+
+    return {
+      success: true,
+      message: "Flashcard updated successfully",
+    };
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Unexpected error in updateFlashcard:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred while updating flashcard",
+      statusCode: 500,
+    };
+  }
+}
