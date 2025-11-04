@@ -66,7 +66,7 @@ describe("flashcardService - listUserFlashcards", () => {
       expect(result.data![0]).toHaveProperty("created_at");
     });
 
-    it("should filter by status=active (deleted_at IS NULL)", async () => {
+    it("should always exclude soft-deleted flashcards", async () => {
       // Arrange
       const mockQuery = {
         eq: vi.fn().mockReturnThis(),
@@ -99,7 +99,7 @@ describe("flashcardService - listUserFlashcards", () => {
       expect(mockQuery.is).toHaveBeenCalledWith("deleted_at", null);
     });
 
-    it("should filter by status=deleted (deleted_at IS NOT NULL)", async () => {
+    it("should filter by status=active", async () => {
       // Arrange
       const mockQuery = {
         eq: vi.fn().mockReturnThis(),
@@ -121,7 +121,7 @@ describe("flashcardService - listUserFlashcards", () => {
         userId: "test-user-id",
         page: 1,
         limit: 10,
-        status: "deleted" as const,
+        status: "active" as const,
         supabase: mockSupabaseClient,
       };
 
@@ -129,7 +129,75 @@ describe("flashcardService - listUserFlashcards", () => {
       await listUserFlashcards(params);
 
       // Assert
-      expect(mockQuery.not).toHaveBeenCalledWith("deleted_at", "is", null);
+      expect(mockQuery.eq).toHaveBeenCalledWith("status", "active");
+    });
+
+    it("should filter by status=pending", async () => {
+      // Arrange
+      const mockQuery = {
+        eq: vi.fn().mockReturnThis(),
+        is: vi.fn().mockReturnThis(),
+        not: vi.fn().mockReturnThis(),
+        order: vi.fn().mockReturnThis(),
+        range: vi.fn().mockResolvedValue({
+          data: [],
+          error: null,
+          count: 0,
+        }),
+      };
+
+      (mockSupabaseClient.from as any) = vi.fn().mockReturnValue({
+        select: vi.fn().mockReturnValue(mockQuery),
+      });
+
+      const params = {
+        userId: "test-user-id",
+        page: 1,
+        limit: 10,
+        status: "pending" as const,
+        supabase: mockSupabaseClient,
+      };
+
+      // Act
+      await listUserFlashcards(params);
+
+      // Assert
+      expect(mockQuery.eq).toHaveBeenCalledWith("status", "pending");
+    });
+
+    it("should return all flashcards when status is not provided", async () => {
+      // Arrange
+      const mockQuery = {
+        eq: vi.fn().mockReturnThis(),
+        is: vi.fn().mockReturnThis(),
+        not: vi.fn().mockReturnThis(),
+        order: vi.fn().mockReturnThis(),
+        range: vi.fn().mockResolvedValue({
+          data: [],
+          error: null,
+          count: 0,
+        }),
+      };
+
+      (mockSupabaseClient.from as any) = vi.fn().mockReturnValue({
+        select: vi.fn().mockReturnValue(mockQuery),
+      });
+
+      const params = {
+        userId: "test-user-id",
+        page: 1,
+        limit: 10,
+        // status not provided - should return all
+        supabase: mockSupabaseClient,
+      };
+
+      // Act
+      await listUserFlashcards(params);
+
+      // Assert - should NOT call eq with "status"
+      const eqCalls = mockQuery.eq.mock.calls;
+      const statusFilterApplied = eqCalls.some((call: any) => call[0] === "status");
+      expect(statusFilterApplied).toBe(false);
     });
 
     it("should filter by source=ai_generated (source column)", async () => {

@@ -168,7 +168,7 @@ interface ListUserFlashcardsParams {
   page: number;
   limit: number;
   source?: "ai_generated" | "manual";
-  status: "active" | "deleted";
+  status?: "active" | "pending";
   supabase: SupabaseClient;
 }
 
@@ -203,13 +203,19 @@ export async function listUserFlashcards(params: ListUserFlashcardsParams): Prom
     const offset = (page - 1) * limit;
 
     // Build base query for flashcards
-    let query = supabase.from("flashcards").select("id, content, created_at", { count: "exact" }).eq("user_id", userId);
+    // Always exclude soft-deleted flashcards (deleted_at IS NULL)
+    let query = supabase
+      .from("flashcards")
+      .select("id, content, created_at", { count: "exact" })
+      .eq("user_id", userId)
+      .is("deleted_at", null);
 
-    // Apply status filter (active = deleted_at is null, deleted = deleted_at is not null)
-    if (status === "active") {
-      query = query.is("deleted_at", null);
-    } else {
-      query = query.not("deleted_at", "is", null);
+    // Apply status filter if provided
+    // - "active" = status = 'active' (excludes pending and archived)
+    // - "pending" = status = 'pending' (AI suggestions awaiting review)
+    // - If not provided: returns all flashcards regardless of status
+    if (status) {
+      query = query.eq("status", status);
     }
 
     // Apply source filter if provided

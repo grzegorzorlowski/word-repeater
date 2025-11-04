@@ -16,6 +16,19 @@ export const prerender = false;
 /**
  * Zod schema for validating query parameters.
  * Validates pagination, filtering by source and status.
+ *
+ * Status filter (optional):
+ * - "active": Returns only active flashcards (excludes pending AI suggestions and archived)
+ * - "pending": Returns only pending AI-generated flashcards awaiting review
+ * - If not provided: Returns all flashcards regardless of status
+ *
+ * Source filter (optional):
+ * - "ai_generated": Returns only AI-generated flashcards
+ * - "manual": Returns only manually created flashcards
+ * - If not provided: Returns all flashcards regardless of source
+ *
+ * Note: Only non-deleted flashcards (deleted_at IS NULL) are returned.
+ * Soft-deleted flashcards are excluded from all queries.
  */
 const ListFlashcardsQuerySchema = z.object({
   page: z
@@ -31,7 +44,7 @@ const ListFlashcardsQuerySchema = z.object({
     .transform((val) => parseInt(val, 10))
     .refine((val) => val >= 1 && val <= 100, "Limit must be between 1 and 100"),
   source: z.enum(["ai_generated", "manual"]).optional(),
-  status: z.enum(["active", "deleted"]).optional().default("active"),
+  status: z.enum(["active", "pending"]).optional(),
 });
 
 /**
@@ -56,7 +69,11 @@ const CreateFlashcardBodySchema = z.object({
  * GET /api/flashcards
  *
  * Retrieves a paginated list of flashcards for the authenticated user.
- * Supports filtering by source (ai_generated/manual) and status (active/deleted).
+ * Only returns non-deleted flashcards (deleted_at IS NULL).
+ *
+ * Optional filters:
+ * - source: "ai_generated" or "manual" (returns all if not specified)
+ * - status: "active" or "pending" (returns all if not specified)
  *
  * @param context - Astro API context containing locals (supabase client) and request
  * @returns JSON response with paginated flashcard list

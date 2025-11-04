@@ -227,7 +227,7 @@ describe("auditLogService", () => {
         page: 1,
         limit: 10,
         source: "ai_generated",
-        status: "active",
+        status: "pending",
       };
 
       // Act

@@ -6,7 +6,7 @@
 @contentType = application/json
 
 # Set these after creating/getting flashcards
-@flashcardId = your-flashcard-id-here
+@flashcardId = d1fc501a-970a-4c72-80a3-8c995470a855
 
 ###############################################################################
 # 1. Generate AI Flashcards
@@ -63,6 +63,9 @@ GET {{baseUrl}}/api/flashcards?status=pending
 
 ### Combined filters
 GET {{baseUrl}}/api/flashcards?source=ai_generated&status=pending&page=1&limit=5
+
+### Combined filters 2
+GET {{baseUrl}}/api/flashcards?source=ai_generated&status=active&page=1&limit=5
 
 ###############################################################################
 # 3. Create Manual Flashcard
