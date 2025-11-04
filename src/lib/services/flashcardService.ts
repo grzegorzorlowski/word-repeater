@@ -167,7 +167,7 @@ interface ListUserFlashcardsParams {
   userId: string;
   page: number;
   limit: number;
-  source?: "ai" | "manual";
+  source?: "ai_generated" | "manual";
   status: "active" | "deleted";
   supabase: SupabaseClient;
 }
@@ -213,11 +213,9 @@ export async function listUserFlashcards(params: ListUserFlashcardsParams): Prom
     }
 
     // Apply source filter if provided
-    // Source is stored in metadata.source as "ai_generated" or "manual"
-    if (source === "ai") {
-      query = query.eq("metadata->>source", "ai_generated");
-    } else if (source === "manual") {
-      query = query.eq("metadata->>source", "manual");
+    // Source is stored in the source column as "ai_generated" or "manual"
+    if (source) {
+      query = query.eq("source", source);
     }
 
     // Apply pagination and ordering

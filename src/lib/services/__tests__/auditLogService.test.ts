@@ -226,7 +226,7 @@ describe("auditLogService", () => {
       const queryParams = {
         page: 1,
         limit: 10,
-        source: "ai",
+        source: "ai_generated",
         status: "active",
       };
 
@@ -564,13 +564,7 @@ describe("auditLogService", () => {
       });
 
       // Act
-      await logFlashcardDecisionFailure(
-        mockSupabaseClient,
-        "user-123",
-        "Validation failed",
-        "flashcard-456",
-        "accept"
-      );
+      await logFlashcardDecisionFailure(mockSupabaseClient, "user-123", "Validation failed", "flashcard-456", "accept");
 
       // Assert
       expect(mockSupabaseClient.from).toHaveBeenCalledWith("audit_logs");

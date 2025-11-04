@@ -30,7 +30,7 @@ const ListFlashcardsQuerySchema = z.object({
     .default("10")
     .transform((val) => parseInt(val, 10))
     .refine((val) => val >= 1 && val <= 100, "Limit must be between 1 and 100"),
-  source: z.enum(["ai", "manual"]).optional(),
+  source: z.enum(["ai_generated", "manual"]).optional(),
   status: z.enum(["active", "deleted"]).optional().default("active"),
 });
 
@@ -56,7 +56,7 @@ const CreateFlashcardBodySchema = z.object({
  * GET /api/flashcards
  *
  * Retrieves a paginated list of flashcards for the authenticated user.
- * Supports filtering by source (ai/manual) and status (active/deleted).
+ * Supports filtering by source (ai_generated/manual) and status (active/deleted).
  *
  * @param context - Astro API context containing locals (supabase client) and request
  * @returns JSON response with paginated flashcard list

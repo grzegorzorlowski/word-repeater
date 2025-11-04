@@ -132,7 +132,7 @@ describe("flashcardService - listUserFlashcards", () => {
       expect(mockQuery.not).toHaveBeenCalledWith("deleted_at", "is", null);
     });
 
-    it("should filter by source=ai (metadata.source = ai_generated)", async () => {
+    it("should filter by source=ai_generated (source column)", async () => {
       // Arrange
       const mockQuery = {
         eq: vi.fn().mockReturnThis(),
@@ -154,7 +154,7 @@ describe("flashcardService - listUserFlashcards", () => {
         userId: "test-user-id",
         page: 1,
         limit: 10,
-        source: "ai" as const,
+        source: "ai_generated" as const,
         status: "active" as const,
         supabase: mockSupabaseClient,
       };
@@ -163,10 +163,10 @@ describe("flashcardService - listUserFlashcards", () => {
       await listUserFlashcards(params);
 
       // Assert
-      expect(mockQuery.eq).toHaveBeenCalledWith("metadata->>source", "ai_generated");
+      expect(mockQuery.eq).toHaveBeenCalledWith("source", "ai_generated");
     });
 
-    it("should filter by source=manual (metadata.source = manual)", async () => {
+    it("should filter by source=manual (source column)", async () => {
       // Arrange
       const mockQuery = {
         eq: vi.fn().mockReturnThis(),
@@ -197,7 +197,7 @@ describe("flashcardService - listUserFlashcards", () => {
       await listUserFlashcards(params);
 
       // Assert
-      expect(mockQuery.eq).toHaveBeenCalledWith("metadata->>source", "manual");
+      expect(mockQuery.eq).toHaveBeenCalledWith("source", "manual");
     });
 
     it("should apply correct pagination offset and limit", async () => {
