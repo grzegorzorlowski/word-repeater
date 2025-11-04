@@ -47,8 +47,8 @@ This endpoint retrieves a paginated list of flashcards for the authenticated use
    - Validate and parse query parameters (page, limit, source, status).
    - Apply defaults for missing parameters.
    - Ensure page >= 1, limit between 1 and 100.
-   - Validate source is either "ai" or "manual" if provided.
-   - Validate status is either "active" or "deleted".
+   - Validate source is either "ai_generated" or "manual" if provided.
+   - Validate status is either "active" or "pending".
 4. **Business Logic & Data Retrieval**: 
    - Pass validated parameters to a dedicated flashcard list service.
    - Service builds database query with filters and pagination.
