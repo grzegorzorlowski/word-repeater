@@ -47,7 +47,8 @@ This endpoint allows authenticated users to manually create a flashcard by provi
 4. **Business Logic & Persistence**: 
    - Pass validated command to a dedicated flashcard creation service.
    - Transform question/answer into the flashcard content format (JSON stringified).
-   - Set metadata source to "manual" to distinguish from AI-generated flashcards.
+   - Set source column to "manual" to distinguish from AI-generated flashcards.
+   - Set status column to "active" (manual flashcards are immediately active).
    - Persist the flashcard to the database with user_id.
 5. **Response Composition**: 
    - Return the created flashcard summary with 201 status.
@@ -92,7 +93,7 @@ This endpoint allows authenticated users to manually create a flashcard by provi
 3. **Create Service Function**: 
    - Add `createManualFlashcard` function to flashcard service.
    - Transform question/answer into content format (JSON stringified).
-   - Set metadata.source to "manual".
+   - Set source column to "manual" and status column to "active".
    - Insert flashcard into database.
    - Return flashcard summary.
 4. **Error Handling & Audit Logging**: 
@@ -111,7 +112,8 @@ This endpoint allows authenticated users to manually create a flashcard by provi
 
 ## 10. Notes
 - **Content Format**: The flashcard content is stored as JSON stringified object with question and answer fields, matching the format used for AI-generated flashcards.
-- **Metadata Source**: Set `metadata.source = "manual"` to distinguish from AI-generated flashcards (`metadata.source = "ai_generated"`).
+- **Source Column**: Set `source = "manual"` to distinguish from AI-generated flashcards (`source = "ai_generated"`).
+- **Status Column**: Set `status = "active"` for manual flashcards (they are immediately active, unlike AI-generated flashcards which start as "pending").
 - **Endpoint Reuse**: The POST handler shares the same route as the GET handler (`/api/flashcards`), following REST conventions.
-- **Trimming**: Consider trimming whitespace from question and answer before validation.
+- **Trimming**: Whitespace is trimmed from question and answer before validation.
 

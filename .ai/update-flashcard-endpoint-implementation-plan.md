@@ -113,7 +113,8 @@ This endpoint allows authenticated users to update an existing flashcard's quest
 
 ## 10. Notes
 - **Content Format**: The flashcard content is updated as JSON stringified object with question and answer fields, maintaining consistency with create operation.
-- **Metadata Preservation**: The update operation should NOT modify the metadata (source, tags, etc.), only the content (question/answer) and updated_at timestamp.
+- **Column Preservation**: The update operation should NOT modify the source, status, or metadata columns, only the content (question/answer) and updated_at timestamp.
 - **Soft Deletes**: Should not allow updating soft-deleted flashcards (deleted_at IS NOT NULL).
+- **Status Preservation**: The status column (active/pending) is not modified by this endpoint.
 - **updated_at**: The database should automatically update the `updated_at` timestamp (if configured with trigger or default value).
 

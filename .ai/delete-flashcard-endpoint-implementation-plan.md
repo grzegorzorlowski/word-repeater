@@ -100,6 +100,8 @@ This endpoint allows authenticated users to soft delete an existing flashcard. T
 
 ## 10. Notes
 - **Soft Delete**: The operation sets `deleted_at` to the current timestamp instead of removing the record from the database. This allows for potential recovery and audit trails.
+- **Query Exclusion**: Once deleted (deleted_at IS NOT NULL), the flashcard is excluded from all list queries, regardless of source or status filters.
+- **Status Preservation**: The status column (active/pending) is not modified by deletion. The flashcard retains its status but is excluded from queries due to deleted_at.
 - **Idempotency**: Attempting to delete an already deleted flashcard returns 404 (consistent with "not found" behavior for deleted resources).
 - **No Confirmation**: The client is expected to have performed a confirmation step before calling this endpoint.
 - **updated_at**: The database should automatically update the `updated_at` timestamp when `deleted_at` is set.

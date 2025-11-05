@@ -45,7 +45,10 @@ This endpoint is responsible for processing a user's input text (up to 5000 char
 4. **Business Logic & Persistence**: 
    - Validate the input and pass to a dedicated flashcard generation service.
    - **Development Phase Note**: Instead of calling the external AI service, a mocked service is used to simulate AI flashcard generation.
-   - Generate flashcard suggestions (using the mocked service during development) and persist these generated flashcards to the database immediately.
+   - Generate flashcard suggestions (using the mocked service during development).
+   - Set source column to "ai_generated" for all generated flashcards.
+   - Set status column to "pending" for all generated flashcards (requiring user accept/reject decision).
+   - Persist these generated flashcards to the database immediately.
 5. **Response Composition**: 
    - After successfully storing the generated flashcards, the service returns the flashcard suggestions alongside a success message.
    - In case of errors, an appropriate HTTP error status along with an error message is returned.
@@ -91,7 +94,8 @@ This endpoint is responsible for processing a user's input text (up to 5000 char
 4. **Invoke Business Logic & Persistence**: 
    - Extract the flashcard generation and persistence logic into a dedicated service (e.g., `src/lib/services/flashcardService.ts`).
    - **Development Phase Note**: Use a mocked service to simulate AI flashcard generation instead of calling an external API.
-   - After generating the flashcards, persist them to the database.
+   - After generating the flashcards, set source="ai_generated" and status="pending" for each.
+   - Persist them to the database.
 5. **Error Handling and Logging**: 
    - Handle any exceptions from the service.
    - Log errors to an audit log (if applicable) to capture failures.
@@ -100,3 +104,8 @@ This endpoint is responsible for processing a user's input text (up to 5000 char
 7. **Testing and Documentation**: 
    - Write unit tests covering successful processing, validation failures, and error scenarios.
    - Update API documentation to reflect the endpoint specification and expected behaviors.
+
+## 10. Notes
+- **Source Column**: All AI-generated flashcards have `source = "ai_generated"` to distinguish them from manually created flashcards (`source = "manual"`).
+- **Status Column**: All AI-generated flashcards start with `status = "pending"` and require user accept/reject decision. Once accepted, status changes to "active". If rejected, flashcard is soft-deleted (deleted_at timestamp set).
+- **Accept/Reject Workflow**: Users must explicitly accept or reject each AI-generated flashcard through the `/api/flashcards/{id}/decision` endpoint before it becomes active.

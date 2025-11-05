@@ -1,7 +1,7 @@
 # API Endpoint Implementation Plan: List User Flashcards
 
 ## 1. Endpoint Overview
-This endpoint retrieves a paginated list of flashcards for the authenticated user. It supports filtering by source (AI-generated or manual) and status (active/deleted), and returns flashcard summaries with pagination metadata.
+This endpoint retrieves a paginated list of flashcards for the authenticated user. It supports optional filtering by source (AI-generated or manual) and status (active or pending), and returns flashcard summaries with pagination metadata. Soft-deleted flashcards are always excluded from results.
 
 ## 2. Request Details
 - **HTTP Method**: GET
@@ -10,8 +10,8 @@ This endpoint retrieves a paginated list of flashcards for the authenticated use
   - **Query Parameters**:
     - `page` (number, optional, default: 1): Page number for pagination
     - `limit` (number, optional, default: 10): Number of items per page (max: 100)
-    - `source` (string, optional): Filter by source ("ai" or "manual")
-    - `status` (string, optional, default: "active"): Filter by status ("active" or "deleted")
+    - `source` (string, optional): Filter by source ("ai_generated" or "manual")
+    - `status` (string, optional): Filter by status ("active" or "pending")
 
 ## 3. Used Types
 - **DTO for Response**: `ListUserFlashcardsResponseDTO` (defined in `src/types.ts`)
@@ -45,17 +45,19 @@ This endpoint retrieves a paginated list of flashcards for the authenticated use
 2. **Authentication**: Middleware validates the JWT token. The authenticated user context is passed via the request (e.g., `context.locals.supabase`).
 3. **Query Parameter Validation**: 
    - Validate and parse query parameters (page, limit, source, status).
-   - Apply defaults for missing parameters.
+   - Apply defaults for missing parameters (page=1, limit=10).
    - Ensure page >= 1, limit between 1 and 100.
    - Validate source is either "ai_generated" or "manual" if provided.
-   - Validate status is either "active" or "pending".
+   - Validate status is either "active" or "pending" if provided.
 4. **Business Logic & Data Retrieval**: 
    - Pass validated parameters to a dedicated flashcard list service.
    - Service builds database query with filters and pagination.
+   - Query ALWAYS excludes soft-deleted flashcards (deleted_at IS NULL).
    - Query includes:
      - Filter by user_id (from authenticated user)
-     - Filter by deleted_at (null for active, not null for deleted)
-     - Filter by metadata.source if source parameter provided
+     - Always filter: deleted_at IS NULL (soft-deleted flashcards are never returned)
+     - Filter by source column if source parameter provided
+     - Filter by status column if status parameter provided
      - Apply pagination (offset and limit)
      - Get total count for pagination metadata
 5. **Response Composition**: 
@@ -104,7 +106,8 @@ This endpoint retrieves a paginated list of flashcards for the authenticated use
    - Extract the flashcard listing logic into a dedicated service (e.g., `src/lib/services/flashcardService.ts` - add new function).
    - Pass validated parameters and authenticated user ID to the service.
 4. **Database Query**: 
-   - Build query with filters for user_id, deleted_at, and source (from metadata).
+   - Build query with filters for user_id and deleted_at (always IS NULL).
+   - Apply optional filters for source column and status column if provided.
    - Apply pagination with offset and limit.
    - Execute query to get flashcards and total count.
 5. **Error Handling**: 
@@ -118,7 +121,9 @@ This endpoint retrieves a paginated list of flashcards for the authenticated use
    - Test edge cases (empty results, invalid parameters, large page numbers).
 
 ## 10. Notes
-- **Default Behavior**: By default, only active (non-deleted) flashcards are returned.
-- **Source Filtering**: The source filter checks the `metadata.source` field which should be set to "ai_generated" for AI flashcards and "manual" for manual ones.
-- **Soft Deletes**: Deleted flashcards have a non-null `deleted_at` timestamp and are excluded by default unless status="deleted" is specified.
+- **Soft-Deleted Exclusion**: Soft-deleted flashcards (deleted_at IS NOT NULL) are ALWAYS excluded from all queries. There is no way to retrieve deleted flashcards through this endpoint.
+- **Source Filtering**: The source filter checks the `source` column which is set to "ai_generated" for AI flashcards and "manual" for manual ones.
+- **Status Filtering**: The status filter checks the `status` column ("active" or "pending"). If not provided, returns all flashcards regardless of status.
+- **Independent Filters**: Source and status filters are independent and optional. Each only restricts results when explicitly provided.
+- **Default Behavior**: Without any filters, returns ALL non-deleted flashcards (both active and pending, both AI-generated and manual).
 

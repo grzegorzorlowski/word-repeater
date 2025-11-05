@@ -129,8 +129,10 @@ export interface AcceptRejectFlashcardResponseDTO {
    - Test database errors
 
 ## 10. Notes
-- **AI-Generated Only**: This endpoint only works with flashcards where `source = 'ai_generated'`
-- **Pending Only**: Only flashcards with `status = 'pending'` can be accepted/rejected
+- **AI-Generated Only**: This endpoint only works with flashcards where `source = 'ai_generated'` (stored in the source column)
+- **Pending Only**: Only flashcards with `status = 'pending'` can be accepted/rejected (stored in the status column)
+- **Accept Behavior**: Sets `status = 'active'`, making the flashcard visible in normal queries
+- **Reject Behavior**: Sets `deleted_at` timestamp (soft-delete), removing flashcard from all queries
 - **Idempotency Consideration**: Attempting to accept/reject an already processed flashcard returns 400 (not 404)
 - **Audit Trail**: Both successful accepts and rejects are logged, plus all errors
 - **No Undo**: Once accepted or rejected, the decision cannot be reversed through this endpoint (would require update endpoint)
