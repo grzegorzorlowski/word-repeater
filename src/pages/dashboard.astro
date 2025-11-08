@@ -1,0 +1,20 @@
+---
+/**
+ * Dashboard Page
+ * Main view that serves as the central hub of the application.
+ * Provides navigation to generate flashcards, view existing flashcards, and start learning.
+ */
+import Layout from "@/layouts/Layout.astro";
+import DashboardHeader from "@/components/DashboardHeader.astro";
+import { DashboardContent } from "@/components/DashboardContent";
+---
+
+<Layout title="Dashboard">
+  <main class="min-h-screen flex flex-col items-center justify-center p-6 bg-background">
+    <div class="w-full max-w-2xl">
+      <DashboardHeader title="Dashboard" />
+
+      <DashboardContent client:load />
+    </div>
+  </main>
+</Layout>

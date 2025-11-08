@@ -111,4 +111,15 @@ export interface AcceptRejectFlashcardResponseDTO {
   status: "active" | "deleted";
 }
 
+/**
+ * ViewModel for Dashboard view state management.
+ * Used for managing loading and error states.
+ */
+export interface DashboardViewModel {
+  // True if any API call is in progress.
+  loading: boolean;
+  // Error message if applicable.
+  error: string | null;
+}
+
 // Additional DTOs for other API endpoints (e.g. delete) can be added as needed.
