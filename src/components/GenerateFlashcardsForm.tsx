@@ -106,7 +106,7 @@ export default function GenerateFlashcardsForm() {
             </div>
             <div className="mt-4">
               <Button asChild>
-                <a href="/dashboard">Go to Dashboard to Review</a>
+                <a href="/accept">Review Flashcards Now</a>
               </Button>
             </div>
           </div>
