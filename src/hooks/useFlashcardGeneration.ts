@@ -145,6 +145,8 @@ export function useFlashcardGeneration() {
 
         setViewModel((prev) => ({
           ...prev,
+          text: "", // Clear text after successful generation
+          charCount: 0,
           isGenerating: false,
           generatedFlashcards: data.flashcards,
           successMessage: data.message || "Flashcards generated successfully!",

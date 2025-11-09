@@ -34,6 +34,12 @@ export default function GenerateFlashcardsForm() {
     submit();
   };
 
+  const handleRetry = () => {
+    // Clear error and retry submission
+    clearError();
+    submit();
+  };
+
   const handleTruncateConfirm = () => {
     const truncatedText = text.slice(0, 5000);
     setText(truncatedText);
@@ -107,7 +113,7 @@ export default function GenerateFlashcardsForm() {
         )}
 
         {/* Error Toast */}
-        {error && <ErrorToast message={error} onDismiss={clearError} />}
+        {error && <ErrorToast message={error} onDismiss={clearError} onRetry={handleRetry} showRetry={true} />}
 
         {/* Truncate Dialog */}
         <TruncateDialog open={showTruncateDialog} onConfirm={handleTruncateConfirm} onCancel={handleTruncateCancel} />
