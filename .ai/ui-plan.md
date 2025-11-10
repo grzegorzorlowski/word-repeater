@@ -60,6 +60,7 @@ The UI architecture follows a **mobile-first** approach with a responsive layout
 3. Alternatively: creates manually → flashcard list.
 4. Starts learning session → reviews flashcards → marks Remembered/Don’t Remember → summary.
 5. If no flashcards → “No flashcards” screen with CTA.
+6. Dashboard -> view flashcards -> possiblity to modify them
 
 ## 4. Layout and Navigation Structure
 - **Header:** Dashboard, Flashcards, Generate, Learn, Logout.
