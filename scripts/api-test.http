@@ -62,7 +62,7 @@ GET {{baseUrl}}/api/flashcards?status=active
 GET {{baseUrl}}/api/flashcards?status=pending
 
 ### Combined filters
-GET {{baseUrl}}/api/flashcards?source=ai_generated&status=pending&page=1&limit=5
+GET {{baseUrl}}/api/flashcards?source=ai_generated&status=pending&page=1&limit=100
 
 ### Combined filters 2
 GET {{baseUrl}}/api/flashcards?source=ai_generated&status=active&page=1&limit=5
