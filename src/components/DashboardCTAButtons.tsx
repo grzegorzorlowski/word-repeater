@@ -3,6 +3,7 @@
  * Provides action buttons for navigation:
  * - Review pending AI flashcards
  * - Generate flashcards
+ * - Create manual flashcard
  * - View existing flashcards
  * - Start learning session
  */
@@ -62,6 +63,16 @@ export function DashboardCTAButtons() {
         aria-label="Generate new flashcards"
       >
         Generate Flashcards
+      </Button>
+
+      <Button
+        onClick={() => handleNavigation("/flashcards/new")}
+        size="lg"
+        variant="outline"
+        className="w-full py-6 text-lg"
+        aria-label="Create manual flashcard"
+      >
+        Create Manual Flashcard
       </Button>
 
       <Button
