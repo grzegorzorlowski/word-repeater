@@ -308,18 +308,13 @@ export async function createManualFlashcard(params: CreateManualFlashcardParams)
       answer,
     });
 
-    // Prepare metadata with source set to "manual"
-    const flashcardMetadata = {
-      ...metadata,
-      source: "manual",
-      created_at: new Date().toISOString(),
-    };
-
     // Prepare flashcard for insertion
     const flashcardToInsert: TablesInsert<"flashcards"> = {
       user_id: userId,
       content,
-      metadata: flashcardMetadata,
+      source: "manual", // Set source column to track manually-created flashcards
+      status: "active", // Set status to active - manual flashcards are immediately active
+      metadata: metadata || null,
     };
 
     // Insert flashcard into database
