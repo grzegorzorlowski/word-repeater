@@ -5,20 +5,14 @@ import { useFlashcardForm } from "../hooks/useFlashcardForm";
 import type { FlashcardSummaryDTO } from "../types";
 
 interface ManualFlashcardFormProps {
-  mode: "create" | "edit";
-  initialData?: {
-    id: string;
-    question: string;
-    answer: string;
-  };
   onSuccess?: (flashcard: FlashcardSummaryDTO) => void;
 }
 
 /**
- * Form component for manually creating or editing flashcards.
+ * Form component for manually creating flashcards.
  * Provides input fields for question and answer with real-time character counting and validation.
  */
-export default function ManualFlashcardForm({ mode, initialData, onSuccess }: ManualFlashcardFormProps) {
+export default function ManualFlashcardForm({ onSuccess }: ManualFlashcardFormProps) {
   const {
     question,
     setQuestion,
@@ -31,7 +25,7 @@ export default function ManualFlashcardForm({ mode, initialData, onSuccess }: Ma
     validationErrors,
     canSubmit,
     submit,
-  } = useFlashcardForm({ mode, initialData, onSuccess });
+  } = useFlashcardForm({ onSuccess });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,13 +42,9 @@ export default function ManualFlashcardForm({ mode, initialData, onSuccess }: Ma
       <div className="space-y-6">
         {/* Header */}
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">
-            {mode === "create" ? "Create Flashcard" : "Edit Flashcard"}
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Create Flashcard</h1>
           <p className="text-muted-foreground">
-            {mode === "create"
-              ? "Enter a question and answer to create a new flashcard for your learning deck."
-              : "Update the question and answer for this flashcard."}
+            Enter a question and answer to create a new flashcard for your learning deck.
           </p>
         </div>
 
@@ -134,7 +124,7 @@ export default function ManualFlashcardForm({ mode, initialData, onSuccess }: Ma
             </Button>
 
             <Button type="button" variant="outline" asChild disabled={isLoading}>
-              <a href="/flashcards">Cancel</a>
+              <a href="/dashboard">Cancel</a>
             </Button>
 
             {isLoading && <span className="text-sm text-muted-foreground">Saving your flashcard...</span>}
@@ -148,19 +138,20 @@ export default function ManualFlashcardForm({ mode, initialData, onSuccess }: Ma
               <div className="space-y-2">
                 <p className="font-medium text-green-900 dark:text-green-100">{successMessage}</p>
                 <p className="text-sm text-green-700 dark:text-green-300">
-                  Your flashcard has been {mode === "create" ? "created" : "updated"} and is ready for learning.
+                  Your flashcard has been created and is ready for learning.
                 </p>
               </div>
             </div>
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex flex-wrap gap-2">
               <Button asChild>
+                <a href="/dashboard">Back to Dashboard</a>
+              </Button>
+              <Button variant="outline" asChild>
                 <a href="/flashcards">View All Flashcards</a>
               </Button>
-              {mode === "create" && (
-                <Button variant="outline" onClick={() => window.location.reload()}>
-                  Create Another
-                </Button>
-              )}
+              <Button variant="outline" onClick={() => window.location.reload()}>
+                Create Another
+              </Button>
             </div>
           </div>
         )}

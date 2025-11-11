@@ -3,10 +3,9 @@ import type { CreateManualFlashcardCommand, CreateManualFlashcardResponseDTO, Fl
 
 /**
  * ViewModel for the Manual Flashcard form.
- * Manages form state for both creation and editing modes.
+ * Manages form state for flashcard creation.
  */
 interface FlashcardFormViewModel {
-  id?: string;
   question: string;
   answer: string;
   isLoading: boolean;
@@ -22,26 +21,19 @@ interface FlashcardFormViewModel {
  * Options for initializing the form hook
  */
 interface UseFlashcardFormOptions {
-  mode: "create" | "edit";
-  initialData?: {
-    id: string;
-    question: string;
-    answer: string;
-  };
   onSuccess?: (flashcard: FlashcardSummaryDTO) => void;
 }
 
 /**
- * Custom hook encapsulating state, validation, and API integration for manual flashcard creation/editing.
+ * Custom hook encapsulating state, validation, and API integration for manual flashcard creation.
  * Provides form field management, client-side validation, submit logic, and success/error state handling.
  */
-export function useFlashcardForm(options: UseFlashcardFormOptions) {
-  const { mode, initialData, onSuccess } = options;
+export function useFlashcardForm(options: UseFlashcardFormOptions = {}) {
+  const { onSuccess } = options;
 
   const [viewModel, setViewModel] = useState<FlashcardFormViewModel>({
-    id: initialData?.id,
-    question: initialData?.question || "",
-    answer: initialData?.answer || "",
+    question: "",
+    answer: "",
     isLoading: false,
     error: null,
     successMessage: null,
@@ -117,7 +109,7 @@ export function useFlashcardForm(options: UseFlashcardFormOptions) {
     setViewModel((prev) => ({ ...prev, error: null }));
   }, []);
 
-  // Submit flashcard creation/update
+  // Submit flashcard creation
   const submit = useCallback(async () => {
     // Pre-submit validation
     if (!validate()) {
@@ -139,12 +131,8 @@ export function useFlashcardForm(options: UseFlashcardFormOptions) {
         answer: viewModel.answer.trim(),
       };
 
-      // Determine endpoint and method based on mode
-      const endpoint = mode === "create" ? "/api/flashcards" : `/api/flashcards/${viewModel.id}`;
-      const method = mode === "create" ? "POST" : "PUT";
-
-      const response = await fetch(endpoint, {
-        method,
+      const response = await fetch("/api/flashcards", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -164,8 +152,6 @@ export function useFlashcardForm(options: UseFlashcardFormOptions) {
               .join(" ");
             errorMessage = detailMessages || errorMessage;
           }
-        } else if (response.status === 404 && mode === "edit") {
-          errorMessage = "Flashcard not found.";
         } else if (response.status >= 500) {
           errorMessage = "Server error. Please try again later.";
         }
@@ -178,17 +164,15 @@ export function useFlashcardForm(options: UseFlashcardFormOptions) {
         return;
       }
 
-      // Success
+      // Success - clear fields to prevent duplicate submissions
       const data: CreateManualFlashcardResponseDTO = await response.json();
 
       setViewModel((prev) => ({
         ...prev,
-        // Clear fields only in create mode to prevent duplicate submissions
-        question: mode === "create" ? "" : prev.question,
-        answer: mode === "create" ? "" : prev.answer,
+        question: "",
+        answer: "",
         isLoading: false,
-        successMessage:
-          data.message || (mode === "create" ? "Flashcard created successfully!" : "Flashcard updated successfully!"),
+        successMessage: data.message || "Flashcard created successfully!",
       }));
 
       // Call onSuccess callback if provided
@@ -208,7 +192,7 @@ export function useFlashcardForm(options: UseFlashcardFormOptions) {
         error: errorMessage,
       }));
     }
-  }, [viewModel, validate, mode, onSuccess]);
+  }, [viewModel, validate, onSuccess]);
 
   return {
     question: viewModel.question,
@@ -222,6 +206,5 @@ export function useFlashcardForm(options: UseFlashcardFormOptions) {
     validationErrors: viewModel.validationErrors,
     canSubmit,
     submit,
-    mode,
   };
 }
