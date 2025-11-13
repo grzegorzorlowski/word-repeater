@@ -90,10 +90,9 @@ describe("flashcardService - createManualFlashcard", () => {
         expect.objectContaining({
           user_id: "test-user-id",
           content: expect.any(String),
-          metadata: expect.objectContaining({
-            source: "manual",
-            created_at: expect.any(String),
-          }),
+          source: "manual",
+          status: "active",
+          metadata: null,
         })
       );
     });
@@ -134,11 +133,11 @@ describe("flashcardService - createManualFlashcard", () => {
       // Assert
       expect(mockInsert).toHaveBeenCalledWith(
         expect.objectContaining({
+          source: "manual",
+          status: "active",
           metadata: expect.objectContaining({
-            source: "manual",
             tags: ["javascript", "programming"],
             category: "tech",
-            created_at: expect.any(String),
           }),
         })
       );
@@ -340,9 +339,9 @@ describe("flashcardService - createManualFlashcard", () => {
       expect(result.success).toBe(true);
       expect(mockInsert).toHaveBeenCalledWith(
         expect.objectContaining({
-          metadata: expect.objectContaining({
-            source: "manual",
-          }),
+          source: "manual",
+          status: "active",
+          metadata: null,
         })
       );
     });
