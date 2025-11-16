@@ -42,7 +42,25 @@ export default function ManualFlashcardForm({ onSuccess }: ManualFlashcardFormPr
       <div className="space-y-6">
         {/* Header */}
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">Create Flashcard</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold tracking-tight">Create Flashcard</h1>
+            <a
+              href="/dashboard"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="h-4 w-4"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+              </svg>
+              Back to Dashboard
+            </a>
+          </div>
           <p className="text-muted-foreground">
             Enter a question and answer to create a new flashcard for your learning deck.
           </p>
