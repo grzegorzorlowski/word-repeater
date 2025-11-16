@@ -46,11 +46,11 @@ export function AcceptFlashcardView() {
       const message = decision === "accept" ? "Flashcard accepted! ✓" : "Flashcard rejected";
       setSuccessMessage(message);
 
-      // Clear success message after 2 seconds
+      // Clear success message after 500 milliseconds
       setTimeout(() => {
         setSuccessMessage(null);
         setIsTransitioning(false);
-      }, 2000);
+      }, 500);
     },
     [processDecision]
   );
