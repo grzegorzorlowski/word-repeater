@@ -86,22 +86,73 @@ export async function generateFlashcardsWithAI(
     });
 
     // Prepare system message for the AI
-    const systemMessage = `You are an expert educational content creator specializing in creating effective flashcards for learning.
+    const systemMessage = `You are an expert language teacher specializing in creating effective vocabulary flashcards for language learning.
 
-Your task is to analyze the provided text and generate high-quality question-answer pairs that help learners understand and remember the key concepts.
+Your task is to analyze the provided text and extract important vocabulary words that are relevant to the text's context and topic.
+
+CRITICAL Translation Rules (MUST FOLLOW):
+- If the text is in ENGLISH → translate to POLISH
+- If the text is in ANY OTHER LANGUAGE (French, Polish, German, Spanish, Italian, etc.) → translate to ENGLISH
+- ALWAYS detect the source language first before translating
+
+REQUIRED Flashcard Format:
+Each flashcard MUST contain BOTH a word AND a sentence in BOTH question and answer.
+
+Question (original language):
+word [phonetic transcription]
+
+sentence using that word
+
+Answer (translated):
+translated word
+
+translated sentence
+
+EXAMPLE for French text (French → English):
+Question:
+guerre [ɡɛʁ]
+
+La guerre a duré plusieurs années.
+
+Answer:
+war
+
+The war lasted several years.
+
+EXAMPLE for English text (English → Polish):
+Question:
+ceasefire [ˈsiːsˌfaɪər]
+
+The two countries agreed to a ceasefire.
+
+Answer:
+zawieszenie broni
+
+Oba kraje zgodziły się na zawieszenie broni.
 
 Guidelines:
-- Focus on the most important concepts, definitions, facts, and relationships in the text
-- Create clear, concise questions that test understanding
-- Provide accurate, complete answers
-- Avoid overly simple or trivial questions
-- Ensure questions are self-contained and understandable without additional context
-- Generate exactly ${limit} flashcards
-- Each flashcard should focus on a single concept or fact`;
+- ALWAYS include BOTH word AND sentence in question and answer (this is mandatory)
+- Extract vocabulary that is relevant to the text's topic and context
+- Focus on words that are meaningful and useful for language learners
+- Prioritize topic-specific vocabulary (e.g., for war-related text: "ceasefire", "truce", "offensive")
+- Avoid overly simple or common words (like "the", "and", "is")
+- Include accurate phonetic transcription using IPA (International Phonetic Alphabet) for the word in the question
+- Generate as many flashcards as you can find relevant vocabulary, but no more than ${limit} flashcards
+- Each flashcard should focus on a single word and its usage in context
+- The sentence should be from the text or a clear contextual example
+- If the translation heavily depends on context, add a brief explanation at the end of the answer (only if necessary)`;
 
     // Prepare user message
-    const userMessage = `Please generate ${limit} flashcards from the following text:
+    const userMessage = `Please extract vocabulary and generate up to ${limit} language learning flashcards from the following text.
 
+IMPORTANT: Each flashcard MUST include:
+- Question: word [IPA transcription] on first line, then a blank line, then a full sentence
+- Answer: translated word on first line, then a blank line, then translated sentence
+
+Example structure:
+{"question": "guerre [ɡɛʁ]\\n\\nLa guerre a duré plusieurs années.", "answer": "war\\n\\nThe war lasted several years."}
+
+Text to analyze:
 ${text}`;
 
     // Call OpenRouter API
@@ -129,9 +180,33 @@ ${text}`;
         const question = (fc as { question: string }).question.trim();
         const answer = (fc as { answer: string }).answer.trim();
 
-        // Validate that question and answer are not empty
-        if (question.length > 0 && answer.length > 0) {
+        // Validate that question and answer contain both word and sentence
+        // Expected format: "word [phonetic]\n\nsentence" for question
+        // Expected format: "word\n\nsentence" for answer
+        const questionHasNewline = question.includes("\n");
+        const answerHasNewline = answer.includes("\n");
+
+        // Additional check: question should have reasonable length (word + transcription + sentence)
+        const questionMinLength = 20; // At minimum: word + [IPA] + short sentence
+        const answerMinLength = 10; // At minimum: word + short sentence
+
+        if (
+          question.length >= questionMinLength &&
+          answer.length >= answerMinLength &&
+          questionHasNewline &&
+          answerHasNewline
+        ) {
           flashcards.push({ question, answer });
+        } else {
+          // Log rejected flashcard for debugging
+          // eslint-disable-next-line no-console
+          console.warn("Rejected flashcard - missing sentence format:", {
+            questionLength: question.length,
+            answerLength: answer.length,
+            questionHasNewline,
+            answerHasNewline,
+            questionPreview: question.substring(0, 50),
+          });
         }
       }
     }

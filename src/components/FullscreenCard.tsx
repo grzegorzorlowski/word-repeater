@@ -29,7 +29,7 @@ export function FullscreenCard({ flashcard }: FullscreenCardProps) {
           </h2>
           <p
             id={`flashcard-question-${flashcard.id}`}
-            className="text-xl sm:text-2xl md:text-3xl font-medium text-foreground leading-relaxed break-words"
+            className="text-xl sm:text-2xl md:text-3xl font-medium text-foreground leading-relaxed break-words whitespace-pre-line"
           >
             {flashcard.question}
           </p>
@@ -47,7 +47,7 @@ export function FullscreenCard({ flashcard }: FullscreenCardProps) {
             Answer
           </h2>
           <p
-            className="text-lg sm:text-xl md:text-2xl text-foreground leading-relaxed break-words"
+            className="text-lg sm:text-xl md:text-2xl text-foreground leading-relaxed break-words whitespace-pre-line"
             aria-label={`Answer: ${flashcard.answer}`}
           >
             {flashcard.answer}
