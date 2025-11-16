@@ -3,6 +3,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { generateFlashcardsFromText } from "../flashcardService";
 import type { SupabaseClient } from "../../../db/supabase.client";
 
+// Mock the AI flashcard generator service
+vi.mock("../aiFlashcardGenerator.service", () => ({
+  generateFlashcardsWithAI: vi.fn(),
+}));
+
+import { generateFlashcardsWithAI } from "../aiFlashcardGenerator.service";
+
 describe("flashcardService - generate flashcards", () => {
   // Mock Supabase client
   const mockSupabaseClient = {
@@ -15,14 +22,24 @@ describe("flashcardService - generate flashcards", () => {
 
   describe("generateFlashcardsFromText", () => {
     it("should generate flashcards and persist them to database", async () => {
-      // Arrange
+      // Arrange - Mock AI service
+      vi.mocked(generateFlashcardsWithAI).mockResolvedValue({
+        success: true,
+        flashcards: [
+          {
+            question: "What is the key concept in this text?",
+            answer: "This is a test sentence for flashcard generation.",
+          },
+        ],
+      });
+
       const mockInsert = vi.fn().mockReturnValue({
         select: vi.fn().mockResolvedValue({
           data: [
             {
               id: "test-id-1",
               content: JSON.stringify({
-                question: 'What is the key concept in: "This is a test sentence for fla"...',
+                question: "What is the key concept in this text?",
                 answer: "This is a test sentence for flashcard generation.",
               }),
               created_at: "2025-01-01T00:00:00Z",
@@ -58,7 +75,17 @@ describe("flashcardService - generate flashcards", () => {
     });
 
     it("should generate at least one flashcard even with short text", async () => {
-      // Arrange
+      // Arrange - Mock AI service
+      vi.mocked(generateFlashcardsWithAI).mockResolvedValue({
+        success: true,
+        flashcards: [
+          {
+            question: "What is the main topic of this text?",
+            answer: "Short text",
+          },
+        ],
+      });
+
       const mockInsert = vi.fn().mockReturnValue({
         select: vi.fn().mockResolvedValue({
           data: [
@@ -96,7 +123,17 @@ describe("flashcardService - generate flashcards", () => {
     });
 
     it("should handle database insertion errors", async () => {
-      // Arrange
+      // Arrange - Mock AI service
+      vi.mocked(generateFlashcardsWithAI).mockResolvedValue({
+        success: true,
+        flashcards: [
+          {
+            question: "Test question",
+            answer: "Test answer",
+          },
+        ],
+      });
+
       const mockInsert = vi.fn().mockReturnValue({
         select: vi.fn().mockResolvedValue({
           data: null,
@@ -125,7 +162,21 @@ describe("flashcardService - generate flashcards", () => {
     });
 
     it("should respect the limit parameter", async () => {
-      // Arrange
+      // Arrange - Mock AI service
+      vi.mocked(generateFlashcardsWithAI).mockResolvedValue({
+        success: true,
+        flashcards: [
+          {
+            question: "Test question 1",
+            answer: "Test answer 1",
+          },
+          {
+            question: "Test question 2",
+            answer: "Test answer 2",
+          },
+        ],
+      });
+
       const mockInsert = vi.fn().mockReturnValue({
         select: vi.fn().mockResolvedValue({
           data: [
@@ -181,7 +232,17 @@ describe("flashcardService - generate flashcards", () => {
     });
 
     it("should include metadata with source and generated_at timestamp", async () => {
-      // Arrange
+      // Arrange - Mock AI service
+      vi.mocked(generateFlashcardsWithAI).mockResolvedValue({
+        success: true,
+        flashcards: [
+          {
+            question: "Test question",
+            answer: "Test answer",
+          },
+        ],
+      });
+
       const mockInsert = vi.fn().mockReturnValue({
         select: vi.fn().mockResolvedValue({
           data: [
@@ -227,7 +288,17 @@ describe("flashcardService - generate flashcards", () => {
     });
 
     it("should return empty data error when database returns empty array", async () => {
-      // Arrange
+      // Arrange - Mock AI service
+      vi.mocked(generateFlashcardsWithAI).mockResolvedValue({
+        success: true,
+        flashcards: [
+          {
+            question: "Test question",
+            answer: "Test answer",
+          },
+        ],
+      });
+
       const mockInsert = vi.fn().mockReturnValue({
         select: vi.fn().mockResolvedValue({
           data: [],

@@ -2,6 +2,7 @@
 import type { SupabaseClient } from "../../db/supabase.client";
 import type { FlashcardSuggestionDTO, FlashcardSummaryDTO } from "../../types";
 import type { TablesInsert } from "../../db/database.types";
+import { generateFlashcardsWithAI } from "./aiFlashcardGenerator.service";
 
 /**
  * Interface for the parameters required to generate flashcards from text.
@@ -25,54 +26,10 @@ interface GenerateFlashcardsResult {
 }
 
 /**
- * Mocked AI service that generates flashcard suggestions from input text.
- *
- * This is a development-phase implementation that simulates AI flashcard generation.
- * In production, this should be replaced with actual AI API calls.
- *
- * @param text - The input text to generate flashcards from
- * @param limit - Maximum number of flashcards to generate
- * @returns Array of generated flashcard suggestions
- */
-function mockAIGenerateFlashcards(text: string, limit: number): Omit<FlashcardSuggestionDTO, "id">[] {
-  // Simple mock: Extract sentences and create Q&A pairs
-  // In a real implementation, this would call an AI service like OpenAI
-
-  const sentences = text
-    .split(/[.!?]+/)
-    .map((s) => s.trim())
-    .filter((s) => s.length > 20); // Filter out very short sentences
-
-  const flashcards: Omit<FlashcardSuggestionDTO, "id">[] = [];
-  const count = Math.min(limit, sentences.length);
-
-  for (let i = 0; i < count; i++) {
-    const sentence = sentences[i];
-
-    // Create a simple question-answer pair
-    // This is just a mock - real AI would generate meaningful Q&A
-    flashcards.push({
-      question: `What is the key concept in: "${sentence.substring(0, 50)}${sentence.length > 50 ? "..." : ""}"?`,
-      answer: sentence,
-    });
-  }
-
-  // Ensure at least one flashcard is generated if possible
-  if (flashcards.length === 0 && text.length > 0) {
-    flashcards.push({
-      question: "What is the main topic of this text?",
-      answer: text.substring(0, 200) + (text.length > 200 ? "..." : ""),
-    });
-  }
-
-  return flashcards;
-}
-
-/**
  * Generates AI flashcards from the provided text and persists them to the database.
  *
  * This function:
- * 1. Uses a mocked AI service to generate flashcard suggestions
+ * 1. Uses OpenRouter AI service to generate flashcard suggestions
  * 2. Transforms the Q&A pairs into the flashcard content format
  * 3. Persists the flashcards to the database
  * 4. Returns the generated flashcards with their database IDs
@@ -84,16 +41,18 @@ export async function generateFlashcardsFromText(params: GenerateFlashcardsParam
   const { text, limit, userId, supabase } = params;
 
   try {
-    // Step 1: Generate flashcard suggestions using the mocked AI service
-    const suggestions = mockAIGenerateFlashcards(text, limit);
+    // Step 1: Generate flashcard suggestions using OpenRouter AI service
+    const aiResult = await generateFlashcardsWithAI({ text, limit });
 
-    if (suggestions.length === 0) {
+    if (!aiResult.success || !aiResult.flashcards || aiResult.flashcards.length === 0) {
       return {
         success: false,
-        error: "Unable to generate flashcards from the provided text",
+        error: aiResult.error || "Unable to generate flashcards from the provided text",
         statusCode: 422,
       };
     }
+
+    const suggestions = aiResult.flashcards;
 
     // Step 2: Transform suggestions into database insert format
     // The flashcard content combines question and answer

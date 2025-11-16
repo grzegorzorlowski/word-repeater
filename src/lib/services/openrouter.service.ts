@@ -445,7 +445,37 @@ export class OpenRouterService {
     // Parse JSON content if using json_schema response format
     let parsedContent: Record<string, unknown>;
     try {
-      parsedContent = JSON.parse(message.content) as Record<string, unknown>;
+      const parsed = JSON.parse(message.content);
+
+      // Handle case where AI returns array directly instead of object
+      // If schema expects an object with a single array property, wrap the array
+      if (Array.isArray(parsed)) {
+        this._logger.warn("AI returned array directly, attempting to wrap in expected schema format");
+
+        const schema = this._currentConfig.responseFormat.json_schema.schema;
+        const properties = schema.properties as Record<string, unknown> | undefined;
+
+        // Find the first array property in the schema
+        if (properties) {
+          const arrayPropertyKey = Object.keys(properties).find((key) => {
+            const prop = properties[key] as { type?: string };
+            return prop.type === "array";
+          });
+
+          if (arrayPropertyKey) {
+            this._logger.debug(`Wrapping array in '${arrayPropertyKey}' property`);
+            parsedContent = { [arrayPropertyKey]: parsed };
+          } else {
+            // Array doesn't match schema expectations, let validation handle it
+            throw new Error("AI returned array but schema does not define array properties");
+          }
+        } else {
+          // No properties defined in schema, let validation handle it
+          throw new Error("AI returned array but schema does not define properties");
+        }
+      } else {
+        parsedContent = parsed as Record<string, unknown>;
+      }
     } catch (error) {
       this._logger.error("Failed to parse JSON content", { content: message.content, error });
       throw new Error("OpenRouter API returned invalid JSON content");
@@ -562,21 +592,35 @@ export class OpenRouterService {
   ): { valid: boolean; errors?: string[] } {
     const errors: string[] = [];
 
-    // Basic validation: check if all required schema properties exist
-    for (const [key, value] of Object.entries(schema)) {
-      if (!(key in content)) {
-        errors.push(`Missing required field: ${key}`);
-        continue;
+    // Validate root type
+    const schemaType = schema.type as string | undefined;
+    if (schemaType === "object" && typeof content !== "object") {
+      errors.push(`Expected type 'object' but got '${typeof content}'`);
+      return { valid: false, errors };
+    }
+
+    // Check required fields
+    const requiredFields = schema.required as string[] | undefined;
+    if (requiredFields && Array.isArray(requiredFields)) {
+      for (const field of requiredFields) {
+        if (!(field in content)) {
+          errors.push(`Missing required field: ${field}`);
+        }
       }
+    }
 
-      // Basic type checking
-      const schemaValue = value as { type?: string };
-      if (schemaValue.type) {
-        const contentValue = content[key];
-        const actualType = Array.isArray(contentValue) ? "array" : typeof contentValue;
+    // Validate properties
+    const properties = schema.properties as Record<string, unknown> | undefined;
+    if (properties) {
+      for (const [key, propertySchema] of Object.entries(properties)) {
+        if (key in content) {
+          const propertyDef = propertySchema as { type?: string };
+          const contentValue = content[key];
+          const actualType = Array.isArray(contentValue) ? "array" : typeof contentValue;
 
-        if (schemaValue.type !== actualType) {
-          errors.push(`Field '${key}' expected type '${schemaValue.type}' but got '${actualType}'`);
+          if (propertyDef.type && propertyDef.type !== actualType) {
+            errors.push(`Field '${key}' expected type '${propertyDef.type}' but got '${actualType}'`);
+          }
         }
       }
     }
