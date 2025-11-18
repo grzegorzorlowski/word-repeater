@@ -78,7 +78,7 @@ US-001 — Account Registration
 Description: As a new user, I want to create an account using email and password so that I can save flashcards and progress.
 Acceptance Criteria:
 - The form enforces correct email format and minimum password requirements.
-- After registration, the user sees a confirmation and is logged in or asked to log in.
+- After registration, the user sees a confirmation and is asked to log in.
 - Agreement to the terms and conditions and privacy policy is required.
 
 US-002 — Login
@@ -86,11 +86,13 @@ Description: As a user, I want to log in to my account to access my flashcards a
 Acceptance Criteria:
 - Correct credentials log in; - Incorrectly displays a message without revealing whether the email exists.
 - The session is maintained until logout or expiration.
+- the login page should consist link to register page;
 
 US-003 — Logout and session expiration
 Description: As a user, I want to be able to log out.
 Acceptance criteria:
 - Logout button available in the menu.
+- When user logout or before login in, every other page should redirect to login page.
 
 US-004 — Account deletion (GDPR)
 Description: As a user, I want to delete my account and all associated data.
