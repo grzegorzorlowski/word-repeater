@@ -122,4 +122,109 @@ export interface DashboardViewModel {
   error: string | null;
 }
 
+// ============================================================================
+// Authentication Types
+// ============================================================================
+
+/**
+ * DTO for user registration request
+ */
+export interface RegisterUserRequestDTO {
+  email: string;
+  password: string;
+  acceptTerms: boolean;
+}
+
+/**
+ * DTO for user registration response
+ */
+export interface RegisterUserResponseDTO {
+  message: string;
+  user: {
+    id: string;
+    email: string;
+  };
+}
+
+/**
+ * DTO for user login request
+ */
+export interface LoginUserRequestDTO {
+  email: string;
+  password: string;
+}
+
+/**
+ * DTO for user login response
+ */
+export interface LoginUserResponseDTO {
+  message: string;
+  user: {
+    id: string;
+    email: string;
+  };
+  redirectTo: string;
+}
+
+/**
+ * DTO for password reset request
+ */
+export interface ForgotPasswordRequestDTO {
+  email: string;
+}
+
+/**
+ * DTO for password reset response
+ */
+export interface ForgotPasswordResponseDTO {
+  message: string;
+}
+
+/**
+ * DTO for password reset confirmation request
+ */
+export interface ResetPasswordRequestDTO {
+  token: string;
+  password: string;
+}
+
+/**
+ * DTO for password reset confirmation response
+ */
+export interface ResetPasswordResponseDTO {
+  message: string;
+}
+
+/**
+ * DTO for account deletion request
+ */
+export interface DeleteAccountRequestDTO {
+  confirmationText: string;
+}
+
+/**
+ * DTO for account deletion response
+ */
+export interface DeleteAccountResponseDTO {
+  message: string;
+}
+
+/**
+ * Generic error response DTO
+ */
+export interface ErrorResponseDTO {
+  error: string;
+  details?: Record<string, string[] | string>;
+}
+
+/**
+ * User info extracted from session
+ */
+export interface SessionUser {
+  id: string;
+  email: string;
+  emailVerified: boolean;
+  createdAt: string;
+}
+
 // Additional DTOs for other API endpoints (e.g. delete) can be added as needed.

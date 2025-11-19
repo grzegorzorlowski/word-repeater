@@ -1,0 +1,27 @@
+---
+import Layout from './Layout.astro';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<Layout title={title}>
+  <div class="min-h-screen flex items-center justify-center bg-background p-4">
+    <div class="w-full max-w-md">
+      <div class="text-center mb-8">
+        <a href="/" class="inline-block">
+          <h1 class="text-3xl font-bold tracking-tight">WordRepeater</h1>
+        </a>
+        <p class="text-sm text-muted-foreground mt-2">Learn smarter with AI-powered flashcards</p>
+      </div>
+      <div class="bg-card p-8 rounded-lg shadow-lg border">
+        <slot />
+      </div>
+    </div>
+  </div>
+</Layout>
+
+
