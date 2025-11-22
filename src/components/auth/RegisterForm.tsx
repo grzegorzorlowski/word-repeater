@@ -117,16 +117,16 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         return;
       }
 
-      // Success
+      // Success - user is automatically logged in by Supabase
       setState((prev) => ({ ...prev, isSubmitting: false, isSuccess: true }));
 
       if (onSuccess) {
         onSuccess();
       }
 
-      // Redirect to login after 2 seconds
+      // Redirect to dashboard after 2 seconds (user is already logged in)
       setTimeout(() => {
-        window.location.href = "/login";
+        window.location.href = "/dashboard";
       }, 2000);
     } catch {
       setState((prev) => ({
@@ -153,7 +153,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             <div className="space-y-1">
               <p className="font-medium text-green-900 dark:text-green-100">Registration successful!</p>
               <p className="text-sm text-green-700 dark:text-green-300">
-                Your account has been created. Redirecting you to login...
+                Your account has been created. Redirecting you to dashboard...
               </p>
             </div>
           </div>
