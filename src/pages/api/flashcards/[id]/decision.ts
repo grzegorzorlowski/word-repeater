@@ -2,7 +2,6 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { acceptRejectFlashcard } from "../../../../lib/services/flashcardService";
-import { DEFAULT_USER } from "../../../../db/supabase.client";
 import {
   logFlashcardAcceptance,
   logFlashcardRejection,
@@ -43,8 +42,9 @@ const AcceptRejectFlashcardSchema = z.object({
  */
 export const POST: APIRoute = async (context) => {
   try {
-    // Get the Supabase client from context.locals
+    // Get the Supabase client and user from context.locals
     const supabase = context.locals.supabase;
+    const user = context.locals.user;
 
     if (!supabase) {
       return new Response(
@@ -53,6 +53,18 @@ export const POST: APIRoute = async (context) => {
         }),
         {
           status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    if (!user) {
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized",
+        }),
+        {
+          status: 401,
           headers: { "Content-Type": "application/json" },
         }
       );
@@ -137,9 +149,8 @@ export const POST: APIRoute = async (context) => {
 
     const { decision } = validationResult.data;
 
-    // Using DEFAULT_USER for development
-    // This will be replaced with authenticated user ID when auth is implemented
-    const userId = DEFAULT_USER;
+    // Get authenticated user ID
+    const userId = user.id;
 
     // Call the flashcard service to accept or reject the flashcard
     const result = await acceptRejectFlashcard({

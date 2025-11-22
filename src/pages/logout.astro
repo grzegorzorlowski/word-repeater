@@ -1,0 +1,54 @@
+---
+/**
+ * Logout Page
+ * Automatically signs out the user and redirects to login page.
+ * This page can be accessed via direct navigation to /logout
+ */
+import Layout from "@/layouts/Layout.astro";
+import { LogoutButton } from "@/components/auth/LogoutButton";
+
+// Check if user is already logged in
+const user = Astro.locals.user;
+---
+
+<Layout title="Sign Out - WordRepeater">
+  <main class="min-h-screen flex flex-col items-center justify-center p-6 bg-background">
+    <div class="w-full max-w-md">
+      <div class="space-y-6 text-center">
+        <div>
+          <h1 class="text-3xl font-bold text-foreground">Sign Out</h1>
+          <p class="text-muted-foreground mt-2">
+            {user ? "Are you sure you want to sign out?" : "You are already signed out."}
+          </p>
+        </div>
+
+        {
+          user ? (
+            <div class="space-y-4">
+              <div class="rounded-lg border border-border bg-card p-6">
+                <p class="text-sm text-muted-foreground mb-4">
+                  Signed in as <span class="font-medium text-foreground">{user.email}</span>
+                </p>
+                <LogoutButton client:load variant="destructive" className="w-full" />
+              </div>
+
+              <a href="/dashboard" class="block text-sm text-primary hover:underline">
+                ← Back to Dashboard
+              </a>
+            </div>
+          ) : (
+            <div class="space-y-4">
+              <p class="text-sm text-muted-foreground">You have been signed out successfully.</p>
+              <a
+                href="/login"
+                class="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 font-medium"
+              >
+                Sign In Again
+              </a>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </main>
+</Layout>

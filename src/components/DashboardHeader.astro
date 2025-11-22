@@ -1,7 +1,7 @@
 ---
 /**
  * DashboardHeader Component
- * Displays the view title with proper accessibility attributes.
+ * Displays the view title with proper accessibility attributes and logout button.
  */
 interface Props {
   title?: string;
@@ -10,7 +10,7 @@ interface Props {
 const { title = "Dashboard" } = Astro.props;
 ---
 
-<header class="mb-8" role="banner">
+<header class="mb-8 flex items-center justify-between" role="banner">
   <h1 class="text-4xl font-bold text-foreground" aria-label={title}>
     {title}
   </h1>

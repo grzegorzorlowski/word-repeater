@@ -171,16 +171,45 @@
 
 ## 3. Authentication and Authorization
 
-- **Mechanism**: JWT-based authentication.
-  - A JWT token is issued upon a successful login.
-  - The token must be included in the `Authorization` header (e.g., `Bearer JWT_TOKEN`) for all protected endpoints.
+- **Mechanism**: Cookie-based session authentication using Supabase Auth with SSR.
+  - Session tokens are managed via secure HttpOnly cookies (`sb-access-token`, `sb-refresh-token`).
+  - Cookies are automatically set upon successful login via `POST /api/auth/login`.
+  - Cookies are automatically sent with subsequent requests by the browser/client.
+  - No manual Authorization header is required - authentication is handled via cookies.
+  
+- **Authentication Flow**:
+  1. User logs in via `POST /api/auth/login` with email/password
+  2. Supabase Auth validates credentials and creates a session
+  3. Session tokens are stored in HttpOnly cookies (Set-Cookie headers)
+  4. Subsequent requests automatically include these cookies
+  5. Middleware validates the session on each request using `supabase.auth.getUser()`
+  
+- **Cookie Configuration**:
+  - `HttpOnly: true` - Prevents XSS attacks
+  - `Secure: true` - Requires HTTPS (except localhost)
+  - `SameSite: lax` - Protects against CSRF attacks
+  - `Path: /` - Available for all routes
+
 - **Authorization**:
-  - Middleware will validate JWT tokens and attach the respective user context.
-  - Additional role-based checks are implemented for administrative endpoints (e.g., audit logs).
+  - Middleware validates session cookies and attaches user context to `locals.user`.
+  - All flashcard operations are scoped to the authenticated user's ID.
+  - Unauthenticated API requests return 401 JSON responses.
+  - Unauthenticated page requests redirect to `/login`.
+
 - **Security Measures**:
-  - All endpoints should be served over HTTPS.
+  - Token validation with Supabase Auth server on every request (using `getUser()`).
+  - Automatic token refresh handled by Supabase SSR.
+  - All endpoints should be served over HTTPS in production.
   - Rate limiting should be applied especially on endpoints such as flashcard generation to mitigate abuse.
   - Standard error handling is enforced to avoid disclosure of internal details.
+
+- **Testing with HTTP Clients**:
+  - **Browser**: Cookies are handled automatically ✅
+  - **REST Client (VS Code)**: Should handle cookies automatically, but may require settings adjustment
+  - **Postman**: Cookies are handled automatically when "Automatically follow redirects" is enabled
+  - **cURL**: Use `-c cookies.txt` to save cookies and `-b cookies.txt` to send them
+  
+  **If REST Client doesn't send cookies**: Check that "Rest-client: Follow Redirect" is enabled in VS Code settings.
 
 ## 4. Validation and Business Logic
 

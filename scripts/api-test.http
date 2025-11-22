@@ -1,5 +1,17 @@
 ### Word Repeater API - Test Requests
 ### Use with REST Client extension in VS Code or similar tools
+###
+### IMPORTANT SETUP FOR REST CLIENT:
+### 1. Install "REST Client" extension by Huachao Mao in VS Code
+### 2. Open VS Code Settings (Ctrl+,) and search for "rest-client"
+### 3. Ensure these settings are enabled:
+###    - "Rest-client: Follow Redirect" = true (default)
+###    - Cookies will be automatically handled per file
+###
+### AUTHENTICATION:
+### - You must login first (see section 0) before testing other endpoints
+### - The REST Client extension stores cookies PER FILE automatically
+### - Cookies from login are sent with all subsequent requests in THIS file
 
 # Variables
 @baseUrl = http://localhost:3000
@@ -7,6 +19,75 @@
 
 # Set these after creating/getting flashcards
 @flashcardId = d1fc501a-970a-4c72-80a3-8c995470a855
+
+###############################################################################
+# 0. Authentication (RUN THIS FIRST!)
+###############################################################################
+#
+# HOW TO CREATE A TEST USER:
+# Option 1: Use Supabase Dashboard
+#   1. Go to your Supabase project dashboard
+#   2. Navigate to Authentication > Users
+#   3. Click "Add user" and create a test user
+#
+# Option 2: Use the register page
+#   1. Go to http://localhost:3000/register
+#   2. Create a test account
+#   3. Use those credentials below
+#
+# TROUBLESHOOTING COOKIE ISSUES:
+# If cookies aren't working in REST Client, try these alternatives:
+#
+# Option A: Use Browser DevTools
+#   1. Open http://localhost:3000/login in browser
+#   2. Login with your credentials
+#   3. Open DevTools (F12) → Network tab
+#   4. Navigate to http://localhost:3000/api/flashcards
+#   5. Inspect the request/response
+#
+# Option B: Use Postman
+#   1. Import this file to Postman
+#   2. Enable "Automatically follow redirects"
+#   3. Enable "Save cookies"
+#   4. Run the login request first
+#
+# Option C: Test in browser console
+#   1. Login via browser at http://localhost:3000/login
+#   2. Open DevTools Console (F12)
+#   3. Run: fetch('/api/flashcards').then(r => r.json()).then(console.log)
+#
+###############################################################################
+
+### Login - Run this first to authenticate
+# Replace with your actual Supabase user credentials
+# After a successful login, cookies will be stored automatically by REST Client
+# You should see Set-Cookie headers in the response
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "test@ab.com",
+  "password": "testabcom123"
+}
+
+### Test authentication - should return your flashcards (or empty array)
+# Run this after login to verify authentication is working
+# If you get 401 here, cookies aren't being sent - see troubleshooting above
+GET {{baseUrl}}/api/flashcards
+
+### Logout - Run this to clear session
+POST {{baseUrl}}/api/auth/logout
+Content-Type: {{contentType}}
+
+###############################################################################
+# DEBUGGING: Check if you're authenticated
+###############################################################################
+
+### Check current session (should show user info if logged in)
+# This endpoint doesn't exist yet, but you can test with /api/flashcards
+# If it returns 401, you're not authenticated
+# If it returns 200, you're authenticated
+GET {{baseUrl}}/api/flashcards?limit=1
 
 ###############################################################################
 # 1. Generate AI Flashcards
@@ -291,15 +372,31 @@ Content-Type: {{contentType}}
 
 ###############################################################################
 # Notes:
-# - All endpoints use the DEFAULT_USER until authentication is implemented
+#
+# AUTHENTICATION REQUIRED:
+# - All endpoints require authentication (except login/logout)
+# - You MUST run the login request first (section 0)
+# - The REST Client extension automatically stores cookies from the login response
+# - These cookies are automatically sent with all subsequent requests in this file
+# - If you get 401 errors, your session expired - login again
+#
+# SETUP:
+# 1. Make sure your Supabase project has a test user created
+# 2. Update the email/password in the login request (section 0)
+# 3. Run the login request to authenticate
+# 4. Now you can test other endpoints
+#
+# OTHER NOTES:
+# - Sessions are managed via secure HttpOnly cookies
 # - Flashcard IDs are UUIDs - replace @flashcardId with actual values
 # - Status codes:
 #   - 200: Success
 #   - 400: Bad Request (validation failed)
+#   - 401: Unauthorized (not logged in or session expired)
 #   - 404: Not Found
 #   - 500: Internal Server Error
-# - Pagination defaults: page=1, limit=20
+# - Pagination defaults: page=1, limit=10
 # - Source values: "manual", "ai_generated"
-# - Status values: "pending", "active", "archived"
+# - Status values: "pending", "active"
 ###############################################################################
 
