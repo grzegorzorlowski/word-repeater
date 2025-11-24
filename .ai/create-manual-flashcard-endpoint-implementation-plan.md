@@ -25,57 +25,57 @@ This view provides functionality for manually creating and editing flashcards. U
 
 ### ManualFlashcardPage
 
-- **Component Description:** 
+- **Component Description:**
   - Acts as the page container. Determines whether the view is in create mode or edit mode and initializes data accordingly (e.g., fetch existing flashcard data for editing).
-- **Main Elements:** 
+- **Main Elements:**
   - Conditional rendering of `ManualFlashcardForm` and usage of `Loader` during API data loading.
-- **Handled Interactions:** 
+- **Handled Interactions:**
   - On mount, if in edit mode, triggers data fetch based on flashcard ID from the URL.
-- **Types:** 
+- **Types:**
   - Uses a ViewModel type (e.g., `FlashcardFormViewModel`) to manage loading, error, and flashcard data.
-- **Props:** 
+- **Props:**
   - Receives route parameters (e.g., `id`) when in edit mode.
 
 ### ManualFlashcardForm
 
-- **Component Description:** 
+- **Component Description:**
   - Provides a form with input fields for `question` and `answer` along with a Save button.
-- **Main Elements:** 
+- **Main Elements:**
   - `<input>` or `<textarea>` fields for entering question and answer.
   - A Save button using Shadcn/ui styled button.
   - Inline error messages for failed validation.
-- **Handled Interactions:** 
+- **Handled Interactions:**
   - `onChange` events for updating form state.
   - `onSubmit` for saving the flashcard.
-- **Handled Validation:** 
+- **Handled Validation:**
   - Both fields must have non-empty values.
   - `question` maximum length 300 characters.
   - `answer` maximum length 500 characters.
-- **Types:** 
+- **Types:**
   - Uses a DTO from the types file (`CreateManualFlashcardCommand`).
   - ViewModel for form state may include: `question: string`, `answer: string`, `loading: boolean`, `error: string | null`.
-- **Props:** 
+- **Props:**
   - For edit mode, initial values are passed via props.
   - A callback function to signal successful save.
 
 ### Loader
 
-- **Component Description:** 
+- **Component Description:**
   - Displays a spinner or progress indicator during API calls or data fetches.
-- **Main Elements:** 
+- **Main Elements:**
   - A spinner element (using Shadcn/ui Loader or similar component).
-- **Handled Interactions:** 
+- **Handled Interactions:**
   - Purely visual; toggled via a prop (`visible: boolean`).
 
 ### ErrorNotification
 
-- **Component Description:** 
+- **Component Description:**
   - Renders error messages received from API calls or client-side validations.
-- **Main Elements:** 
+- **Main Elements:**
   - A styled `<div>` or alert component with error text.
-- **Handled Interactions:** 
+- **Handled Interactions:**
   - May include a retry mechanism in case of API errors (optional).
-- **Props:** 
+- **Props:**
   - `message: string`
 
 ## 5. Types
@@ -104,11 +104,11 @@ This view provides functionality for manually creating and editing flashcards. U
 
 ## 6. State Management
 
-- **Local Form State:** 
+- **Local Form State:**
   - Manage the values for `question` and `answer` using React’s `useState`.
-- **Form Validation State:** 
+- **Form Validation State:**
   - Track error messages for invalid inputs.
-- **Loading State:** 
+- **Loading State:**
   - Boolean state to display `Loader` while waiting for API responses.
 - **Custom Hook (useFlashcardForm):**
   - Encapsulates logic for form state management, input validations, API submission, and handling success/error states.
@@ -118,24 +118,24 @@ This view provides functionality for manually creating and editing flashcards. U
 
 - **Endpoint:** `/api/flashcards`
 - **HTTP Method:** POST (for creation)
-- **Request Payload:** 
- 
+- **Request Payload:**
+
   {
-    "question": "What is REST?",
-    "answer": "Representational State Transfer",
-    "metadata": { "tags": ["tech"] }
+  "question": "What is REST?",
+  "answer": "Representational State Transfer",
+  "metadata": { "tags": ["tech"] }
   }
-  - **Response Payload:** 
- 
+  - **Response Payload:**
+
   {
-    "message": "Flashcard created successfully",
-    "flashcard": {
-      "id": "UUID",
-      "content": "...",
-      "created_at": "ISO8601"
-    }
+  "message": "Flashcard created successfully",
+  "flashcard": {
+  "id": "UUID",
+  "content": "...",
+  "created_at": "ISO8601"
   }
-  - **Handling in the View:** 
+  }
+  - **Handling in the View:**
   - On form submission, validate inputs on the client.
   - Trigger the POST request and display a loader while the request is in progress.
   - On success, clear the form (or redirect) so the updated flashcard appears in the list view.
@@ -143,7 +143,7 @@ This view provides functionality for manually creating and editing flashcards. U
 
 ## 8. User Interactions
 
-- **Input Fields:** 
+- **Input Fields:**
   - Users type in the question and answer. Real-time validation provides immediate feedback.
 - **Save Button Click:**
   - When clicked, the form validates inputs; if valid, it initiates an API call.

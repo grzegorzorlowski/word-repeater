@@ -1,12 +1,15 @@
 # View Implementation Plan [AI Flashcard Acceptance]
 
 ## 1. Overview
+
 This view provides a fullscreen interface where users can either accept or reject AI-generated flashcards. It displays both the question and its corresponding answer and includes large, clearly labeled buttons for making a decision. The view communicates with the backend to persist accepted flashcards or discard rejected ones and shows appropriate loading and error states. In addition, the view leverages the "List User Flashcards" API to check for any pending flashcards that need user action. A link to this view is also made available from the dashboard, which directs users to review pending flashcards retrieved from the list API.
 
 ## 2. View Routing
+
 The view is accessible at the path `/accept`.
 
 ## 3. Component Structure
+
 - **AcceptFlashcardView** (Container Component)
   - **FullscreenCard**: Displays the flashcard content (question and answer).
   - **ActionButtons**: Contains two large buttons: Accept and Reject.
@@ -15,8 +18,10 @@ The view is accessible at the path `/accept`.
   - **PendingFlashcardsChecker** (logic handled within the container): Fetches pending flashcards using the List User Flashcards API if the current flashcard suggestion from generate responses is exhausted.
 
 ## 4. Component Details
+
 ### AcceptFlashcardView
-- **Component Description**: 
+
+- **Component Description**:
   - Main container that orchestrates state management, API integration, and renders child components.
   - Integrates logic to fetch pending flashcards using the "List User Flashcards" API (with status set to pending) once all flashcards from the generate response have been processed.
 - **Main HTML Elements and Child Components**:
@@ -38,11 +43,12 @@ The view is accessible at the path `/accept`.
 - **Props**: None (state is managed internally).
 
 ### FullscreenCard
-- **Component Description**: 
+
+- **Component Description**:
   - Presents the flashcard content in a fullscreen view with emphasis on readability.
 - **Main HTML Elements and Child Components**:
   - A title or heading (if needed) and a display area for the question and answer.
-- **Handled Events**: 
+- **Handled Events**:
   - Purely presentational; does not handle interaction events.
 - **Validation Conditions**:
   - Ensure the flashcard's content (question and answer) is present and well formatted.
@@ -52,7 +58,8 @@ The view is accessible at the path `/accept`.
   - `flashcard`: the flashcard to be displayed.
 
 ### ActionButtons
-- **Component Description**: 
+
+- **Component Description**:
   - Provides two clear call-to-action buttons for accepting or rejecting the flashcard.
 - **Main HTML Elements and Child Components**:
   - Two large buttons labeled “Accept” and “Reject”.
@@ -64,11 +71,12 @@ The view is accessible at the path `/accept`.
   - Props: `{ onDecision: (decision: 'accept' | 'reject') => void, disabled: boolean }`.
 
 ### Loader
-- **Component Description**: 
+
+- **Component Description**:
   - Displays a spinner or similar indicator to show that an API operation is in progress.
 - **Main HTML Elements and Child Components**:
   - A spinner or progress indicator.
-- **Handled Events**: 
+- **Handled Events**:
   - None; simply reflects the state of an API call.
 - **Validation Conditions**:
   - Displayed only when `loading` is `true`.
@@ -76,7 +84,8 @@ The view is accessible at the path `/accept`.
   - Props: `{ visible: boolean }`.
 
 ### ErrorNotification
-- **Component Description**: 
+
+- **Component Description**:
   - Shows an error message if an API call fails.
 - **Main HTML Elements and Child Components**:
   - A text element (or alert box) to display the error message.
@@ -88,6 +97,7 @@ The view is accessible at the path `/accept`.
   - Props: `{ message: string }`.
 
 ## 5. Types
+
 - **AcceptFlashcardViewModel**:
   - `flashcard: { id: string; question: string; answer: string } | null` – The current flashcard suggestion to display.
   - `pendingFlashcards: Array<{ id: string; question: string; answer: string }>` – List of pending flashcards fetched from the list API.
@@ -99,6 +109,7 @@ The view is accessible at the path `/accept`.
   - `{ message: string; flashcard_id: string; status: 'active' | 'deleted' }`
 
 ## 6. State Management
+
 - State is managed locally within the `AcceptFlashcardView` using React's `useState` hook.
 - Create a custom hook (e.g., `useAcceptFlashcard`) to encapsulate:
   - The current flashcard suggestion.
@@ -108,6 +119,7 @@ The view is accessible at the path `/accept`.
   - Logic to update the flashcard data when one is processed, and if exhausted, automatically fetch pending flashcards.
 
 ## 7. API Integration
+
 - **Primary Endpoint**: POST `/api/flashcards/{tempId}/decision`
   - **Request Payload**: `{ "decision": "accept" }` or `{ "decision": "reject" }`
   - **Response Payload**: `{ "message": string, "flashcard_id": string, "status": "active" | "deleted" }`
@@ -123,6 +135,7 @@ The view is accessible at the path `/accept`.
     - Update the state (`pendingFlashcards` and set the next `flashcard` from this list) accordingly.
 
 ## 8. User Interactions
+
 - **Accept Interaction**:
   - When the user clicks the Accept button, the system sends a decision of `accept` to the API.
   - Upon success, the flashcard’s status becomes active and this flashcard is removed from the pending list. The next pending flashcard is then displayed.
@@ -136,17 +149,20 @@ The view is accessible at the path `/accept`.
   - If an error occurs, an error message is displayed via the ErrorNotification component, and the user can retry the action.
 
 ## 9. Conditions and Validation
+
 - **Flashcard Validation**: Verify that a flashcard exists and contains a valid `id` before processing any decision.
 - **API Response Validation**: Ensure that responses from both the decision endpoint and the list endpoint are successful (HTTP 200) and include the required data fields.
 - **Button State**: Disable Accept and Reject buttons when an API call is in progress to avoid duplicate submissions.
 - **Content Validation**: The flashcard content (question and answer) must be non-empty and properly formatted for display.
 
 ## 10. Error Handling
+
 - **API Errors**: If the POST decision API or GET list API call fails, update the error state and display an appropriate error notification.
 - **Validation Errors**: Handle any issues with flashcard data (missing or malformed) by logging the error and prompting the user with a clear message.
 - **Retry Mechanism**: Allow users to retry a failed API call by re-triggering the request via the same button or a dedicated retry action.
 
 ## 11. Implementation Steps
+
 1. Update the `AcceptFlashcardView` container component to include logic for fetching pending flashcards from the List User Flashcards API when no current flashcard is available.
 2. Implement the `FullscreenCard` component to display the flashcard’s question and answer.
 3. Develop the `ActionButtons` component to render and wire the Accept and Reject buttons to trigger the decision API call.

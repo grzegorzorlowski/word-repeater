@@ -54,6 +54,7 @@ Astro automatically loads environment variables from `.env` files. Make sure to:
 3. Use `import.meta.env.VARIABLE_NAME` to access variables in your code
 
 Example:
+
 ```typescript
 const apiKey = import.meta.env.OPENROUTER_API_KEY;
 ```
@@ -69,18 +70,19 @@ After configuring your environment variables:
 ### Troubleshooting
 
 **Error: "OpenRouter API key is not configured"**
+
 - Make sure you've created a `.env` file in the root directory
 - Verify the API key is correctly set
 - Restart your development server
 
 **Error: "Authentication failed"**
+
 - Check that your API key is valid
 - Ensure you have credits on your OpenRouter account
 - Visit [https://openrouter.ai/settings/limits](https://openrouter.ai/settings/limits) to check your balance
 
 **Error: "Rate limit exceeded"**
+
 - You've hit the rate limit for your account
 - Wait a few minutes and try again
 - Consider upgrading your OpenRouter plan
-
-

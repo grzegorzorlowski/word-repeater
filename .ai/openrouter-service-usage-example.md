@@ -52,11 +52,7 @@ try {
 For more control, instantiate the service manually:
 
 ```typescript
-import {
-  OpenRouterService,
-  ConsoleLogger,
-  FetchHttpClient,
-} from "@/lib/services/openrouter.service";
+import { OpenRouterService, ConsoleLogger, FetchHttpClient } from "@/lib/services/openrouter.service";
 
 const logger = new ConsoleLogger();
 const httpClient = new FetchHttpClient();
@@ -131,10 +127,7 @@ export class FlashcardGeneratorService {
     });
   }
 
-  async generateFlashcards(
-    text: string,
-    limit: number = 5
-  ): Promise<FlashcardSuggestionDTO[]> {
+  async generateFlashcards(text: string, limit: number = 5): Promise<FlashcardSuggestionDTO[]> {
     // Input validation
     if (!text || text.trim().length === 0) {
       throw new Error("Input text cannot be empty");
@@ -155,10 +148,7 @@ Generate exactly ${limit} flashcards.`;
 
     try {
       // Call OpenRouter API
-      const response = await this.openRouterService.sendMessage(
-        userMessage,
-        systemMessage
-      );
+      const response = await this.openRouterService.sendMessage(userMessage, systemMessage);
 
       // Extract flashcards from response
       const flashcardsData = response.content.flashcards as Array<{
@@ -199,10 +189,10 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Validate inputs
     if (!text) {
-      return new Response(
-        JSON.stringify({ error: "Text is required" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Text is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // Generate flashcards
@@ -309,11 +299,7 @@ class RetryHttpClient implements HttpClient {
   private maxRetries = 3;
   private retryDelay = 1000;
 
-  async post<T>(
-    url: string,
-    data: unknown,
-    config?: RequestConfig
-  ): Promise<HttpResponse<T>> {
+  async post<T>(url: string, data: unknown, config?: RequestConfig): Promise<HttpResponse<T>> {
     let lastError: Error | undefined;
 
     for (let attempt = 0; attempt < this.maxRetries; attempt++) {
@@ -443,9 +429,7 @@ describe("FlashcardGeneratorService", () => {
     const mockService = {
       sendMessage: vi.fn().mockResolvedValue({
         content: {
-          flashcards: [
-            { question: "What is TypeScript?", answer: "A typed superset of JavaScript" },
-          ],
+          flashcards: [{ question: "What is TypeScript?", answer: "A typed superset of JavaScript" }],
         },
       }),
     } as unknown as OpenRouterService;
@@ -474,4 +458,3 @@ describe("FlashcardGeneratorService", () => {
 4. **Monitor API usage to stay within rate limits**
 5. **Use lower temperature values (0.3-0.5) for more deterministic responses**
 6. **Adjust max_tokens based on your needs to optimize costs**
-

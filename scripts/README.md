@@ -37,6 +37,7 @@ curl -X POST http://localhost:4321/api/flashcards/generate \
 ## Prerequisites
 
 1. **Start the development server:**
+
    ```bash
    npm run dev
    ```
@@ -50,33 +51,39 @@ curl -X POST http://localhost:4321/api/flashcards/generate \
 ## Available Endpoints
 
 ### 1. Generate AI Flashcards
+
 - **POST** `/api/flashcards/generate`
 - Generates flashcards from text using AI
 - Text must be 500-5000 characters
 - Creates flashcards with `source: "ai_generated"` and `status: "pending"`
 
 ### 2. List User Flashcards
+
 - **GET** `/api/flashcards`
 - Lists flashcards with pagination and filtering
 - Query parameters: `page`, `limit`, `source`, `status`
 
 ### 3. Create Manual Flashcard
+
 - **POST** `/api/flashcards`
 - Creates a manual flashcard
 - Creates flashcards with `source: "manual"` and `status: "active"`
 
 ### 4. Update Flashcard
+
 - **PUT** `/api/flashcards/{id}`
 - Updates question and/or answer of a flashcard
 - Only owner can update their flashcards
 
 ### 5. Accept/Reject AI Flashcard
+
 - **POST** `/api/flashcards/{id}/decision`
 - Accept: Changes status from `pending` to `active`
 - Reject: Soft deletes the flashcard (sets `deleted_at`)
 - Only works with AI-generated pending flashcards
 
 ### 6. Delete Flashcard
+
 - **DELETE** `/api/flashcards/{id}`
 - Soft deletes a flashcard
 - Only owner can delete their flashcards
@@ -86,11 +93,13 @@ curl -X POST http://localhost:4321/api/flashcards/generate \
 ### Workflow 1: AI Flashcard Generation and Review
 
 1. Generate AI flashcards:
+
    ```http
    POST /api/flashcards/generate
    ```
 
 2. List pending flashcards:
+
    ```http
    GET /api/flashcards?source=ai_generated&status=pending
    ```
@@ -104,11 +113,13 @@ curl -X POST http://localhost:4321/api/flashcards/generate \
 ### Workflow 2: Manual Flashcard Management
 
 1. Create a flashcard:
+
    ```http
    POST /api/flashcards
    ```
 
 2. Update it:
+
    ```http
    PUT /api/flashcards/{id}
    ```
@@ -146,4 +157,3 @@ Update these variables in `api-test.http`:
 - **404 errors**: Check that the flashcard ID exists and belongs to the test user
 - **Validation errors**: Review request body against the schema requirements
 - **500 errors**: Check server logs for detailed error messages
-

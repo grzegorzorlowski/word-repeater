@@ -14,6 +14,7 @@ This table is managed by Supabase Auth
 - **deleted_at**: TIMESTAMPTZ, nullable, służy do soft delete.
 
 #### flashcards
+
 - **id**: UUID, Primary Key, domyślnie generowany (np. przy użyciu `uuid_generate_v4()`).
 - **user_id**: UUID, not null, Foreign Key odnoszący się do `users(id)`.
 - **content**: TEXT, not null — zawiera treść fiszki (np. pytanie/odpowiedź); struktura może być rozbudowywana w przyszłości.
@@ -24,6 +25,7 @@ This table is managed by Supabase Auth
 - **deleted_at**: TIMESTAMPTZ, nullable, służy do soft delete.
 
 #### audit_logs
+
 - **id**: UUID, Primary Key, domyślnie generowany (np. przy użyciu `uuid_generate_v4()`).
 - **user_id**: UUID, nullable, Foreign Key odnoszący się do `users(id)` — wskazuje użytkownika, który wywołał akcję (jeśli dotyczy).
 - **action**: TEXT, not null — opis akcji logowanej.

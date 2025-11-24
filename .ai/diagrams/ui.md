@@ -21,7 +21,7 @@ flowchart TD
         REGISTER["/register - register.astro"]
         FORGOT["/forgot-password - forgot-password.astro"]
         RESET["/reset-password - reset-password.astro"]
-        
+
         LOGIN --> AUTHLAYOUT1[Używa AuthLayout]
         REGISTER --> AUTHLAYOUT2[Używa AuthLayout]
         FORGOT --> AUTHLAYOUT3[Używa AuthLayout]
@@ -32,7 +32,7 @@ flowchart TD
         BASELAYOUT[Layout.astro - Bazowy layout]
         AUTHLAYOUT[AuthLayout.astro - Layout dla stron auth]
         APPLAYOUT[AppLayout.astro - Layout dla chronionych stron]
-        
+
         AUTHLAYOUT --> BASELAYOUT
         APPLAYOUT --> BASELAYOUT
         APPLAYOUT --> APPNAV[AppNavigation.astro]
@@ -45,7 +45,7 @@ flowchart TD
         FORGOTFORM[ForgotPasswordForm.tsx]
         RESETFORM[ResetPasswordForm.tsx]
         DELETEMODAL[DeleteAccountModal.tsx]
-        
+
         LOGINFORM --> FORMFIELD1[Używa FormField]
         REGISTERFORM --> FORMFIELD2[Używa FormField]
         REGISTERFORM --> PWDSTRENGTH[PasswordStrengthIndicator]
@@ -65,7 +65,7 @@ flowchart TD
         ACCEPT["/accept - accept.astro"]
         FLASHCARDS["/flashcards - index.astro"]
         NEWCARD["/flashcards/new - new.astro"]
-        
+
         DASHBOARD --> APPLAYOUT1[Używa AppLayout]
         GENERATE --> APPLAYOUT2[Używa AppLayout]
         ACCEPT --> APPLAYOUT3[Używa AppLayout]
@@ -79,7 +79,7 @@ flowchart TD
         ACCEPTVIEW[AcceptFlashcardView.tsx]
         LISTPAGE[FlashcardListPage.tsx]
         MANUALFORM[ManualFlashcardForm.tsx]
-        
+
         DASHCONTENT --> DASHCTA[DashboardCTAButtons.tsx]
         LISTPAGE --> FLASHTABLE[FlashcardTable.tsx]
         LISTPAGE --> EDITMODAL[EditModal.tsx]
@@ -113,7 +113,7 @@ flowchart TD
         FLASHSVC[flashcardService.ts - Istniejący]
         AUDITSVC[auditLogService.ts - Zaktualizowany]
         VALIDATION[authSchemas.ts - Walidacja Zod]
-        
+
         AUTHSVC --> SUPABASE[Supabase Client]
         FLASHSVC --> SUPABASE
         AUDITSVC --> SUPABASE
@@ -124,7 +124,7 @@ flowchart TD
         SUPAAUTH[Supabase Auth - Tabela users]
         FLASHTABLE_DB[Tabela flashcards]
         AUDITTABLE[Tabela audit_logs]
-        
+
         SUPABASE --> SUPAAUTH
         SUPABASE --> FLASHTABLE_DB
         SUPABASE --> AUDITTABLE
@@ -223,7 +223,7 @@ flowchart TD
 3. **Komponenty UI:** FormField, PasswordStrengthIndicator
 4. **Layouty:** AuthLayout, AppLayout
 5. **Nawigacja:** AppNavigation, UserMenu
-6. **API endpoints:** /api/auth/* (6 endpointów)
+6. **API endpoints:** /api/auth/\* (6 endpointów)
 7. **Serwisy:** authService.ts, authSchemas.ts (walidacja)
 8. **Middleware:** Rozszerzenie o walidację sesji i przekierowania
 
@@ -238,26 +238,33 @@ flowchart TD
 ## Przepływ Autentykacji
 
 ### Rejestracja:
+
 Użytkownik → /register → RegisterForm → POST /api/auth/register → authService → Supabase Auth → Email weryfikacyjny → Przekierowanie na /login
 
 ### Logowanie:
+
 Użytkownik → /login → LoginForm → POST /api/auth/login → authService → Supabase Auth → Ustawienie cookies sesji → Przekierowanie na /dashboard
 
 ### Reset hasła:
+
 Użytkownik → /forgot-password → ForgotPasswordForm → POST /api/auth/forgot-password → authService → Supabase Auth → Email z linkiem → /reset-password?token=X → ResetPasswordForm → POST /api/auth/reset-password → authService → Supabase Auth → Przekierowanie na /login
 
 ### Usunięcie konta:
+
 Użytkownik zalogowany → UserMenu → Delete Account → DeleteAccountModal (potwierdzenie "DELETE") → POST /api/auth/delete-account → authService → Soft delete fiszek → Hard delete użytkownika z Supabase Auth → Wylogowanie → Przekierowanie
 
 ## Przepływ Middleware
 
 ### Dla użytkownika niezalogowanego:
+
 Request → Middleware → Brak sesji → Próba dostępu do chronionej strony → Przekierowanie na /login?redirect=/intended-path
 
 ### Dla użytkownika zalogowanego:
+
 Request → Middleware → Walidacja sesji → Odświeżanie tokenów (jeśli potrzebne) → Inject user/session do Astro.locals → Próba dostępu do /login lub /register → Przekierowanie na /dashboard
 
 ### Dla żądania API:
+
 Request → Middleware → Walidacja sesji → Chroniony endpoint bez sesji → Zwrot 401 Unauthorized
 
 ## Bezpieczeństwo
@@ -283,6 +290,7 @@ Request → Middleware → Walidacja sesji → Chroniony endpoint bez sesji → 
 ### Kolejność implementacji (wg faz z specyfikacji):
 
 **Faza 1 - Core Authentication:**
+
 - API endpoints: register, login, logout
 - authService
 - Komponenty: LoginForm, RegisterForm
@@ -290,39 +298,41 @@ Request → Middleware → Walidacja sesji → Chroniony endpoint bez sesji → 
 - Middleware: podstawowa walidacja sesji
 
 **Faza 2 - Session Management:**
+
 - Middleware: odświeżanie tokenów, przekierowania
 - AuthLayout, AppLayout
 - AppNavigation, UserMenu
 - Aktualizacja istniejących stron
 
 **Faza 3 - Password Recovery:**
+
 - API endpoints: forgot-password, reset-password
 - Komponenty: ForgotPasswordForm, ResetPasswordForm
 - Strony: forgot-password.astro, reset-password.astro
 - Konfiguracja email templates w Supabase
 
 **Faza 4 - Account Deletion:**
+
 - API endpoint: delete-account
 - Komponent: DeleteAccountModal
 - Integracja z UserMenu
 
 **Faza 5 - Migration & Cleanup:**
+
 - Usunięcie DEFAULT_USER
 - Aktualizacja flashcardService (userId param)
 - Aktualizacja wszystkich API flashcards
 - Testy przepływów
 
 **Faza 6 - Security Hardening:**
+
 - Rate limiting
 - Audit logging dla auth
 - HTTPS redirect
 - Security audit
 
 **Faza 7 - Legal & Compliance:**
+
 - Terms of Service
 - Privacy Policy
 - Cookie consent (jeśli wymagane)
-
-
-
-

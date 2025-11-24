@@ -1,13 +1,16 @@
 ## View Implementation Plan — Flashcard Generation
 
 ## 1. Overview
+
 The Flashcard Generation view allows a logged-in user to paste text and request AI-generated flashcard suggestions that are persisted as “pending” flashcards. The view provides a textarea with a live character counter, validates the text length (500–5000 chars), and calls the `/api/flashcards/generate` endpoint. The UI shows a loader during generation, disables the Generate button when invalid or loading, and displays errors as a toast/alert. On success, it shows a brief summary and an affordance to proceed to review/accept/reject flow elsewhere.
 
 ## 2. View Routing
+
 - Path: `/generate`
 - Page type: Astro page using `Layout.astro` with a React island for the interactive form.
 
 ## 3. Component Structure
+
 - `src/pages/generate.astro`
   - Uses `src/layouts/Layout.astro`
   - Renders React island: `GenerateFlashcardsForm` (client:load or client:idle)
@@ -20,7 +23,9 @@ The Flashcard Generation view allows a logged-in user to paste text and request 
   - `TruncateDialog` (confirm dialog to trim to 5000 if exceeded)
 
 ## 4. Component Details
+
 ### GenerateFlashcardsForm
+
 - Component description: Main interactive form enabling text input, validation, and submit to generate flashcards. Manages view state, API integration, loading and error handling, and post-success affordances.
 - Main elements: heading, descriptive text, `TextAreaWithCounter`, `CharacterLimitHint`, `GenerateButton`, `InlineLoader`, `ErrorToast`, `TruncateDialog`.
 - Handled interactions:
@@ -41,6 +46,7 @@ The Flashcard Generation view allows a logged-in user to paste text and request 
 - Props: none (self-contained view island)
 
 ### TextAreaWithCounter
+
 - Component description: Textarea with a “N / 5000” counter and accessibility labels.
 - Main elements: `<label>`, `<textarea>`, `<div>` counter
 - Handled interactions:
@@ -53,6 +59,7 @@ The Flashcard Generation view allows a logged-in user to paste text and request 
   - `value`, `onChange`, `count`, `min=500`, `max=5000`, `disabled?`
 
 ### GenerateButton
+
 - Component description: Primary action, re-uses Shadcn/ui `Button` abstraction at `src/components/ui/button.tsx`.
 - Main elements: `<Button>`
 - Handled interactions: onClick → form submit handler
@@ -61,6 +68,7 @@ The Flashcard Generation view allows a logged-in user to paste text and request 
 - Props: as above
 
 ### CharacterLimitHint
+
 - Component description: Small helper text explaining limits and minimum.
 - Main elements: `<p>` with subdued text style
 - Handled interactions: none
@@ -69,6 +77,7 @@ The Flashcard Generation view allows a logged-in user to paste text and request 
 - Props: optional `variant` (info/warn/error) based on char state
 
 ### InlineLoader
+
 - Component description: Inline spinner shown inside the button or near it while generating.
 - Main elements: spinner icon + “Generating…” text (or re-use `DashboardLoader.tsx` in compact mode)
 - Handled interactions: none
@@ -77,6 +86,7 @@ The Flashcard Generation view allows a logged-in user to paste text and request 
 - Props: `visible: boolean`
 
 ### ErrorToast
+
 - Component description: Dismissible alert/toast for API or validation errors.
 - Main elements: alert container with message and close button
 - Handled interactions: onDismiss
@@ -85,6 +95,7 @@ The Flashcard Generation view allows a logged-in user to paste text and request 
 - Props: `message: string`, `onDismiss: () => void`
 
 ### TruncateDialog
+
 - Component description: Minimal confirm dialog to trim input to 5000 chars.
 - Main elements: dialog container with message, “Shorten to 5000” (primary) and “Cancel” (secondary)
 - Handled interactions: onConfirm → trims text; onCancel → closes dialog, no change
@@ -93,6 +104,7 @@ The Flashcard Generation view allows a logged-in user to paste text and request 
 - Props: `open: boolean`, `onConfirm: () => void`, `onCancel: () => void`
 
 ## 5. Types
+
 - Existing (from `src/types.ts`):
   - `GenerateAIFlashcardsRequestDTO`:
     - `text: string`
@@ -123,6 +135,7 @@ The Flashcard Generation view allows a logged-in user to paste text and request 
     - `details?: ValidationErrorItem[]`
 
 ## 6. State Management
+
 - Managed within `GenerateFlashcardsForm` via `useState`/`useMemo`/`useCallback`.
 - Suggested custom hook: `useFlashcardGeneration()`
   - Responsibilities:
@@ -133,6 +146,7 @@ The Flashcard Generation view allows a logged-in user to paste text and request 
   - Optional: include a request timeout via `AbortController` (e.g., ~12s) to guard against long waits
 
 ## 7. API Integration
+
 - Endpoint: `POST /api/flashcards/generate`
 - Request (TypeScript aligns to `GenerateAIFlashcardsRequestDTO`):
 
@@ -163,6 +177,7 @@ type GenerateAIFlashcardsResponseDTO = {
   - Parse `details` array on 400 to show specific validation messages
 
 ## 8. User Interactions
+
 - Typing/pasting text:
   - Counter updates live
   - Visual states for <500 (warning), 500–5000 (ok), >5000 (error)
@@ -174,12 +189,14 @@ type GenerateAIFlashcardsResponseDTO = {
   - On error → display `ErrorToast`; re-enable inputs
 
 ## 9. Conditions and Validation
+
 - Minimum 500 characters: enforce in `canSubmit`, show visual warning
 - Maximum 5000 characters: if exceeded, show `TruncateDialog` with “Shorten to 5000” or “Cancel”
 - Disable Generate during `isGenerating`
 - Ensure HTTPS is used in production; rely on site deployment configuration (no mixed content warnings)
 
 ## 10. Error Handling
+
 - 400 Validation failed:
   - Show top-level error “Validation failed”
   - If `details` present, display first/merged messages near the textarea or within `ErrorToast`
@@ -192,6 +209,7 @@ type GenerateAIFlashcardsResponseDTO = {
   - Abort after ~12s and surface a retry affordance
 
 ## 11. Implementation Steps
+
 1. Routing
    - Create `src/pages/generate.astro` using `src/layouts/Layout.astro` and mount `GenerateFlashcardsForm` as a React island.
 2. Components
@@ -218,4 +236,3 @@ type GenerateAIFlashcardsResponseDTO = {
    - Tailwind 4 classes consistent with existing project style; responsive mobile-first.
 9. QA
    - Test paths: <500, 500–5000, >5000 with truncate confirm/cancel, network error, 400 details, 422 failure, success.
-

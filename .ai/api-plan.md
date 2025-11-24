@@ -1,6 +1,7 @@
 # REST API Plan
 
 ## 1. Resources
+
 - **Users**: Managed by Supabase Auth, corresponding to the `users` table. Key fields include:
   - `id`: UUID
   - `email`: Must be a valid, unique email (CHECK constraint in DB)
@@ -50,8 +51,8 @@
        "message": "Flashcard generated successfully"
      }
      ```
-   - **Validation**: 
-     - Text length must be ≤5000 characters. 
+   - **Validation**:
+     - Text length must be ≤5000 characters.
      - In case of excess, the client may choose to truncate or cancel.
    - **Success Codes**: 200 OK
    - **Error Codes**: 400 Bad Request, 422 Unprocessable Entity
@@ -106,9 +107,9 @@
        }
      }
      ```
-   - **Validation**: 
-    - `question` must be non-empty string and maximum length should 300 
-    - `answer` must be non-empty string and maximum length should 500 
+   - **Validation**:
+   - `question` must be non-empty string and maximum length should 300
+   - `answer` must be non-empty string and maximum length should 500
    - **Success Codes**: 201 Created
    - **Error Codes**: 400 Bad Request, 401 Unauthorized
 
@@ -153,7 +154,7 @@
    - **Request Payload**:
      ```json
      {
-       "decision": "accept"  // or "reject"
+       "decision": "accept" // or "reject"
      }
      ```
    - **Response Payload**:
@@ -162,12 +163,11 @@
        "message": "Flashcard accepted and saved"
      }
      ```
-   - **Business Logic**: 
+   - **Business Logic**:
      - If accepted: persist flashcard and schedule for review.
      - If rejected: discard the suggestion.
    - **Success Codes**: 200 OK
    - **Error Codes**: 400 Bad Request, 401 Unauthorized
-
 
 ## 3. Authentication and Authorization
 
@@ -176,14 +176,12 @@
   - Cookies are automatically set upon successful login via `POST /api/auth/login`.
   - Cookies are automatically sent with subsequent requests by the browser/client.
   - No manual Authorization header is required - authentication is handled via cookies.
-  
 - **Authentication Flow**:
   1. User logs in via `POST /api/auth/login` with email/password
   2. Supabase Auth validates credentials and creates a session
   3. Session tokens are stored in HttpOnly cookies (Set-Cookie headers)
   4. Subsequent requests automatically include these cookies
   5. Middleware validates the session on each request using `supabase.auth.getUser()`
-  
 - **Cookie Configuration**:
   - `HttpOnly: true` - Prevents XSS attacks
   - `Secure: true` - Requires HTTPS (except localhost)
@@ -208,7 +206,7 @@
   - **REST Client (VS Code)**: Should handle cookies automatically, but may require settings adjustment
   - **Postman**: Cookies are handled automatically when "Automatically follow redirects" is enabled
   - **cURL**: Use `-c cookies.txt` to save cookies and `-b cookies.txt` to send them
-  
+
   **If REST Client doesn't send cookies**: Check that "Rest-client: Follow Redirect" is enabled in VS Code settings.
 
 ## 4. Validation and Business Logic
@@ -224,4 +222,3 @@
      - Endpoint `/api/flashcards/{tempId}/decision` manages acceptance and rejection; rejected flashcards cannot be restored.
   2. **Manual Flashcard Management**:
      - Endpoints for creation, updating, and deletion are designed to handle manual input with validations ensuring non-empty content (RF-009 to RF-012).
-  

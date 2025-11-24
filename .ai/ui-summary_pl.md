@@ -14,6 +14,7 @@
 </decisions>
 
 <matched_recommendations>
+
 1. Zaprojektować dashboard jako centralny punkt z CTA do głównych funkcji.
 2. Użyć prostych przycisków „Previous/Next” lub numerowanych stron dla paginacji.
 3. Zastosować komponenty typu „chips” do filtrowania źródła flashcards.
@@ -24,15 +25,17 @@
 8. Dodanie spójnego komponentu loadera w kluczowych widokach.
 9. Umieścić główne CTA zarówno na dashboardzie, jak i w globalnym menu.
 10. Zapewnić komunikaty o stanie braku danych w widokach listy i sesji nauki.
-</matched_recommendations>
+    </matched_recommendations>
 
 <ui_architecture_planning_summary>
 **Główne wymagania dotyczące architektury UI:**
+
 - Mobile-first, responsywne UI z prostą nawigacją.
 - Spójny design system oparty na Tailwind i Shadcn/ui.
 - Minimalistyczne ekrany zgodne z MVP (bez historii generacji, bez edycji przed akceptacją).
 
 **Kluczowe widoki i przepływy użytkownika:**
+
 - Dashboard (hub z CTA i liczbą flashcards na dziś).
 - Generowanie flashcards (pole tekstowe, licznik, przycisk „Generate”).
 - Akceptacja AI flashcards (pełnoekranowy widok z Accept/Reject).
@@ -41,28 +44,32 @@
 - Ekrany błędów i brak danych (np. „No flashcards to study today”).
 
 **Strategia integracji z API i zarządzania stanem:**
+
 - Wykorzystanie React Query do obsługi zapytań i cache.
 - Paginacja i filtrowanie zgodne z parametrami API (`page`, `limit`, `source`).
 - Obsługa JWT w nagłówkach dla autoryzacji.
 - Komponenty loadera i obsługa błędów (retry, toast).
 
 **Responsywność, dostępność i bezpieczeństwo:**
+
 - Mobile-first layout z hamburger menu.
 - WCAG AA: aria-labels, kontrast, obsługa klawiatury.
 - Bezpieczne przechowywanie tokenów (HttpOnly cookies lub secure storage).
 - HTTPS i zgodność z GDPR (linki do polityki prywatności, zgody).
 
 **Nierozwiązane kwestie:**
+
 - Brak szczegółów dotyczących design systemu (np. kolorystyka, typografia).
 - Brak decyzji o strategii zarządzania stanem dla sesji nauki (lokalny vs globalny).
 - Nieustalone komunikaty dla limitów generacji i błędów sieciowych (treść i styl).
-</ui_architecture_planning_summary>
+  </ui_architecture_planning_summary>
 
 <unresolved_issues>
+
 1. Wybór konkretnej biblioteki do zarządzania stanem (React Query vs alternatywy).
 2. Szczegóły dotyczące design systemu (paleta kolorów, komponenty bazowe).
 3. Dokładne komunikaty i UX dla wyjątkowych stanów (np. przekroczenie limitu, błędy API).
 4. Strategia dla obsługi sesji nauki offline lub w przypadku utraty połączenia.
-</unresolved_issues>
+   </unresolved_issues>
 
 </conversation_summary>

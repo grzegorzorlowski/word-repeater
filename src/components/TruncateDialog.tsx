@@ -1,4 +1,4 @@
-import { Button } from './ui/button';
+import { Button } from "./ui/button";
 
 interface TruncateDialogProps {
   open: boolean;
@@ -24,8 +24,8 @@ export default function TruncateDialog({ open, onConfirm, onCancel }: TruncateDi
           Text Too Long
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Your text exceeds the maximum limit of 5000 characters. Would you like to automatically
-          shorten it to 5000 characters?
+          Your text exceeds the maximum limit of 5000 characters. Would you like to automatically shorten it to 5000
+          characters?
         </p>
         <div className="mt-6 flex justify-end gap-3">
           <Button variant="outline" onClick={onCancel}>
@@ -37,4 +37,3 @@ export default function TruncateDialog({ open, onConfirm, onCancel }: TruncateDi
     </div>
   );
 }
-

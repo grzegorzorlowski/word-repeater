@@ -1,7 +1,9 @@
 # OpenRouter Service Implementation Guide
 
 ## 1. Service Description
+
 The OpenRouter service is responsible for interacting with the OpenRouter API interface to drive LLM-based chat interactions. Its main responsibilities include:
+
 1. **Message Assembly:** Constructing the input payload containing system and user messages.
 2. **API Integration:** Sending requests to, and handling responses from, the OpenRouter API.
 3. **Structured Response Parsing:** Enforcing and parsing JSON schema-based responses.
@@ -10,13 +12,16 @@ The OpenRouter service is responsible for interacting with the OpenRouter API in
 6. **Logging and Auditing:** Capturing interactions and errors for monitoring and debugging.
 
 ## 2. Constructor Description
+
 The constructor sets up the service with essential configurations. It accepts:
+
 - **Configuration Object:** Contains default settings such as API endpoint, model name, model parameters, and the default response format.
 - **Logger Instance:** For capturing debug, info, and error logs.
 - **HTTP Client Interface:** For making POST requests to the OpenRouter API.
 - **Optional Overrides:** System message or any dynamic parameters to be appended to requests.
 
 Example:
+
 ```typescript
 // Pseudocode
 const openRouterService = new OpenRouterService({
@@ -24,21 +29,23 @@ const openRouterService = new OpenRouterService({
   modelName: "gpt-4",
   modelParameters: { temperature: 0.7, max_tokens: 150 },
   responseFormat: {
-    type: 'json_schema',
+    type: "json_schema",
     json_schema: {
-      name: 'ChatResponseSchema',
+      name: "ChatResponseSchema",
       strict: true,
       schema: {
-        answer: { type: 'string' },
-        citations: { type: 'array' }
-      }
-    }
-  }
+        answer: { type: "string" },
+        citations: { type: "array" },
+      },
+    },
+  },
 });
 ```
 
 ## 3. Public Methods and Fields
+
 ### Public Methods
+
 1. **sendMessage(userMessage: string, [systemMessage?: string]): Promise\<Response\>**
    - **Functionality:** Combines the optional system message and user message into the structured request payload. It then calls the API and returns the parsed response.
    - **Example Payload:**
@@ -69,28 +76,34 @@ const openRouterService = new OpenRouterService({
    - **Functionality:** Returns the most recent API response for debugging or further processing.
 
 ### Public Fields
+
 - **apiEndpoint:** The base URL for the OpenRouter API.
 - **modelName:** The default model name to be used for API requests.
 - **modelParameters:** Default parameters such as `temperature` and `max_tokens`.
 - **responseFormat:** The expected response format in terms of JSON schema.
 
 ## 4. Private Methods and Fields
+
 ### Private Methods
-1. **_buildPayload(userMessage: string, systemMessage?: string): RequestPayload**
+
+1. **\_buildPayload(userMessage: string, systemMessage?: string): RequestPayload**
    - **Functionality:** Creates the full payload object by combining system and user messages along with configuration fields.
-2. **_parseResponse(rawResponse: any): Response**
+2. **\_parseResponse(rawResponse: any): Response**
    - **Functionality:** Validates and parses the API response based on the configured JSON schema. If the schema check fails and `strict` is enabled, an error is thrown.
-3. **_handleError(error: any): void**
+3. **\_handleError(error: any): void**
    - **Functionality:** Centralizes error management, logs errors, and prepares informative error messages.
 
 ### Private Fields
-- **_httpClient:** Abstraction for making HTTP requests.
-- **_logger:** Instance for logging debug and error messages.
-- **_lastResponse:** Cache of the last successful response.
-- **_currentConfig:** Internal privacy for the current configuration parameters.
+
+- **\_httpClient:** Abstraction for making HTTP requests.
+- **\_logger:** Instance for logging debug and error messages.
+- **\_lastResponse:** Cache of the last successful response.
+- **\_currentConfig:** Internal privacy for the current configuration parameters.
 
 ## 5. Error Handling
+
 The service should address potential error scenarios:
+
 1. **Network Errors:** Unreachable API or connectivity issues.
    - **Solution:** Implement retries with exponential backoff and friendly error messaging.
 2. **Invalid Response Format:** The API returns a payload not matching the JSON schema.
@@ -101,6 +114,7 @@ The service should address potential error scenarios:
    - **Solution:** Set a timeout value on HTTP requests and handle aborts gracefully.
 
 ## 6. Security Considerations
+
 - **API Credentials:** Ensure that API keys or tokens are stored securely and not exposed in the client code.
 - **Input Sanitization:** Sanitize the user inputs to prevent injection or malformed requests.
 - **Logging:** Avoid logging sensitive data.
@@ -115,9 +129,10 @@ The service should address potential error scenarios:
 2. **Define Types and Interfaces:**
    - Create interfaces for the configuration object, request payload, and expected response.
    - Example:
+
      ```typescript
      interface ResponseFormat {
-       type: 'json_schema';
+       type: "json_schema";
        json_schema: {
          name: string;
          strict: boolean;
@@ -134,7 +149,7 @@ The service should address potential error scenarios:
 
      interface RequestPayload {
        model: string;
-       messages: { role: string, content: string }[];
+       messages: { role: string; content: string }[];
        response_format: ResponseFormat;
        model_parameters: object;
      }
@@ -145,7 +160,7 @@ The service should address potential error scenarios:
    - Assign defaults that follow best practices outlined in the tech stack.
 
 4. **Implement Public Methods:**
-   - `sendMessage(userMessage, systemMessage?)`: 
+   - `sendMessage(userMessage, systemMessage?)`:
      - Use `_buildPayload` to create the payload.
      - Send the payload via the HTTP client.
      - Use `_parseResponse` to validate and return the response.
@@ -159,11 +174,11 @@ The service should address potential error scenarios:
 
 6. **Incorporate OpenRouter API Elements:**
    - **System Message:** Include as a dedicated message in the payload (e.g., `role: "system", content: "<system_message>"`).
-     - *Example:* `{ "role": "system", "content": "You are using a secure LLM interface" }`
+     - _Example:_ `{ "role": "system", "content": "You are using a secure LLM interface" }`
    - **User Message:** Include as the primary query message in the payload.
-     - *Example:* `{ "role": "user", "content": "What is the weather today?" }`
+     - _Example:_ `{ "role": "user", "content": "What is the weather today?" }`
    - **Structured Responses:** Use a `response_format` field in the payload.
-     - *Example:*
+     - _Example:_
        ```json
        "response_format": {
          "type": "json_schema",
