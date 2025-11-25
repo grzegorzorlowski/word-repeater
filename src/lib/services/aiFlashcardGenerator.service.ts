@@ -53,10 +53,10 @@ export async function generateFlashcardsWithAI(
       modelName: import.meta.env.OPENROUTER_MODEL_NAME || "openai/gpt-4o-mini",
       apiKey,
       modelParameters: {
-        temperature: 0.7,
-        max_tokens: 2000,
+        temperature: 0.5, // Lower temperature for faster, more focused responses
+        max_tokens: 6000, // Optimized for ~20 flashcards (300 tokens each max)
       },
-      timeout: 60000, // 60 seconds for longer texts
+      timeout: 25000, // 25 seconds to match frontend expectations
       responseFormat: {
         type: "json_schema",
         json_schema: {
@@ -85,74 +85,29 @@ export async function generateFlashcardsWithAI(
       },
     });
 
-    // Prepare system message for the AI
-    const systemMessage = `You are an expert language teacher specializing in creating effective vocabulary flashcards for language learning.
+    // Prepare system message for the AI (optimized for speed and accuracy)
+    const systemMessage = `You are a language learning expert. Extract up to ${limit} vocabulary words from the text and create flashcards.
 
-Your task is to analyze the provided text and extract important vocabulary words that are relevant to the text's context and topic.
+TRANSLATION RULES:
+- English → Polish
+- Any other language → English
 
-CRITICAL Translation Rules (MUST FOLLOW):
-- If the text is in ENGLISH → translate to POLISH
-- If the text is in ANY OTHER LANGUAGE (French, Polish, German, Spanish, Italian, etc.) → translate to ENGLISH
-- ALWAYS detect the source language first before translating
+CRITICAL FORMAT (use \\n\\n as separator):
+Question: "word [IPA]\\n\\nsentence with the word"
+Answer: "translation\\n\\ntranslated sentence"
 
-REQUIRED Flashcard Format:
-Each flashcard MUST contain BOTH a word AND a sentence in BOTH question and answer.
-
-Question (original language):
-word [phonetic transcription]
-
-sentence using that word
-
-Answer (translated):
-translated word
-
-translated sentence
-
-EXAMPLE for French text (French → English):
-Question:
-guerre [ɡɛʁ]
-
-La guerre a duré plusieurs années.
-
-Answer:
-war
-
-The war lasted several years.
-
-EXAMPLE for English text (English → Polish):
-Question:
-ceasefire [ˈsiːsˌfaɪər]
-
-The two countries agreed to a ceasefire.
-
-Answer:
-zawieszenie broni
-
-Oba kraje zgodziły się na zawieszenie broni.
-
-Guidelines:
-- ALWAYS include BOTH word AND sentence in question and answer (this is mandatory)
-- Extract vocabulary that is relevant to the text's topic and context
-- Focus on words that are meaningful and useful for language learners
-- Prioritize topic-specific vocabulary (e.g., for war-related text: "ceasefire", "truce", "offensive")
-- Avoid overly simple or common words (like "the", "and", "is")
-- Include accurate phonetic transcription using IPA (International Phonetic Alphabet) for the word in the question
-- Generate as many flashcards as you can find relevant vocabulary, but no more than ${limit} flashcards
-- Each flashcard should focus on a single word and its usage in context
-- The sentence should be from the text or a clear contextual example
-- If the translation heavily depends on context, add a brief explanation at the end of the answer (only if necessary)`;
-
-    // Prepare user message
-    const userMessage = `Please extract vocabulary and generate up to ${limit} language learning flashcards from the following text.
-
-IMPORTANT: Each flashcard MUST include:
-- Question: word [IPA transcription] on first line, then a blank line, then a full sentence
-- Answer: translated word on first line, then a blank line, then translated sentence
-
-Example structure:
+EXAMPLE JSON (French→English):
 {"question": "guerre [ɡɛʁ]\\n\\nLa guerre a duré plusieurs années.", "answer": "war\\n\\nThe war lasted several years."}
 
-Text to analyze:
+GUIDELINES:
+- MUST include \\n\\n separator between word and sentence
+- Include both word+sentence in question AND answer
+- Focus on topic-specific vocabulary, skip common words
+- Use accurate IPA transcription`;
+
+    // Prepare user message (optimized for speed)
+    const userMessage = `Extract ${limit} vocabulary flashcards from this text:
+
 ${text}`;
 
     // Call OpenRouter API

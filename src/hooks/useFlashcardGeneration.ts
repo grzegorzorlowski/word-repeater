@@ -94,7 +94,7 @@ export function useFlashcardGeneration() {
 
       // Create abort controller with 15s timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      const timeoutId = setTimeout(() => controller.abort(), 90000);
 
       try {
         const requestBody: GenerateAIFlashcardsRequestDTO = {
