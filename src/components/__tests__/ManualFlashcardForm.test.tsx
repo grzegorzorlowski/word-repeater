@@ -34,9 +34,7 @@ describe("ManualFlashcardForm", () => {
     it("should render description text", () => {
       render(<ManualFlashcardForm />);
 
-      expect(
-        screen.getByText(/enter a question and answer to create a new flashcard/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/enter a question and answer to create a new flashcard/i)).toBeInTheDocument();
     });
 
     it("should render helper text for question field", () => {
@@ -187,10 +185,7 @@ describe("ManualFlashcardForm", () => {
 
       server.use(
         http.post("/api/flashcards", () => {
-          return HttpResponse.json(
-            { error: "Question must not exceed 300 characters" },
-            { status: 400 }
-          );
+          return HttpResponse.json({ error: "Question must not exceed 300 characters" }, { status: 400 });
         })
       );
 
@@ -245,10 +240,7 @@ describe("ManualFlashcardForm", () => {
 
       server.use(
         http.post("/api/flashcards", () => {
-          return HttpResponse.json(
-            { error: "Server error" },
-            { status: 500 }
-          );
+          return HttpResponse.json({ error: "Server error" }, { status: 500 });
         })
       );
 
@@ -281,10 +273,7 @@ describe("ManualFlashcardForm", () => {
 
       server.use(
         http.post("/api/flashcards", () => {
-          return HttpResponse.json(
-            { error: "Server error" },
-            { status: 500 }
-          );
+          return HttpResponse.json({ error: "Server error" }, { status: 500 });
         })
       );
 
@@ -538,9 +527,7 @@ describe("ManualFlashcardForm", () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/your flashcard has been created and is ready for learning/i)
-        ).toBeInTheDocument();
+        expect(screen.getByText(/your flashcard has been created and is ready for learning/i)).toBeInTheDocument();
       });
     });
 
@@ -894,10 +881,7 @@ describe("ManualFlashcardForm", () => {
 
       server.use(
         http.post("/api/flashcards", () => {
-          return HttpResponse.json(
-            { error: "Server error" },
-            { status: 500 }
-          );
+          return HttpResponse.json({ error: "Server error" }, { status: 500 });
         })
       );
 
@@ -1038,9 +1022,12 @@ describe("ManualFlashcardForm", () => {
       await user.type(answerInput, "Test answer");
       await user.click(submitButton);
 
-      await waitFor(() => {
-        expect(screen.getByText("Flashcard created successfully!")).toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText("Flashcard created successfully!")).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
     });
   });
 });

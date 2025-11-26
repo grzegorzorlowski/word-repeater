@@ -8,6 +8,11 @@ export default defineConfig({
     globals: true,
     // Use happy-dom for component tests, node for API/service tests
     environment: "happy-dom",
+    environmentOptions: {
+      happyDOM: {
+        url: "http://localhost:3000",
+      },
+    },
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{js,ts,tsx}"],
     exclude: ["**/node_modules/**", "**/dist/**", "**/e2e/**"],

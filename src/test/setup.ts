@@ -8,7 +8,9 @@ export const server = setupServer();
 
 // Start MSW server before all tests
 beforeAll(() => {
-  server.listen({ onUnhandledRequest: "warn" });
+  server.listen({
+    onUnhandledRequest: "warn",
+  });
 });
 
 // Reset handlers after each test
@@ -50,3 +52,17 @@ global.IntersectionObserver = class IntersectionObserver {
 
 // Mock scrollTo
 window.scrollTo = vi.fn();
+
+// Set base URL for fetch requests in tests
+Object.defineProperty(window, "location", {
+  writable: true,
+  value: {
+    ...window.location,
+    origin: "http://localhost:3000",
+    href: "http://localhost:3000/",
+    protocol: "http:",
+    host: "localhost:3000",
+    hostname: "localhost",
+    port: "3000",
+  },
+});
