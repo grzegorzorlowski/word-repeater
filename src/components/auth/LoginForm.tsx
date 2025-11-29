@@ -2,7 +2,7 @@ import * as React from "react";
 import { Button } from "../ui/button";
 import { FormField } from "../ui/FormField";
 import InlineLoader from "../InlineLoader";
-import { loginSchema, type LoginFormData } from "@/lib/validation/authSchemas";
+import { loginSchema } from "@/lib/validation/authSchemas";
 import type { ErrorResponseDTO } from "@/types";
 
 interface LoginFormProps {
@@ -100,7 +100,7 @@ export function LoginForm({ redirectTo = "/dashboard" }: LoginFormProps) {
 
       // Success - redirect to dashboard or specified location
       window.location.href = redirectTo;
-    } catch (error) {
+    } catch {
       setState((prev) => ({
         ...prev,
         isSubmitting: false,
@@ -110,7 +110,7 @@ export function LoginForm({ redirectTo = "/dashboard" }: LoginFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6" noValidate role="form">
       <FormField
         label="Email"
         name="email"
@@ -138,7 +138,7 @@ export function LoginForm({ redirectTo = "/dashboard" }: LoginFormProps) {
       />
 
       {state.error && (
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4" role="alert" aria-live="polite">
           <p className="text-sm text-destructive">{state.error}</p>
         </div>
       )}

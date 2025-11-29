@@ -161,7 +161,7 @@ Created comprehensive unit tests for the high-priority components in the `Genera
 
 1. **Descriptive Test Organization**: Tests grouped with `describe` blocks by functionality
 2. **Arrange-Act-Assert Pattern**: All tests follow this structure
-3. **MSW for API Mocking**: Using `server.use()` for HTTP mocking instead of manual mocks
+3. **MSW for API Mocking**: Using `server.use()` for HTTP mocking only if manual mock will not fully cover the scenario
 4. **Testing Library**: Using `@testing-library/react` for user-centric testing
 5. **Accessibility Testing**: Checking ARIA attributes, labels, and live regions
 6. **Edge Case Coverage**: Boundary testing at 499, 500, 5000, 5001 characters
@@ -226,5 +226,7 @@ Components not yet tested but recommended for future:
 - All 94 tests pass successfully
 - Tests are maintainable and follow project conventions
 - Coverage focuses on critical paths rather than arbitrary percentages
+
+
 
 

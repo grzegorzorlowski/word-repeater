@@ -45,6 +45,7 @@ export function FormField({
         autoComplete={autocomplete}
         placeholder={placeholder}
         disabled={disabled}
+        required={required}
         className={error ? "border-destructive focus-visible:ring-destructive" : ""}
         aria-invalid={error ? "true" : "false"}
         aria-describedby={error ? `${name}-error` : undefined}
