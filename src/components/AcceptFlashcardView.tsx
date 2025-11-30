@@ -59,7 +59,7 @@ export function AcceptFlashcardView() {
   if (loading && !flashcard) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <InlineLoader visible={true} />
+        <InlineLoader visible={true} data-testid="inline-loader" />
         <p className="mt-4 text-muted-foreground">Loading flashcards...</p>
       </div>
     );
@@ -158,7 +158,7 @@ export function AcceptFlashcardView() {
       {/* Loading indicator during decision processing */}
       {loading && flashcard && (
         <div className="flex justify-center">
-          <InlineLoader visible={true} />
+          <InlineLoader visible={true} data-testid="decision-loader" />
         </div>
       )}
 

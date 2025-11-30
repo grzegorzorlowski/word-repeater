@@ -1,11 +1,12 @@
 interface InlineLoaderProps {
   visible: boolean;
+  "data-testid"?: string;
 }
 
 /**
  * Inline spinner shown while generating flashcards.
  */
-export default function InlineLoader({ visible }: InlineLoaderProps) {
+export default function InlineLoader({ visible, "data-testid": testId }: InlineLoaderProps) {
   if (!visible) return null;
 
   return (
@@ -15,6 +16,7 @@ export default function InlineLoader({ visible }: InlineLoaderProps) {
       fill="none"
       viewBox="0 0 24 24"
       aria-hidden="true"
+      data-testid={testId}
     >
       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
       <path
