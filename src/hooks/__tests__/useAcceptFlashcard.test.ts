@@ -5,14 +5,16 @@ import type { FlashcardSummaryDTO } from "@/types";
 
 // Mock fetch globally
 const fetchMock = vi.fn();
-vi.stubGlobal('fetch', fetchMock);
+vi.stubGlobal("fetch", fetchMock);
 
 // Helper to create proper mock responses
 const createMockResponse = (data: any, ok = true, status = 200) => ({
   ok,
   status,
   json: () => Promise.resolve(data),
-  clone: function() { return this; }
+  clone: function () {
+    return this;
+  },
 });
 
 describe("useAcceptFlashcard", () => {
@@ -20,21 +22,21 @@ describe("useAcceptFlashcard", () => {
     id: "test-flashcard-id",
     content: JSON.stringify({
       question: "What is React?",
-      answer: "A JavaScript library for building user interfaces"
+      answer: "A JavaScript library for building user interfaces",
     }),
-    created_at: "2024-01-15T10:30:00.000Z"
+    created_at: "2024-01-15T10:30:00.000Z",
   };
 
   const mockResponseData = {
     data: [mockFlashcard],
     page: 1,
     limit: 50,
-    total: 1
+    total: 1,
   };
 
   const mockDecisionResponse = {
     message: "Flashcard accepted successfully",
-    flashcard_id: "test-flashcard-id"
+    flashcard_id: "test-flashcard-id",
   };
 
   beforeEach(() => {
@@ -67,13 +69,13 @@ describe("useAcceptFlashcard", () => {
 
       expect(fetchMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          url: "http://localhost:3000/api/flashcards?status=pending&source=ai_generated&limit=50"
+          url: "http://localhost:3000/api/flashcards?status=pending&source=ai_generated&limit=50",
         })
       );
       expect(result.current.flashcard).toEqual({
         id: "test-flashcard-id",
         question: "What is React?",
-        answer: "A JavaScript library for building user interfaces"
+        answer: "A JavaScript library for building user interfaces",
       });
     });
   });
@@ -130,12 +132,14 @@ describe("useAcceptFlashcard", () => {
     });
 
     it("should handle empty flashcard list", async () => {
-      fetchMock.mockResolvedValueOnce(createMockResponse({
-        data: [],
-        page: 1,
-        limit: 50,
-        total: 0
-      }));
+      fetchMock.mockResolvedValueOnce(
+        createMockResponse({
+          data: [],
+          page: 1,
+          limit: 50,
+          total: 0,
+        })
+      );
 
       const { result } = renderHook(() => useAcceptFlashcard());
 
@@ -150,18 +154,22 @@ describe("useAcceptFlashcard", () => {
     it("should parse flashcard content correctly", async () => {
       const contentWithMetadata = JSON.stringify({
         question: "Test question",
-        answer: "Test answer"
+        answer: "Test answer",
       });
 
-      fetchMock.mockResolvedValueOnce(createMockResponse({
-        data: [{
-          ...mockFlashcard,
-          content: contentWithMetadata
-        }],
-        page: 1,
-        limit: 50,
-        total: 1
-      }));
+      fetchMock.mockResolvedValueOnce(
+        createMockResponse({
+          data: [
+            {
+              ...mockFlashcard,
+              content: contentWithMetadata,
+            },
+          ],
+          page: 1,
+          limit: 50,
+          total: 1,
+        })
+      );
 
       const { result } = renderHook(() => useAcceptFlashcard());
 
@@ -174,15 +182,19 @@ describe("useAcceptFlashcard", () => {
     });
 
     it("should handle malformed flashcard content", async () => {
-      fetchMock.mockResolvedValueOnce(createMockResponse({
-        data: [{
-          ...mockFlashcard,
-          content: "invalid json"
-        }],
-        page: 1,
-        limit: 50,
-        total: 1
-      }));
+      fetchMock.mockResolvedValueOnce(
+        createMockResponse({
+          data: [
+            {
+              ...mockFlashcard,
+              content: "invalid json",
+            },
+          ],
+          page: 1,
+          limit: 50,
+          total: 1,
+        })
+      );
 
       const { result } = renderHook(() => useAcceptFlashcard());
 
@@ -217,7 +229,7 @@ describe("useAcceptFlashcard", () => {
       expect(fetchMock).toHaveBeenLastCalledWith(
         expect.objectContaining({
           url: `http://localhost:3000/api/flashcards/${mockFlashcard.id}/decision`,
-          method: "POST"
+          method: "POST",
         })
       );
 
@@ -246,7 +258,7 @@ describe("useAcceptFlashcard", () => {
       expect(fetchMock).toHaveBeenLastCalledWith(
         expect.objectContaining({
           url: `http://localhost:3000/api/flashcards/${mockFlashcard.id}/decision`,
-          method: "POST"
+          method: "POST",
         })
       );
     });
@@ -257,16 +269,18 @@ describe("useAcceptFlashcard", () => {
         id: "second-flashcard-id",
         content: JSON.stringify({
           question: "Second question?",
-          answer: "Second answer"
-        })
+          answer: "Second answer",
+        }),
       };
 
-      fetchMock.mockResolvedValueOnce(createMockResponse({
-        data: [mockFlashcard, secondFlashcard],
-        page: 1,
-        limit: 50,
-        total: 2
-      }));
+      fetchMock.mockResolvedValueOnce(
+        createMockResponse({
+          data: [mockFlashcard, secondFlashcard],
+          page: 1,
+          limit: 50,
+          total: 2,
+        })
+      );
 
       const { result } = renderHook(() => useAcceptFlashcard());
 
@@ -354,12 +368,14 @@ describe("useAcceptFlashcard", () => {
 
     it("should prevent processing decision when no flashcard is present", async () => {
       // Setup empty flashcard list
-      fetchMock.mockResolvedValueOnce(createMockResponse({
-        data: [],
-        page: 1,
-        limit: 50,
-        total: 0
-      }));
+      fetchMock.mockResolvedValueOnce(
+        createMockResponse({
+          data: [],
+          page: 1,
+          limit: 50,
+          total: 0,
+        })
+      );
 
       const { result } = renderHook(() => useAcceptFlashcard());
 
@@ -436,7 +452,7 @@ describe("useAcceptFlashcard", () => {
       // Resolve the fetch
       resolveFetch({
         ok: true,
-        json: () => Promise.resolve(mockResponseData)
+        json: () => Promise.resolve(mockResponseData),
       });
 
       await waitFor(() => {
@@ -471,7 +487,7 @@ describe("useAcceptFlashcard", () => {
       // Resolve decision
       resolveDecision({
         ok: true,
-        json: () => Promise.resolve(mockDecisionResponse)
+        json: () => Promise.resolve(mockDecisionResponse),
       });
 
       await waitFor(() => {
@@ -484,13 +500,14 @@ describe("useAcceptFlashcard", () => {
       const mockResponse = {
         ok: true,
         status: 200,
-        json: () => Promise.resolve({
-          data: [mockFlashcard, { ...mockFlashcard, id: "second-id" }],
-          page: 1,
-          limit: 50,
-          total: 2
-        }),
-        clone: () => mockResponse // Add clone method
+        json: () =>
+          Promise.resolve({
+            data: [mockFlashcard, { ...mockFlashcard, id: "second-id" }],
+            page: 1,
+            limit: 50,
+            total: 2,
+          }),
+        clone: () => mockResponse, // Add clone method
       };
 
       fetchMock.mockResolvedValueOnce(mockResponse);
@@ -526,4 +543,3 @@ describe("useAcceptFlashcard", () => {
     });
   });
 });
-
