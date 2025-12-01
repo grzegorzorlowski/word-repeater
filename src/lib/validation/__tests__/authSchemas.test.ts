@@ -263,9 +263,9 @@ describe("authSchemas", () => {
       });
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(
-          result.error.issues.some((issue) => issue.message.includes("accept the terms and conditions"))
-        ).toBe(true);
+        expect(result.error.issues.some((issue) => issue.message.includes("accept the terms and conditions"))).toBe(
+          true
+        );
       }
     });
 
@@ -419,8 +419,3 @@ describe("authSchemas", () => {
     });
   });
 });
-
-
-
-
-

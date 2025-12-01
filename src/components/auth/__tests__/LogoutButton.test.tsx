@@ -199,7 +199,8 @@ describe("LogoutButton", () => {
       const user = userEvent.setup();
 
       // First attempt fails
-      global.fetch = vi.fn()
+      global.fetch = vi
+        .fn()
         .mockImplementationOnce(() =>
           Promise.resolve({
             ok: false,

@@ -391,9 +391,10 @@ describe("EditModal", () => {
     it("should handle network errors", async () => {
       const user = userEvent.setup();
 
-      // Create a promise that rejects after a delay to allow loading state to show
-      const networkErrorPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Network error")), 50); // Increased delay
+      // Alternative 2: Control timing with manual promise resolution
+      let rejectPromise: (error: Error) => void;
+      const networkErrorPromise = new Promise<Response>((_, reject) => {
+        rejectPromise = reject;
       });
 
       fetchMock.mockReturnValueOnce(networkErrorPromise);
@@ -405,20 +406,23 @@ describe("EditModal", () => {
       expect(submitButton).toBeInTheDocument();
       await user.click(submitButton);
 
-      // Wait for loading state - check that buttons become disabled
-      await waitFor(() => {
-        const buttons = screen.getAllByRole("button") as HTMLButtonElement[];
-        const hasDisabledButton = buttons.some((button) => button.disabled);
-        expect(hasDisabledButton).toBe(true);
-      });
+      // Verify buttons are disabled immediately after click
+      expect(submitButton).toBeDisabled();
+      expect(screen.getByText("Cancel")).toBeDisabled();
+
+      // Now reject the promise to simulate network error
+      rejectPromise!(new Error("Network error"));
 
       // Should show network error message
-      await waitFor(
-        () => {
-          expect(screen.getByText("Network error")).toBeInTheDocument();
-        },
-        { timeout: 200 }
-      );
+      await waitFor(() => {
+        expect(screen.getByText("Network error")).toBeInTheDocument();
+      });
+
+      // Buttons should be re-enabled after error
+      await waitFor(() => {
+        expect(submitButton).not.toBeDisabled();
+        expect(screen.getByText("Cancel")).not.toBeDisabled();
+      });
     });
 
     it("should trim whitespace from question and answer before submitting", async () => {
