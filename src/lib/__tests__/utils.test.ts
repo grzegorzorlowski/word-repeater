@@ -21,8 +21,8 @@ describe("utils", () => {
     it("should handle object-style conditional classes", () => {
       const result = cn("text-red-500", {
         "bg-blue-500": true,
-        "border": false,
-        "p-4": true
+        border: false,
+        "p-4": true,
       });
       expect(result).toBe("text-red-500 bg-blue-500 p-4");
     });
@@ -84,7 +84,9 @@ describe("utils", () => {
         "rounded-md",
         "transition-colors"
       );
-      expect(result).toBe("flex items-center justify-between px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors");
+      expect(result).toBe(
+        "flex items-center justify-between px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+      );
     });
 
     it("should deduplicate identical classes", () => {
@@ -114,17 +116,8 @@ describe("utils", () => {
     });
 
     it("should handle mixed argument types", () => {
-      const result = cn(
-        "text-red-500",
-        ["bg-blue-500", "p-4"],
-        { "m-2": true, "border": false },
-        undefined,
-        null,
-        ""
-      );
+      const result = cn("text-red-500", ["bg-blue-500", "p-4"], { "m-2": true, border: false }, undefined, null, "");
       expect(result).toBe("text-red-500 bg-blue-500 p-4 m-2");
     });
   });
 });
-
-

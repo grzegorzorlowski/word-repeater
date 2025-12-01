@@ -200,7 +200,11 @@ describe("Label", () => {
     });
 
     it("should accept data attributes", () => {
-      render(<Label data-testid="custom-label" data-type="primary">Label</Label>);
+      render(
+        <Label data-testid="custom-label" data-type="primary">
+          Label
+        </Label>
+      );
       const label = screen.getByText("Label");
       expect(label).toHaveAttribute("data-testid", "custom-label");
       expect(label).toHaveAttribute("data-type", "primary");
@@ -313,7 +317,7 @@ describe("Label", () => {
     });
 
     it("should handle multiple spaces", () => {
-      render(<Label>Label    with    spaces</Label>);
+      render(<Label>Label with spaces</Label>);
       expect(screen.getByText(/Label\s+with\s+spaces/)).toBeInTheDocument();
     });
   });
@@ -381,9 +385,3 @@ describe("Label", () => {
     });
   });
 });
-
-
-
-
-
-

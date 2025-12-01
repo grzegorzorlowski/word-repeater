@@ -137,7 +137,11 @@ describe("Button", () => {
     it("should not trigger onClick when disabled", async () => {
       const user = userEvent.setup();
       const onClick = vi.fn();
-      render(<Button onClick={onClick} disabled>Click</Button>);
+      render(
+        <Button onClick={onClick} disabled>
+          Click
+        </Button>
+      );
 
       const button = screen.getByRole("button");
       await user.click(button);
@@ -446,7 +450,11 @@ describe("Button", () => {
     });
 
     it("should accept data attributes", () => {
-      render(<Button data-testid="custom-button" data-action="save">Button</Button>);
+      render(
+        <Button data-testid="custom-button" data-action="save">
+          Button
+        </Button>
+      );
       const button = screen.getByRole("button");
       expect(button).toHaveAttribute("data-testid", "custom-button");
       expect(button).toHaveAttribute("data-action", "save");
@@ -527,9 +535,3 @@ describe("Button", () => {
     });
   });
 });
-
-
-
-
-
-
