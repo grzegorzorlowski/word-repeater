@@ -110,7 +110,7 @@ export function LoginForm({ redirectTo = "/dashboard" }: LoginFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" noValidate role="form">
+    <form onSubmit={handleSubmit} className="space-y-6" noValidate role="form" data-testid="login-form">
       <FormField
         label="Email"
         name="email"
@@ -122,6 +122,7 @@ export function LoginForm({ redirectTo = "/dashboard" }: LoginFormProps) {
         autocomplete="email"
         placeholder="you@example.com"
         disabled={state.isSubmitting}
+        data-testid="login-email-input"
       />
 
       <FormField
@@ -135,16 +136,22 @@ export function LoginForm({ redirectTo = "/dashboard" }: LoginFormProps) {
         autocomplete="current-password"
         placeholder="••••••••"
         disabled={state.isSubmitting}
+        data-testid="login-password-input"
       />
 
       {state.error && (
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4" role="alert" aria-live="polite">
+        <div
+          className="rounded-lg border border-destructive/50 bg-destructive/10 p-4"
+          role="alert"
+          aria-live="polite"
+          data-testid="login-error-message"
+        >
           <p className="text-sm text-destructive">{state.error}</p>
         </div>
       )}
 
       <div className="space-y-4">
-        <Button type="submit" className="w-full" disabled={state.isSubmitting}>
+        <Button type="submit" className="w-full" disabled={state.isSubmitting} data-testid="login-submit-button">
           {state.isSubmitting ? (
             <span className="flex items-center gap-2">
               <InlineLoader visible={true} />
@@ -160,6 +167,7 @@ export function LoginForm({ redirectTo = "/dashboard" }: LoginFormProps) {
             href="/forgot-password"
             className="text-sm text-primary hover:underline"
             tabIndex={state.isSubmitting ? -1 : 0}
+            data-testid="forgot-password-link"
           >
             Forgot your password?
           </a>

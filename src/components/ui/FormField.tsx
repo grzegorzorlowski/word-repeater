@@ -13,6 +13,7 @@ export interface FormFieldProps {
   autocomplete?: string;
   placeholder?: string;
   disabled?: boolean;
+  "data-testid"?: string;
 }
 
 /**
@@ -29,6 +30,7 @@ export function FormField({
   autocomplete,
   placeholder,
   disabled = false,
+  "data-testid": testId,
 }: FormFieldProps) {
   return (
     <div className="space-y-2">
@@ -49,9 +51,15 @@ export function FormField({
         className={error ? "border-destructive focus-visible:ring-destructive" : ""}
         aria-invalid={error ? "true" : "false"}
         aria-describedby={error ? `${name}-error` : undefined}
+        data-testid={testId}
       />
       {error && (
-        <p id={`${name}-error`} className="text-sm text-destructive" role="alert">
+        <p
+          id={`${name}-error`}
+          className="text-sm text-destructive"
+          role="alert"
+          data-testid={testId ? `${testId}-error` : undefined}
+        >
           {error}
         </p>
       )}

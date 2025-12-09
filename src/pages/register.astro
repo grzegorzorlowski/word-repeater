@@ -4,9 +4,9 @@ import { RegisterForm } from "@/components/auth/RegisterForm";
 ---
 
 <AuthLayout title="Create Account - WordRepeater">
-  <div class="space-y-6">
+  <div class="space-y-6" data-testid="register-page">
     <div class="text-center">
-      <h1 class="text-2xl font-bold">Create Account</h1>
+      <h1 class="text-2xl font-bold" data-testid="register-page-title">Create Account</h1>
       <p class="text-muted-foreground mt-2">Start learning with AI-powered flashcards</p>
     </div>
 
@@ -15,7 +15,7 @@ import { RegisterForm } from "@/components/auth/RegisterForm";
     <div class="text-center text-sm">
       <p class="text-muted-foreground">
         Already have an account?{" "}
-        <a href="/login" class="text-primary hover:underline font-medium"> Sign in </a>
+        <a href="/login" class="text-primary hover:underline font-medium" data-testid="login-link"> Sign in </a>
       </p>
     </div>
   </div>

@@ -9,7 +9,7 @@
 
 -- create audit_logs table
 create table public.audit_logs (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   user_id uuid references auth.users(id) on delete set null,
   action text not null,
   occurred_at timestamptz not null default now()

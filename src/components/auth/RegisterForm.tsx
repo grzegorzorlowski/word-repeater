@@ -163,7 +163,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6" data-testid="register-form">
       <FormField
         label="Email"
         name="email"
@@ -175,6 +175,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         autocomplete="email"
         placeholder="you@example.com"
         disabled={state.isSubmitting}
+        data-testid="register-email-input"
       />
 
       <div className="space-y-2">
@@ -189,6 +190,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           autocomplete="new-password"
           placeholder="••••••••"
           disabled={state.isSubmitting}
+          data-testid="register-password-input"
         />
         <PasswordStrengthIndicator password={state.password} />
       </div>
@@ -204,6 +206,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         autocomplete="new-password"
         placeholder="••••••••"
         disabled={state.isSubmitting}
+        data-testid="register-confirm-password-input"
       />
 
       <div className="space-y-2">
@@ -215,6 +218,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             disabled={state.isSubmitting}
             aria-invalid={state.validationErrors.acceptTerms ? "true" : "false"}
             aria-describedby={state.validationErrors.acceptTerms ? "acceptTerms-error" : undefined}
+            data-testid="register-accept-terms-checkbox"
           />
           <Label htmlFor="acceptTerms" className="text-sm font-normal leading-tight cursor-pointer">
             I accept the{" "}
@@ -235,12 +239,15 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       </div>
 
       {state.error && (
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+        <div
+          className="rounded-lg border border-destructive/50 bg-destructive/10 p-4"
+          data-testid="register-error-message"
+        >
           <p className="text-sm text-destructive">{state.error}</p>
         </div>
       )}
 
-      <Button type="submit" className="w-full" disabled={state.isSubmitting}>
+      <Button type="submit" className="w-full" disabled={state.isSubmitting} data-testid="register-submit-button">
         {state.isSubmitting ? (
           <span className="flex items-center gap-2">
             <InlineLoader visible={true} />

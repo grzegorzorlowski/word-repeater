@@ -5,8 +5,13 @@ End-to-end tests using Playwright.
 ## Structure
 
 - `example.spec.ts` - Example tests for landing and auth pages
+- `login.spec.ts` - Login flow tests using Page Object Model
 - `accessibility.spec.ts` - Accessibility tests using axe-core
 - `fixtures/` - Shared test fixtures and helpers
+- `page-objects/` - Page Object Model classes for maintainable tests
+  - `LoginPage.ts` - Login page interactions
+  - `DashboardPage.ts` - Dashboard page interactions
+  - `index.ts` - Central export point for all page objects
 
 ## Running Tests
 
@@ -34,35 +39,51 @@ npx playwright codegen http://localhost:4321
 
 ### Page Object Model
 
-Use the Page Object Model pattern to organize your tests:
+This project uses the Page Object Model (POM) pattern to organize tests. All page objects are located in `page-objects/` directory.
+
+**Example usage:**
 
 ```typescript
-// pages/LoginPage.ts
-import { Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import { LoginPage, DashboardPage } from "./page-objects";
 
-export class LoginPage {
-  constructor(private page: Page) {}
+test("should login successfully", async ({ page }) => {
+  // Arrange
+  const loginPage = new LoginPage(page);
+  const dashboardPage = new DashboardPage(page);
 
-  async goto() {
-    await this.page.goto("/login");
-  }
+  // Act
+  await loginPage.goto();
+  await loginPage.login("user@example.com", "password123");
 
-  async login(email: string, password: string) {
-    await this.page.getByLabel(/email/i).fill(email);
-    await this.page.getByLabel(/password/i).fill(password);
-    await this.page.getByRole("button", { name: /login/i }).click();
-  }
-}
+  // Assert
+  await dashboardPage.waitForDashboard();
+  await expect(dashboardPage.dashboardTitle).toHaveText("Dashboard");
+});
 ```
+
+**Available Page Objects:**
+
+- `LoginPage` - Login page interactions using `data-testid` selectors
+- `DashboardPage` - Dashboard page interactions using `data-testid` selectors
+
+**Creating New Page Objects:**
+
+1. Create a new file in `page-objects/` directory
+2. Use `data-testid` attributes for resilient selectors
+3. Export the class from `page-objects/index.ts`
+4. Follow the existing pattern with locators and helper methods
 
 ### Best Practices
 
-1. **Use user-facing selectors**: Prefer `getByRole`, `getByLabel`, `getByText` over CSS selectors
-2. **Wait for navigation**: Use `waitForURL` after actions that navigate
-3. **Isolate tests**: Each test should be independent and not rely on other tests
-4. **Use fixtures**: Share common setup code using fixtures
-5. **Test accessibility**: Include accessibility tests for all pages
-6. **Visual regression**: Use `toHaveScreenshot()` for visual comparisons
+1. **Use data-testid selectors**: Use `getByTestId()` for resilient test-oriented selectors
+2. **Page Object Model**: Encapsulate page interactions in dedicated classes in `page-objects/`
+3. **Arrange-Act-Assert**: Structure tests with clear AAA pattern for readability
+4. **Wait for navigation**: Use `waitForURL` after actions that navigate
+5. **Isolate tests**: Each test should be independent and not rely on other tests
+6. **Use fixtures**: Share common setup code using fixtures
+7. **Test accessibility**: Include accessibility tests for all pages
+8. **Visual regression**: Use `toHaveScreenshot()` for visual comparisons
 
 ## Debugging
 

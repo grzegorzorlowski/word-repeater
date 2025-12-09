@@ -7,12 +7,13 @@
 --   - implements row-level security for user data isolation
 --   - prepared for future full-text search capabilities
 
--- enable uuid extension if not already enabled
-create extension if not exists "uuid-ossp";
+-- enable pgcrypto extension for gen_random_uuid() if not already enabled
+-- note: pgcrypto is enabled by default in supabase projects
+create extension if not exists "pgcrypto";
 
 -- create flashcards table
 create table public.flashcards (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   content text not null,
   metadata jsonb,

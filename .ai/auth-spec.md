@@ -296,6 +296,7 @@ All form components are implemented as interactive React components with client-
 - **File Location:** `src/layouts/AuthLayout.astro`
 - **Purpose:** Dedicated layout for authentication pages with centered form design
 - **Structure:**
+
   ```astro
   ---
   import Layout from "./Layout.astro";
@@ -317,6 +318,7 @@ All form components are implemented as interactive React components with client-
     </div>
   </Layout>
   ```
+
 - **Usage:** Wrap all auth pages (login, register, forgot-password, reset-password)
 
 ##### **AppLayout Component (New)**
