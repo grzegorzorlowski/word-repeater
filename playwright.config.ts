@@ -34,9 +34,22 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    // Setup project for authentication (runs first)
+    {
+      name: "setup",
+      testMatch: /.*\.setup\.ts/,
+      teardown: "teardown", // Run teardown after this project
+    },
+    // Main test project that depends on auth setup
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+      dependencies: ["setup"],
+    },
+    // Teardown project for cleanup (runs last)
+    {
+      name: "teardown",
+      testMatch: /.*\.teardown\.ts/,
     },
   ],
 

@@ -5,26 +5,39 @@ interface ErrorToastProps {
   onDismiss: () => void;
   onRetry?: () => void;
   showRetry?: boolean;
+  "data-testid"?: string;
 }
 
 /**
  * Dismissible alert/toast for API or validation errors.
  * Supports optional retry action for recoverable errors (US-009).
  */
-export default function ErrorToast({ message, onDismiss, onRetry, showRetry = false }: ErrorToastProps) {
+export default function ErrorToast({
+  message,
+  onDismiss,
+  onRetry,
+  showRetry = false,
+  "data-testid": testId,
+}: ErrorToastProps) {
   return (
-    <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950">
+    <div
+      role="alert"
+      className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950"
+      data-testid={testId}
+    >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 space-y-3">
           <div>
             <p className="font-medium text-red-900 dark:text-red-100">Error</p>
-            <p className="mt-1 text-sm text-red-700 dark:text-red-300">{message}</p>
+            <p className="mt-1 text-sm text-red-700 dark:text-red-300" data-testid="error-message">
+              {message}
+            </p>
           </div>
 
           {/* Retry button for recoverable errors (US-009) */}
           {showRetry && onRetry && (
             <div className="flex items-center gap-2">
-              <Button onClick={onRetry} variant="outline" size="sm" className="h-8">
+              <Button onClick={onRetry} variant="outline" size="sm" className="h-8" data-testid="error-retry-button">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -49,6 +62,7 @@ export default function ErrorToast({ message, onDismiss, onRetry, showRetry = fa
           onClick={onDismiss}
           aria-label="Dismiss error"
           className="rounded-md p-1 text-red-900 hover:bg-red-100 dark:text-red-100 dark:hover:bg-red-900"
+          data-testid="error-dismiss-button"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

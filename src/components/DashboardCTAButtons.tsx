@@ -40,7 +40,12 @@ export function DashboardCTAButtons() {
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-md mx-auto" role="navigation" aria-label="Dashboard navigation">
+    <div
+      className="flex flex-col gap-4 w-full max-w-md mx-auto"
+      role="navigation"
+      aria-label="Dashboard navigation"
+      data-testid="dashboard-cta-buttons"
+    >
       {/* Review Pending Flashcards - Only show if there are pending flashcards */}
       {!isLoadingCount && pendingCount !== null && pendingCount > 0 && (
         <Button
@@ -48,9 +53,13 @@ export function DashboardCTAButtons() {
           size="lg"
           className="w-full py-6 text-lg bg-orange-600 hover:bg-orange-700 text-white shadow-md"
           aria-label={`Review ${pendingCount} pending flashcard${pendingCount === 1 ? "" : "s"}`}
+          data-testid="review-pending-flashcards-button"
         >
           Review Pending Flashcards
-          <span className="ml-2 px-2.5 py-0.5 bg-white text-orange-600 rounded-full text-sm font-bold">
+          <span
+            className="ml-2 px-2.5 py-0.5 bg-white text-orange-600 rounded-full text-sm font-bold"
+            data-testid="pending-flashcards-count"
+          >
             {pendingCount}
           </span>
         </Button>
@@ -61,6 +70,7 @@ export function DashboardCTAButtons() {
         size="lg"
         className="w-full py-6 text-lg"
         aria-label="Generate new flashcards"
+        data-testid="generate-flashcards-button"
       >
         Generate Flashcards
       </Button>
@@ -71,6 +81,7 @@ export function DashboardCTAButtons() {
         variant="outline"
         className="w-full py-6 text-lg"
         aria-label="Create manual flashcard"
+        data-testid="create-manual-flashcard-button"
       >
         Create Manual Flashcard
       </Button>
@@ -81,6 +92,7 @@ export function DashboardCTAButtons() {
         variant="outline"
         className="w-full py-6 text-lg"
         aria-label="View my flashcards"
+        data-testid="my-flashcards-button"
       >
         My Flashcards
       </Button>
@@ -91,6 +103,7 @@ export function DashboardCTAButtons() {
         variant="secondary"
         className="w-full py-6 text-lg"
         aria-label="Start learning session"
+        data-testid="start-learning-button"
       >
         Start Learning
       </Button>

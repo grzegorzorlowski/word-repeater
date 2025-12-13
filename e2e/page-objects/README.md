@@ -10,10 +10,13 @@ The Page Object Model (POM) pattern provides a layer of abstraction between test
 
 ```
 page-objects/
-├── LoginPage.ts       # Login page interactions
-├── DashboardPage.ts   # Dashboard page interactions
-├── index.ts          # Central export point
-└── README.md         # This file
+├── LoginPage.ts                # Login page interactions
+├── DashboardPage.ts            # Dashboard page interactions
+├── ManualFlashcardPage.ts      # Manual flashcard creation page
+├── DashboardCTAButtons.ts      # Dashboard navigation buttons component
+├── ErrorToastComponent.ts      # Error toast notification component
+├── index.ts                    # Central export point
+└── README.md                   # This file
 ```
 
 ## Available Page Objects
@@ -78,6 +81,171 @@ Encapsulates all interactions with the dashboard page.
 const dashboardPage = new DashboardPage(page);
 await dashboardPage.waitForDashboard();
 expect(await dashboardPage.getDashboardTitle()).toBe("Dashboard");
+```
+
+### ManualFlashcardPage
+
+Encapsulates all interactions with the manual flashcard creation form.
+
+**Location Elements:**
+
+- `formContainer` - Main form container
+- `formTitle` - Page title "Create Flashcard"
+- `backToDashboardLink` - Back to dashboard link
+- `questionInput` - Question textarea input
+- `questionCharacterCount` - Question character counter
+- `questionError` - Question validation error message
+- `answerInput` - Answer textarea input
+- `answerCharacterCount` - Answer character counter
+- `answerError` - Answer validation error message
+- `saveButton` - Save/Submit button
+- `cancelButton` - Cancel button
+- `savingIndicator` - Loading indicator during save
+- `successMessage` - Success message container
+- `successTitle` - Success message text
+- `successBackToDashboardButton` - Navigate to dashboard after success
+- `successViewAllFlashcardsButton` - Navigate to flashcards list after success
+- `successCreateAnotherButton` - Create another flashcard button
+- `errorToast` - Error toast notification
+
+**Key Methods:**
+
+- `goto()` - Navigate to manual flashcard creation page
+- `waitForForm()` - Wait for form to be loaded
+- `fillQuestion(question)` - Fill question field
+- `fillAnswer(answer)` - Fill answer field
+- `clearQuestion()` - Clear question field
+- `clearAnswer()` - Clear answer field
+- `fillFlashcard(question, answer)` - Fill both fields
+- `createFlashcard(question, answer)` - Fill and submit form
+- `submit()` - Click save button
+- `cancel()` - Click cancel button
+- `clickBackToDashboard()` - Navigate back using link
+- `getQuestionCharacterCount()` - Get question character count text
+- `getAnswerCharacterCount()` - Get answer character count text
+- `isQuestionErrorVisible()` - Check if question error is visible
+- `isAnswerErrorVisible()` - Check if answer error is visible
+- `getQuestionErrorText()` - Get question error message
+- `getAnswerErrorText()` - Get answer error message
+- `isSaveButtonEnabled()` - Check if save button is enabled
+- `isSaveButtonDisabled()` - Check if save button is disabled
+- `isSaving()` - Check if form is in saving state
+- `waitForSaveComplete()` - Wait for save operation to finish
+- `isSuccessMessageVisible()` - Check if success message is visible
+- `getSuccessMessageText()` - Get success message text
+- `waitForSuccess()` - Wait for success message to appear
+- `goToDashboardAfterSuccess()` - Navigate to dashboard after success
+- `viewAllFlashcardsAfterSuccess()` - Navigate to flashcards list
+- `createAnotherFlashcard()` - Reload page to create another
+- `isErrorVisible()` - Check if error toast is visible
+- `waitForError()` - Wait for error toast to appear
+- `getFormTitle()` - Get form title text
+- `isOnCreatePage()` - Check if on create flashcard page
+
+**Example Usage:**
+
+```typescript
+const flashcardPage = new ManualFlashcardPage(page);
+await flashcardPage.goto();
+await flashcardPage.waitForForm();
+
+// Create a flashcard
+await flashcardPage.createFlashcard(
+  "What is TypeScript?",
+  "TypeScript is a strongly typed programming language."
+);
+
+// Wait for success
+await flashcardPage.waitForSuccess();
+await expect(flashcardPage.successMessage).toBeVisible();
+
+// Navigate back to dashboard
+await flashcardPage.goToDashboardAfterSuccess();
+```
+
+### DashboardCTAButtons
+
+Encapsulates interactions with dashboard navigation buttons component.
+
+**Location Elements:**
+
+- `ctaButtonsContainer` - Main CTA buttons container
+- `reviewPendingFlashcardsButton` - Review pending AI flashcards button (conditional)
+- `pendingFlashcardsCount` - Badge showing pending count
+- `generateFlashcardsButton` - Navigate to generation page
+- `createManualFlashcardButton` - Navigate to manual creation
+- `myFlashcardsButton` - Navigate to flashcards list
+- `startLearningButton` - Start learning session
+
+**Key Methods:**
+
+- `isVisible()` - Check if buttons are visible
+- `waitForButtons()` - Wait for buttons to load
+- `isReviewPendingButtonVisible()` - Check if review pending button visible
+- `getPendingFlashcardsCount()` - Get count of pending flashcards
+- `clickReviewPendingFlashcards()` - Navigate to accept page
+- `clickGenerateFlashcards()` - Navigate to generate page
+- `clickCreateManualFlashcard()` - Navigate to create page
+- `clickMyFlashcards()` - Navigate to flashcards list
+- `clickStartLearning()` - Navigate to learning page
+- Various `is[Button]Visible()` methods for each button
+
+**Example Usage:**
+
+```typescript
+const ctaButtons = new DashboardCTAButtons(page);
+await ctaButtons.waitForButtons();
+
+// Navigate to manual flashcard creation
+await ctaButtons.clickCreateManualFlashcard();
+
+// Check if there are pending flashcards
+const pendingCount = await ctaButtons.getPendingFlashcardsCount();
+if (pendingCount && pendingCount > 0) {
+  await ctaButtons.clickReviewPendingFlashcards();
+}
+```
+
+### ErrorToastComponent
+
+Encapsulates interactions with error toast notifications (component that can appear on multiple pages).
+
+**Location Elements:**
+
+- `errorToast` - Main error toast container
+- `errorMessage` - Error message text
+- `retryButton` - Retry button
+- `dismissButton` - Dismiss/close button
+
+**Key Methods:**
+
+- `isVisible()` - Check if error toast is visible
+- `waitForError(timeout?)` - Wait for error to appear
+- `getErrorMessage()` - Get error message text
+- `hasErrorMessage(text)` - Check if error contains text
+- `isRetryButtonVisible()` - Check if retry button is visible
+- `retry()` - Click retry button
+- `dismiss()` - Click dismiss button
+- `waitForDisappear(timeout?)` - Wait for toast to disappear
+- `dismissAndWait()` - Dismiss and wait for disappearance
+
+**Example Usage:**
+
+```typescript
+const errorToast = new ErrorToastComponent(page);
+
+// Wait for error and check message
+await errorToast.waitForError();
+expect(await errorToast.getErrorMessage()).toContain("Server error");
+
+// Retry the operation
+if (await errorToast.isRetryButtonVisible()) {
+  await errorToast.retry();
+}
+
+// Or dismiss the error
+await errorToast.dismissAndWait();
+expect(await errorToast.isVisible()).toBe(false);
 ```
 
 ## Design Principles
@@ -184,7 +352,13 @@ export class NewPage {
 ### Import Page Objects
 
 ```typescript
-import { LoginPage, DashboardPage } from "./page-objects";
+import {
+  LoginPage,
+  DashboardPage,
+  ManualFlashcardPage,
+  DashboardCTAButtons,
+  ErrorToastComponent
+} from "./page-objects";
 ```
 
 ### Initialize in beforeEach

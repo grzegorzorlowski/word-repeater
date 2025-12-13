@@ -6,18 +6,54 @@ End-to-end tests using Playwright.
 
 - `example.spec.ts` - Example tests for landing and auth pages
 - `login.spec.ts` - Login flow tests using Page Object Model
+- `manual-flashcard-creation.spec.ts` - Manual flashcard creation tests
 - `accessibility.spec.ts` - Accessibility tests using axe-core
 - `fixtures/` - Shared test fixtures and helpers
+  - `auth.ts` - Authentication helpers and test user credentials
+  - `auth.setup.ts` - API-based authentication setup for tests
+  - `global.teardown.ts` - Database cleanup after all tests complete
+- `.auth/` - Authenticated storage state (gitignored)
+  - `user.json` - Generated auth state used by tests
 - `page-objects/` - Page Object Model classes for maintainable tests
   - `LoginPage.ts` - Login page interactions
   - `DashboardPage.ts` - Dashboard page interactions
+  - `ManualFlashcardPage.ts` - Manual flashcard creation page
+  - `DashboardCTAButtons.ts` - Dashboard navigation component
+  - `ErrorToastComponent.ts` - Error toast component
   - `index.ts` - Central export point for all page objects
+
+## Documentation
+
+- `AUTH-SETUP-GUIDE.md` - Complete guide for authentication setup
+- `MANUAL-FLASHCARD-POM-GUIDE.md` - Page Object Model guide for flashcard tests
+- `TEST-IDS-MANUAL-FLASHCARD.md` - Test ID reference for flashcard components
+- `page-objects/README.md` - Page Object Model patterns and best practices
 
 ## Running Tests
 
+### First Time Setup
+
+1. Copy `.env.test.example` to `.env.test` and update credentials:
 ```bash
-# Run all e2e tests
+cp .env.test.example .env.test
+```
+
+2. Ensure your test user exists in the database with the credentials from `.env.test`
+
+### Running Tests
+
+```bash
+# Run all e2e tests (includes auth setup and database cleanup)
 npm run test:e2e
+
+# Run auth setup only
+npx playwright test --project=setup
+
+# Run cleanup/teardown only
+npx playwright test --project=teardown
+
+# Run specific test file
+npx playwright test manual-flashcard-creation.spec.ts
 
 # Run tests in UI mode (recommended for development)
 npm run test:e2e:ui
@@ -25,15 +61,21 @@ npm run test:e2e:ui
 # Run tests in debug mode
 npm run test:e2e:debug
 
-# Run specific test file
-npx playwright test example.spec.ts
-
 # Run tests in headed mode (see the browser)
 npx playwright test --headed
 
 # Generate tests using Playwright codegen
 npx playwright codegen http://localhost:4321
 ```
+
+### Database Cleanup
+
+After tests complete, the teardown script automatically:
+- Deletes all flashcards created by the test user
+- Ensures a clean state for the next test run
+- Uses `E2E_USERNAME_ID` from `.env.test` to identify test data
+
+**Note**: Make sure `E2E_USERNAME_ID` is set in your `.env.test` file for cleanup to work.
 
 ## Writing Tests
 
@@ -66,6 +108,9 @@ test("should login successfully", async ({ page }) => {
 
 - `LoginPage` - Login page interactions using `data-testid` selectors
 - `DashboardPage` - Dashboard page interactions using `data-testid` selectors
+- `ManualFlashcardPage` - Manual flashcard creation form interactions
+- `DashboardCTAButtons` - Dashboard navigation buttons component
+- `ErrorToastComponent` - Error notification toast (reusable across pages)
 
 **Creating New Page Objects:**
 

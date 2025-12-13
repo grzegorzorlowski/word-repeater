@@ -9,9 +9,11 @@ export interface TestUser {
   password: string;
 }
 
+// Load test credentials from environment variables
+// These should be set in .env.test file
 export const testUser: TestUser = {
-  email: "test@example.com",
-  password: "TestPassword123!",
+  email: process.env.E2E_USERNAME || "test@example.com",
+  password: process.env.E2E_PASSWORD || "TestPassword123!",
 };
 
 /**

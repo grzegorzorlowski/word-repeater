@@ -38,15 +38,18 @@ export default function ManualFlashcardForm({ onSuccess }: ManualFlashcardFormPr
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
+    <div className="mx-auto max-w-3xl px-4 py-8" data-testid="manual-flashcard-form-container">
       <div className="space-y-6">
         {/* Header */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold tracking-tight">Create Flashcard</h1>
+            <h1 className="text-3xl font-bold tracking-tight" data-testid="form-title">
+              Create Flashcard
+            </h1>
             <a
               href="/dashboard"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              data-testid="back-to-dashboard-link"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -72,10 +75,13 @@ export default function ManualFlashcardForm({ onSuccess }: ManualFlashcardFormPr
           <div className="space-y-2">
             <label htmlFor="question" className="block text-sm font-medium">
               Question
-              <span className="ml-1 text-muted-foreground">({question.length}/300)</span>
+              <span className="ml-1 text-muted-foreground" data-testid="question-character-count">
+                ({question.length}/300)
+              </span>
             </label>
             <textarea
               id="question"
+              data-testid="question-input"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="Enter your question here..."
@@ -91,7 +97,7 @@ export default function ManualFlashcardForm({ onSuccess }: ManualFlashcardFormPr
               aria-describedby={validationErrors.question ? "question-error" : undefined}
             />
             {validationErrors.question && (
-              <p id="question-error" className="text-sm text-destructive" role="alert">
+              <p id="question-error" className="text-sm text-destructive" role="alert" data-testid="question-error">
                 {validationErrors.question}
               </p>
             )}
@@ -102,10 +108,13 @@ export default function ManualFlashcardForm({ onSuccess }: ManualFlashcardFormPr
           <div className="space-y-2">
             <label htmlFor="answer" className="block text-sm font-medium">
               Answer
-              <span className="ml-1 text-muted-foreground">({answer.length}/500)</span>
+              <span className="ml-1 text-muted-foreground" data-testid="answer-character-count">
+                ({answer.length}/500)
+              </span>
             </label>
             <textarea
               id="answer"
+              data-testid="answer-input"
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               placeholder="Enter your answer here..."
@@ -121,7 +130,7 @@ export default function ManualFlashcardForm({ onSuccess }: ManualFlashcardFormPr
               aria-describedby={validationErrors.answer ? "answer-error" : undefined}
             />
             {validationErrors.answer && (
-              <p id="answer-error" className="text-sm text-destructive" role="alert">
+              <p id="answer-error" className="text-sm text-destructive" role="alert" data-testid="answer-error">
                 {validationErrors.answer}
               </p>
             )}
@@ -130,7 +139,12 @@ export default function ManualFlashcardForm({ onSuccess }: ManualFlashcardFormPr
 
           {/* Submit Button */}
           <div className="flex items-center gap-4">
-            <Button type="submit" disabled={!canSubmit || isLoading} className="min-w-[140px]">
+            <Button
+              type="submit"
+              disabled={!canSubmit || isLoading}
+              className="min-w-[140px]"
+              data-testid="save-flashcard-button"
+            >
               {isLoading ? (
                 <span className="flex items-center gap-2">
                   <InlineLoader visible={true} />
@@ -141,33 +155,46 @@ export default function ManualFlashcardForm({ onSuccess }: ManualFlashcardFormPr
               )}
             </Button>
 
-            <Button type="button" variant="outline" asChild disabled={isLoading}>
+            <Button type="button" variant="outline" asChild disabled={isLoading} data-testid="cancel-button">
               <a href="/dashboard">Cancel</a>
             </Button>
 
-            {isLoading && <span className="text-sm text-muted-foreground">Saving your flashcard...</span>}
+            {isLoading && (
+              <span className="text-sm text-muted-foreground" data-testid="saving-indicator">
+                Saving your flashcard...
+              </span>
+            )}
           </div>
         </form>
 
         {/* Success Message */}
         {successMessage && (
-          <div className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950">
+          <div
+            className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950"
+            data-testid="success-message"
+          >
             <div className="flex items-start justify-between">
               <div className="space-y-2">
-                <p className="font-medium text-green-900 dark:text-green-100">{successMessage}</p>
+                <p className="font-medium text-green-900 dark:text-green-100" data-testid="success-title">
+                  {successMessage}
+                </p>
                 <p className="text-sm text-green-700 dark:text-green-300">
                   Your flashcard has been created and is ready for learning.
                 </p>
               </div>
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
-              <Button asChild>
+              <Button asChild data-testid="success-back-to-dashboard-button">
                 <a href="/dashboard">Back to Dashboard</a>
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" asChild data-testid="success-view-all-flashcards-button">
                 <a href="/flashcards">View All Flashcards</a>
               </Button>
-              <Button variant="outline" onClick={() => window.location.reload()}>
+              <Button
+                variant="outline"
+                onClick={() => window.location.reload()}
+                data-testid="success-create-another-button"
+              >
                 Create Another
               </Button>
             </div>
@@ -175,7 +202,15 @@ export default function ManualFlashcardForm({ onSuccess }: ManualFlashcardFormPr
         )}
 
         {/* Error Toast */}
-        {error && <ErrorToast message={error} onDismiss={clearError} onRetry={handleRetry} showRetry={true} />}
+        {error && (
+          <ErrorToast
+            message={error}
+            onDismiss={clearError}
+            onRetry={handleRetry}
+            showRetry={true}
+            data-testid="error-toast"
+          />
+        )}
       </div>
     </div>
   );
