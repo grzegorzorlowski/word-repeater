@@ -140,18 +140,20 @@ jobs:
             const statusText = allPassed ? 'All checks passed' : 'Some checks failed';
             
             // Create comment body
-            const commentBody = `## ${statusEmoji} ${statusText}
-
-**Commit:** \`${sha.substring(0, 7)}\`
-
-| Job | Status |
-|-----|--------|
-| Unit Tests | ${unitTestStatus === 'success' ? '✅ Passed' : '❌ Failed'} |
-| E2E Tests | ${e2eTestStatus === 'success' ? '✅ Passed' : '❌ Failed'} |
-
-${allPassed ? '' : '⚠️ Please review the failed checks above.'}
-
-*Last updated: ${new Date().toUTCString()}*`;
+            const commentBody = [
+              `## ${statusEmoji} ${statusText}`,
+              '',
+              `**Commit:** \`${sha.substring(0, 7)}\``,
+              '',
+              '| Job | Status |',
+              '|-----|--------|',
+              `| Unit Tests | ${unitTestStatus === 'success' ? '✅ Passed' : '❌ Failed'} |`,
+              `| E2E Tests | ${e2eTestStatus === 'success' ? '✅ Passed' : '❌ Failed'} |`,
+              '',
+              allPassed ? '' : '⚠️ Please review the failed checks above.',
+              '',
+              `*Last updated: ${new Date().toUTCString()}*`
+            ].join('\n');
             
             if (commentId) {
               // Update existing comment
