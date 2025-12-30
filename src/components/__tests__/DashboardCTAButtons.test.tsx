@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@/test/utils/test-utils";
 import userEvent from "@testing-library/user-event";
 import { DashboardCTAButtons } from "../DashboardCTAButtons";
-import { http, HttpResponse } from "msw";
 import { server } from "@/test/setup";
 
 describe("DashboardCTAButtons", () => {

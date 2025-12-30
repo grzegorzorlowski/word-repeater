@@ -1,4 +1,5 @@
 // src/lib/services/__tests__/flashcardService.delete.test.ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { deleteFlashcard } from "../flashcardService";
 import type { SupabaseClient } from "../../../db/supabase.client";

@@ -3,16 +3,16 @@ import type { Page, Locator } from "@playwright/test";
 /**
  * Page Object Model for Dashboard CTA Buttons Component
  * Encapsulates interactions with dashboard navigation buttons
- * 
+ *
  * This component appears on the dashboard and provides navigation
  * to various features of the application.
  */
 export class DashboardCTAButtons {
   readonly page: Page;
-  
+
   // Container
   readonly ctaButtonsContainer: Locator;
-  
+
   // Navigation buttons
   readonly reviewPendingFlashcardsButton: Locator;
   readonly pendingFlashcardsCount: Locator;
@@ -23,7 +23,7 @@ export class DashboardCTAButtons {
 
   constructor(page: Page) {
     this.page = page;
-    
+
     this.ctaButtonsContainer = page.getByTestId("dashboard-cta-buttons");
     this.reviewPendingFlashcardsButton = page.getByTestId("review-pending-flashcards-button");
     this.pendingFlashcardsCount = page.getByTestId("pending-flashcards-count");
@@ -66,7 +66,7 @@ export class DashboardCTAButtons {
   async getPendingFlashcardsCount(): Promise<number | null> {
     const isVisible = await this.isReviewPendingButtonVisible();
     if (!isVisible) return null;
-    
+
     const countText = await this.pendingFlashcardsCount.textContent();
     return countText ? parseInt(countText.trim(), 10) : null;
   }
@@ -139,4 +139,3 @@ export class DashboardCTAButtons {
     return await this.startLearningButton.isVisible();
   }
 }
-

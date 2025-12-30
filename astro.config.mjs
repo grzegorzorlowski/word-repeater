@@ -1,6 +1,5 @@
 // @ts-check
 import { defineConfig } from "astro/config";
-import { loadEnv } from "vite";
 
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
@@ -8,11 +7,14 @@ import tailwindcss from "@tailwindcss/vite";
 import node from "@astrojs/node";
 
 // Load environment variables based on mode
+// eslint-disable-next-line no-undef
 const mode = process.env.NODE_ENV || "development";
+// eslint-disable-next-line no-undef
 const envMode = process.argv.includes("--mode") ? process.argv[process.argv.indexOf("--mode") + 1] : mode;
 
 // Load .env.test when in test mode
 if (envMode === "test") {
+  // eslint-disable-next-line no-undef
   process.loadEnvFile?.(".env.test");
 }
 

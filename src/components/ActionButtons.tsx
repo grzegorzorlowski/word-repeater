@@ -34,7 +34,6 @@ export function ActionButtons({ onDecision, disabled }: ActionButtonsProps) {
   return (
     <div
       className="flex flex-col sm:flex-row gap-4 w-full max-w-4xl mx-auto"
-      onKeyDown={handleKeyDown}
       role="group"
       aria-label="Flashcard decision buttons"
     >
@@ -44,6 +43,7 @@ export function ActionButtons({ onDecision, disabled }: ActionButtonsProps) {
         variant="outline"
         size="lg"
         onClick={() => onDecision("reject")}
+        onKeyDown={handleKeyDown}
         disabled={disabled}
         className="flex-1 h-14 text-lg font-semibold transition-transform hover:scale-105 active:scale-95"
         aria-label="Reject this flashcard and move to the next one"
@@ -61,6 +61,7 @@ export function ActionButtons({ onDecision, disabled }: ActionButtonsProps) {
         variant="default"
         size="lg"
         onClick={() => onDecision("accept")}
+        onKeyDown={handleKeyDown}
         disabled={disabled}
         className="flex-1 h-14 text-lg font-semibold transition-transform hover:scale-105 active:scale-95"
         aria-label="Accept this flashcard and add it to your deck"

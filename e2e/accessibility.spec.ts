@@ -21,6 +21,9 @@ test.describe("Accessibility Tests", () => {
   test("should not have accessibility issues on register page", async ({ page }) => {
     await page.goto("/register");
 
+    // Wait for page to be fully loaded and stable
+    await page.waitForLoadState("networkidle");
+
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);

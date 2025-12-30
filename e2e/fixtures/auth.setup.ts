@@ -42,6 +42,8 @@ setup("authenticate via API", async ({ request, baseURL }) => {
   // Save authentication state (cookies, local storage, etc.)
   await request.storageState({ path: authFile });
 
+  // eslint-disable-next-line no-console
   console.log(`✓ Authentication successful for ${TEST_EMAIL}`);
+  // eslint-disable-next-line no-console
   console.log(`✓ Auth state saved to ${authFile}`);
 });

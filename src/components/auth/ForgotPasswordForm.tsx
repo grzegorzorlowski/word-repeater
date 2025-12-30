@@ -89,7 +89,7 @@ export function ForgotPasswordForm() {
 
       // Success - always show success message (security best practice)
       setState((prev) => ({ ...prev, isSubmitting: false, isSuccess: true }));
-    } catch (error) {
+    } catch {
       setState((prev) => ({
         ...prev,
         isSubmitting: false,

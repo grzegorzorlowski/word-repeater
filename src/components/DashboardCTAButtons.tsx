@@ -26,6 +26,7 @@ export function DashboardCTAButtons() {
         }
       } catch (err) {
         // Silently fail - the button will just not show
+        // eslint-disable-next-line no-console
         console.error("Failed to fetch pending flashcards count:", err);
       } finally {
         setIsLoadingCount(false);

@@ -3,13 +3,13 @@ import type { Page, Locator } from "@playwright/test";
 /**
  * Page Object Model for the ErrorToast Component
  * Encapsulates all interactions with error toast notifications
- * 
+ *
  * This component can appear on multiple pages, so it's designed
  * to be composed into page objects rather than used standalone.
  */
 export class ErrorToastComponent {
   readonly page: Page;
-  
+
   // Main container
   readonly errorToast: Locator;
   readonly errorMessage: Locator;
@@ -18,7 +18,7 @@ export class ErrorToastComponent {
 
   constructor(page: Page) {
     this.page = page;
-    
+
     this.errorToast = page.getByTestId("error-toast");
     this.errorMessage = page.getByTestId("error-message");
     this.retryButton = page.getByTestId("error-retry-button");
@@ -103,4 +103,3 @@ export class ErrorToastComponent {
     await this.waitForDisappear();
   }
 }
-

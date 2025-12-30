@@ -125,6 +125,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       },
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Registration error:", error);
     return new Response(
       JSON.stringify({

@@ -35,10 +35,12 @@ export async function logAuditEntry(supabase: SupabaseClient, entry: AuditLogEnt
     if (error) {
       // If audit logging fails, log to console but don't throw
       // We don't want audit log failures to break the main application flow
+      // eslint-disable-next-line no-console
       console.error("Failed to write audit log:", error);
     }
   } catch (error) {
     // Catch any unexpected errors in audit logging
+    // eslint-disable-next-line no-console
     console.error("Unexpected error in audit logging:", error);
   }
 }

@@ -4,7 +4,7 @@ import type { ErrorResponseDTO } from "@/types";
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request, cookies, locals }) => {
+export const POST: APIRoute = async ({ locals }) => {
   try {
     const supabase = locals.supabase;
 
@@ -37,6 +37,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
       }
     );
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Logout error:", error);
     return new Response(
       JSON.stringify({

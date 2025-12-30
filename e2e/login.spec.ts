@@ -149,8 +149,12 @@ test.describe("Login Flow", () => {
     // Arrange: Navigate to login page
     await loginPage.goto();
 
-    // Assert: Form should have proper role
-    await expect(loginPage.loginForm).toHaveAttribute("role", "form");
+    // Assert: Form element should exist and be visible
+    await expect(loginPage.loginForm).toBeVisible();
+
+    // Assert: Form should be a form element (has implicit form role)
+    const tagName = await loginPage.loginForm.evaluate((el) => el.tagName.toLowerCase());
+    expect(tagName).toBe("form");
 
     // Assert: Submit button should be a button type
     await expect(loginPage.submitButton).toHaveAttribute("type", "submit");

@@ -1,4 +1,5 @@
 // src/lib/services/__tests__/auditLogService.test.ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   logAuditEntry,

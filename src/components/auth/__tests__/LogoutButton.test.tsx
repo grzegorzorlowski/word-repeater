@@ -20,7 +20,6 @@ Object.defineProperty(window, "location", {
 
 describe("LogoutButton", () => {
   const originalLocation = window.location;
-  const originalFetch = global.fetch;
 
   beforeEach(() => {
     // Reset location before each test

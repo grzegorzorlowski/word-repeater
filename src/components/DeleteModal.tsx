@@ -83,6 +83,7 @@ export function DeleteModal({ isOpen, flashcard, onClose, onSuccess }: DeleteMod
   };
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       role="dialog"
@@ -90,6 +91,11 @@ export function DeleteModal({ isOpen, flashcard, onClose, onSuccess }: DeleteMod
       aria-labelledby="delete-modal-title"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
+          handleClose();
+        }
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
           handleClose();
         }
       }}

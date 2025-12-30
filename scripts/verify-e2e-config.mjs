@@ -5,6 +5,9 @@
  * Usage: node scripts/verify-e2e-config.mjs
  */
 
+/* eslint-disable no-console */
+/* eslint-disable no-undef */
+
 import * as dotenv from "dotenv";
 import * as path from "path";
 import { fileURLToPath } from "url";
@@ -129,5 +132,3 @@ console.log("\n🎯 Current Configuration:");
 console.log(`   Base URL: ${process.env.BASE_URL || "http://localhost:3000"}`);
 console.log(`   Mode: ${process.env.NODE_ENV || "development"}`);
 console.log("\n");
-
-

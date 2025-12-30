@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useFlashcardList } from "../useFlashcardList";
 import type { FlashcardSummaryDTO } from "@/types";
-import { server } from "@/test/setup";
-import { http, HttpResponse } from "msw";
 
 // Mock flashcard data for testing
 const mockFlashcards: FlashcardSummaryDTO[] = [

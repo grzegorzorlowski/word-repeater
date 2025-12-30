@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@/test/utils/test-utils";
 import userEvent from "@testing-library/user-event";

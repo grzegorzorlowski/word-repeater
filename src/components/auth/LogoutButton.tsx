@@ -38,6 +38,7 @@ export function LogoutButton({ variant = "outline", className }: LogoutButtonPro
       // Successful logout - redirect to login page
       window.location.href = "/login";
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Logout error:", error);
       setError("Network error. Please try again.");
       setIsLoading(false);

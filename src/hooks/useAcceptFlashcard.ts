@@ -34,6 +34,7 @@ function parseFlashcardContent(content: string): { question: string; answer: str
     };
   } catch (err) {
     // Fallback: return empty strings if parsing fails
+    // eslint-disable-next-line no-console
     console.error("Failed to parse flashcard content:", err);
     return { question: "", answer: "" };
   }

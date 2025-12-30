@@ -1,4 +1,6 @@
 // src/lib/services/__tests__/flashcardService.test.ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { generateFlashcardsFromText } from "../flashcardService";
 import type { SupabaseClient } from "../../../db/supabase.client";

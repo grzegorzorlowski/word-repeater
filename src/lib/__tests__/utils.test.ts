@@ -14,7 +14,9 @@ describe("utils", () => {
     });
 
     it("should handle clsx-style conditional classes", () => {
-      const result = cn("text-red-500", true && "bg-blue-500", false && "border");
+      const isActive = true;
+      const isDisabled = false;
+      const result = cn("text-red-500", isActive && "bg-blue-500", isDisabled && "border");
       expect(result).toBe("text-red-500 bg-blue-500");
     });
 

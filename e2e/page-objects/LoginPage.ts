@@ -76,7 +76,7 @@ export class LoginPage {
     // Wait for form to be hydrated and inputs to be enabled
     await this.emailInput.waitFor({ state: "visible" });
     await this.passwordInput.waitFor({ state: "visible" });
-    
+
     await this.fillEmail(email);
     await this.fillPassword(password);
     await this.submit();

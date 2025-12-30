@@ -110,7 +110,7 @@ export function LoginForm({ redirectTo = "/dashboard" }: LoginFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" noValidate role="form" data-testid="login-form">
+    <form onSubmit={handleSubmit} className="space-y-6" noValidate data-testid="login-form">
       <FormField
         label="Email"
         name="email"

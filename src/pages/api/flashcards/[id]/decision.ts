@@ -112,7 +112,7 @@ export const POST: APIRoute = async (context) => {
     let requestBody;
     try {
       requestBody = await context.request.json();
-    } catch (error) {
+    } catch {
       return new Response(
         JSON.stringify({
           error: "Invalid JSON in request body",

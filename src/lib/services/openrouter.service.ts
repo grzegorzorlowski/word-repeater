@@ -642,18 +642,22 @@ export class OpenRouterService {
  */
 export class ConsoleLogger implements Logger {
   debug(message: string, meta?: unknown): void {
+    // eslint-disable-next-line no-console
     console.debug(`[DEBUG] ${message}`, meta ?? "");
   }
 
   info(message: string, meta?: unknown): void {
+    // eslint-disable-next-line no-console
     console.info(`[INFO] ${message}`, meta ?? "");
   }
 
   error(message: string, meta?: unknown): void {
+    // eslint-disable-next-line no-console
     console.error(`[ERROR] ${message}`, meta ?? "");
   }
 
   warn(message: string, meta?: unknown): void {
+    // eslint-disable-next-line no-console
     console.warn(`[WARN] ${message}`, meta ?? "");
   }
 }

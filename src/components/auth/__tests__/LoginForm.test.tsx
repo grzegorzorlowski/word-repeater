@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@/test/utils/test-utils";
 import userEvent from "@testing-library/user-event";
@@ -6,7 +7,6 @@ import { server } from "@/test/setup";
 
 describe("LoginForm", () => {
   const originalLocation = window.location;
-  const originalFetch = global.fetch;
 
   beforeEach(() => {
     // Mock window.location for navigation tests
@@ -819,8 +819,9 @@ describe("LoginForm", () => {
   describe("Accessibility", () => {
     it("should have accessible form structure", () => {
       render(<LoginForm />);
-      const form = screen.getByRole("form", { hidden: true });
+      const form = screen.getByTestId("login-form");
       expect(form).toBeInTheDocument();
+      expect(form.tagName).toBe("FORM");
     });
 
     it("should associate error messages with fields using aria-describedby", async () => {

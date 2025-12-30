@@ -3,74 +3,74 @@ import type { Page, Locator } from "@playwright/test";
 /**
  * Page Object Model for the Manual Flashcard Creation Page
  * Encapsulates all interactions with the manual flashcard form
- * 
+ *
  * Test scenarios:
  * 1. Invalid flashcard validation (empty fields, validation errors)
  * 2. Valid flashcard creation and navigation back to dashboard
  */
 export class ManualFlashcardPage {
   readonly page: Page;
-  
+
   // Container
   readonly formContainer: Locator;
   readonly formTitle: Locator;
   readonly backToDashboardLink: Locator;
-  
+
   // Question field
   readonly questionInput: Locator;
   readonly questionCharacterCount: Locator;
   readonly questionError: Locator;
-  
+
   // Answer field
   readonly answerInput: Locator;
   readonly answerCharacterCount: Locator;
   readonly answerError: Locator;
-  
+
   // Actions
   readonly saveButton: Locator;
   readonly cancelButton: Locator;
   readonly savingIndicator: Locator;
-  
+
   // Success state
   readonly successMessage: Locator;
   readonly successTitle: Locator;
   readonly successBackToDashboardButton: Locator;
   readonly successViewAllFlashcardsButton: Locator;
   readonly successCreateAnotherButton: Locator;
-  
+
   // Error state
   readonly errorToast: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    
+
     // Container
     this.formContainer = page.getByTestId("manual-flashcard-form-container");
     this.formTitle = page.getByTestId("form-title");
     this.backToDashboardLink = page.getByTestId("back-to-dashboard-link");
-    
+
     // Question field
     this.questionInput = page.getByTestId("question-input");
     this.questionCharacterCount = page.getByTestId("question-character-count");
     this.questionError = page.getByTestId("question-error");
-    
+
     // Answer field
     this.answerInput = page.getByTestId("answer-input");
     this.answerCharacterCount = page.getByTestId("answer-character-count");
     this.answerError = page.getByTestId("answer-error");
-    
+
     // Actions
     this.saveButton = page.getByTestId("save-flashcard-button");
     this.cancelButton = page.getByTestId("cancel-button");
     this.savingIndicator = page.getByTestId("saving-indicator");
-    
+
     // Success state
     this.successMessage = page.getByTestId("success-message");
     this.successTitle = page.getByTestId("success-title");
     this.successBackToDashboardButton = page.getByTestId("success-back-to-dashboard-button");
     this.successViewAllFlashcardsButton = page.getByTestId("success-view-all-flashcards-button");
     this.successCreateAnotherButton = page.getByTestId("success-create-another-button");
-    
+
     // Error state
     this.errorToast = page.getByTestId("error-toast");
   }
@@ -259,7 +259,7 @@ export class ManualFlashcardPage {
     } catch {
       // Saving might complete too quickly, continue
     }
-    
+
     // Wait for saving indicator to disappear or success/error to appear
     await this.page.waitForFunction(
       () => {
@@ -350,4 +350,3 @@ export class ManualFlashcardPage {
     return this.page.url().includes("/flashcards/new");
   }
 }
-
