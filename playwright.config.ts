@@ -1,9 +1,16 @@
 import { defineConfig, devices } from "@playwright/test";
 import * as dotenv from "dotenv";
 import * as path from "path";
+import * as fs from "fs";
 
-// Load .env.test file for e2e tests
-dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
+// Load .env.test file for e2e tests (only if not in CI and file exists)
+if (!process.env.CI) {
+  const envTestPath = path.resolve(process.cwd(), ".env.test");
+  if (fs.existsSync(envTestPath)) {
+    dotenv.config({ path: envTestPath });
+  }
+}
+// In CI, environment variables are already set via GitHub secrets
 
 /**
  * See https://playwright.dev/docs/test-configuration.

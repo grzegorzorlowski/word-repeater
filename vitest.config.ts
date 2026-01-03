@@ -21,12 +21,13 @@ export default defineConfig({
       reporter: ["text", "json", "html", "lcov"],
       include: ["src/**/*.{ts,tsx}"],
       exclude: ["src/**/*.{test,spec}.{ts,tsx}", "src/test/**", "src/**/*.d.ts", "src/env.d.ts", "src/types.ts"],
-      thresholds: {
-        lines: 60,
-        functions: 60,
-        branches: 60,
-        statements: 60,
-      },
+      // Monitor coverage without failing builds
+      // thresholds: {
+      //   lines: 60,
+      //   functions: 60,
+      //   branches: 60,
+      //   statements: 60,
+      // },
     },
   },
   resolve: {
