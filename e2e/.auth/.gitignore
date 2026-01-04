@@ -1,0 +1,6 @@
+# Ignore all auth state files
+*.json
+
+# But keep this directory in git
+!.gitignore
+

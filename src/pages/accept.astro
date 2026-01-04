@@ -1,0 +1,14 @@
+---
+/**
+ * Accept Flashcards Page
+ * Allows users to review and accept/reject AI-generated flashcards.
+ */
+import Layout from "@/layouts/Layout.astro";
+import { AcceptFlashcardView } from "@/components/AcceptFlashcardView";
+---
+
+<Layout title="Accept Flashcards - WordRepeater">
+  <main class="min-h-screen bg-background py-8 px-4">
+    <AcceptFlashcardView client:load />
+  </main>
+</Layout>

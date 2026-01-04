@@ -1,0 +1,71 @@
+import "@testing-library/jest-dom/vitest";
+import { cleanup } from "@testing-library/react";
+import { afterEach, beforeAll, afterAll, vi } from "vitest";
+import { setupServer } from "msw/node";
+
+// Setup MSW server for API mocking
+export const server = setupServer();
+
+// Start MSW server before all tests
+beforeAll(() => {
+  server.listen({
+    onUnhandledRequest: "warn",
+  });
+});
+
+// Reset handlers after each test
+afterEach(() => {
+  server.resetHandlers();
+  cleanup();
+});
+
+// Clean up after all tests
+afterAll(() => {
+  server.close();
+});
+
+// Mock window.matchMedia
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: vi.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+// Mock IntersectionObserver
+global.IntersectionObserver = class IntersectionObserver {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  disconnect() {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  observe() {}
+  takeRecords() {
+    return [];
+  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  unobserve() {}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+} as any;
+
+// Mock scrollTo
+window.scrollTo = vi.fn();
+
+// Set base URL for fetch requests in tests
+Object.defineProperty(window, "location", {
+  writable: true,
+  value: {
+    ...window.location,
+    origin: "http://localhost:3000",
+    href: "http://localhost:3000/",
+    protocol: "http:",
+    host: "localhost:3000",
+    hostname: "localhost",
+    port: "3000",
+  },
+});
