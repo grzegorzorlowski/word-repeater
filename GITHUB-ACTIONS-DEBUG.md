@@ -95,6 +95,14 @@ Before the fix, tests failed when code coverage was below 60%. Now:
 - **Files**: `astro.config.mjs` and `playwright.config.ts`
 - Local development still uses `.env.test` file
 
+### ✅ GitHub Actions Permissions
+- **Before**: Missing permissions caused "Resource not accessible by integration" error
+- **After**: Added proper permissions to workflow:
+  - `contents: read` - Read repository contents
+  - `pull-requests: write` - Comment on PRs
+  - `issues: write` - Create/update comments
+- **File**: `.github/workflows/pull-request.yml`
+
 ## Quick Troubleshooting Checklist
 
 - [ ] Are all secrets set in the `integration` environment?
