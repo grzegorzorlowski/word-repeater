@@ -7,11 +7,13 @@ Before running your workflows, verify these GitHub settings:
 Go to: **Settings** → **Actions** → **General**
 
 ### Workflow Permissions
-- [ ] Select **"Read and write permissions"** 
+
+- [ ] Select **"Read and write permissions"**
   - OR keep "Read repository contents and packages permissions" if you prefer more security
   - The workflow now has explicit permissions defined, so this should work either way
-  
+
 ### Allow GitHub Actions to create and approve pull requests
+
 - [ ] Check this box if you want workflows to be able to create PRs (optional for now)
 
 ## 2. ✅ Create Integration Environment
@@ -22,6 +24,7 @@ Go to: **Settings** → **Environments** → **New environment**
 - [ ] Add the following secrets to this environment:
 
 ### Required Secrets for E2E Tests:
+
 ```
 BASE_URL                 (e.g., http://localhost:3000)
 SUPABASE_URL             (your Supabase project URL)
@@ -33,6 +36,7 @@ E2E_USERNAME_ID          (test user UUID from Supabase)
 ```
 
 **Note:** You can get these values from:
+
 - Your local `.env.test` file (if you have one)
 - Your Supabase project dashboard
 - Create a test user in your Supabase database
@@ -44,6 +48,7 @@ Go to: **Settings** → **Branches** → **Add rule**
 For branch: `master`
 
 Recommended settings:
+
 - [ ] **Require a pull request before merging**
   - [ ] Require approvals: 1 (if working in a team)
 - [ ] **Require status checks to pass before merging**
@@ -56,13 +61,16 @@ Recommended settings:
 Go to: **Settings** → **Actions** → **General**
 
 ### Actions permissions:
+
 - [ ] Select **"Allow all actions and reusable workflows"**
   - OR "Allow [organization] and select non-[organization] actions and reusable workflows"
 
 ### Artifact and log retention:
+
 - [ ] Default is 90 days (our workflows use 7 days for artifacts)
 
 ### Fork pull request workflows:
+
 - [ ] **"Require approval for first-time contributors"** (recommended for security)
 
 ## 5. ✅ Verify Workflow Files Are in Master Branch
@@ -88,6 +96,7 @@ gh secret list --env integration
 ```
 
 Or simply go to your repository URL:
+
 ```
 https://github.com/grzegorzorlowski/word-repeater/settings
 ```
@@ -97,12 +106,14 @@ https://github.com/grzegorzorlowski/word-repeater/settings
 For E2E tests to work, you need a test user in Supabase:
 
 ### Option A: Create via Supabase Dashboard
+
 1. Go to: **Authentication** → **Users** → **Add user**
 2. Create user with email matching `E2E_USERNAME`
 3. Set password matching `E2E_PASSWORD`
 4. Copy the user's UUID for `E2E_USERNAME_ID`
 
 ### Option B: Create via SQL
+
 ```sql
 -- In Supabase SQL Editor
 INSERT INTO auth.users (
@@ -147,7 +158,7 @@ Once all settings are configured:
 ## Need Help?
 
 If you get stuck, check:
+
 - GitHub Actions logs in the **Actions** tab
 - The "Verify environment variables" step in the e2e-test job
 - `GITHUB-ACTIONS-DEBUG.md` for troubleshooting tips
-

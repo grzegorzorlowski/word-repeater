@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { createServerClient, type CookieOptionsWithName } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import type { AstroCookies } from "astro";
 
 import type { Database } from "../db/database.types.ts";
@@ -12,14 +12,6 @@ export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKe
 
 // Export the SupabaseClient type for use in other parts of the application
 export type SupabaseClient = typeof supabaseClient;
-
-// Cookie options for Supabase Auth
-export const cookieOptions: CookieOptionsWithName = {
-  path: "/",
-  secure: true,
-  httpOnly: true,
-  sameSite: "lax",
-};
 
 /**
  * Parses the Cookie header string into an array of cookie objects
@@ -37,13 +29,21 @@ function parseCookieHeader(cookieHeader: string): { name: string; value: string 
  */
 export const createSupabaseServerClient = (context: { headers: Headers; cookies: AstroCookies }) => {
   const supabase = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
-    cookieOptions,
     cookies: {
       getAll() {
         return parseCookieHeader(context.headers.get("Cookie") ?? "");
       },
       setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) => context.cookies.set(name, value, options));
+        cookiesToSet.forEach(({ name, value, options }) => {
+          // Explicitly set security options for authentication cookies
+          const cookieOptions = {
+            ...options,
+            httpOnly: true, // Prevent XSS attacks - JavaScript cannot access cookie
+            sameSite: "lax" as const, // Prevent CSRF attacks while allowing normal navigation
+            secure: import.meta.env.PROD, // Only secure in production (HTTPS)
+          };
+          context.cookies.set(name, value, cookieOptions);
+        });
       },
     },
   });

@@ -20,8 +20,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -39,8 +39,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -77,8 +77,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -118,18 +118,18 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const prNumber = context.issue.number;
-            
+
             const comments = await github.rest.issues.listComments({
               owner,
               repo,
               issue_number: prNumber,
             });
-            
+
             const botComment = comments.data.find(comment => 
               comment.user.type === 'Bot' && 
               comment.body.includes('## ✅') || comment.body.includes('## ❌')
             );
-            
+
             return botComment ? botComment.id : null;
 
       - name: Update or create status comment
@@ -141,16 +141,16 @@ jobs:
             const prNumber = context.issue.number;
             const sha = context.payload.pull_request.head.sha;
             const commentId = ${{ steps.find-comment.outputs.result }};
-            
+
             // Get job statuses
             const unitTestStatus = '${{ needs.unit-test.result }}';
             const e2eTestStatus = '${{ needs.e2e-test.result }}';
-            
+
             // Determine overall status
             const allPassed = unitTestStatus === 'success' && e2eTestStatus === 'success';
             const statusEmoji = allPassed ? '✅' : '❌';
             const statusText = allPassed ? 'All checks passed' : 'Some checks failed';
-            
+
             // Create comment body
             const commentBody = [
               `## ${statusEmoji} ${statusText}`,
@@ -166,7 +166,7 @@ jobs:
               '',
               `*Last updated: ${new Date().toUTCString()}*`
             ].join('\n');
-            
+
             if (commentId) {
               // Update existing comment
               await github.rest.issues.updateComment({

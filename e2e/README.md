@@ -34,6 +34,7 @@ End-to-end tests using Playwright.
 ### First Time Setup
 
 1. Copy `.env.test.example` to `.env.test` and update credentials:
+
 ```bash
 cp .env.test.example .env.test
 ```
@@ -71,6 +72,7 @@ npx playwright codegen http://localhost:4321
 ### Database Cleanup
 
 After tests complete, the teardown script automatically:
+
 - Deletes all flashcards created by the test user
 - Ensures a clean state for the next test run
 - Uses `E2E_USERNAME_ID` from `.env.test` to identify test data

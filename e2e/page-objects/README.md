@@ -150,10 +150,7 @@ await flashcardPage.goto();
 await flashcardPage.waitForForm();
 
 // Create a flashcard
-await flashcardPage.createFlashcard(
-  "What is TypeScript?",
-  "TypeScript is a strongly typed programming language."
-);
+await flashcardPage.createFlashcard("What is TypeScript?", "TypeScript is a strongly typed programming language.");
 
 // Wait for success
 await flashcardPage.waitForSuccess();
@@ -357,7 +354,7 @@ import {
   DashboardPage,
   ManualFlashcardPage,
   DashboardCTAButtons,
-  ErrorToastComponent
+  ErrorToastComponent,
 } from "./page-objects";
 ```
 
