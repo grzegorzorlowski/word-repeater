@@ -1,9 +1,7 @@
 name: Master Branch Deployment
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -46,17 +44,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run unit tests with coverage
-        run: npm run test:coverage
+      - name: Run unit tests
+        run: npm run test
         continue-on-error: false
-
-      - name: Upload unit test coverage
-        uses: actions/upload-artifact@v6
-        if: always()
-        with:
-          name: unit-test-coverage
-          path: coverage/
-          retention-days: 7
 
   build:
     runs-on: ubuntu-latest
@@ -117,38 +107,3 @@ jobs:
         id: deployment
         run: |
           echo "deployment_url=https://word-repeater.pages.dev" >> $GITHUB_OUTPUT
-
-      - name: Comment deployment status
-        uses: actions/github-script@v8
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const { owner, repo } = context.repo;
-            const sha = context.sha;
-            const deploymentUrl = '${{ steps.deployment.outputs.deployment_url }}';
-
-            const commentBody = [
-              '## 🚀 Deployment Successful',
-              '',
-              `**Commit:** \`${sha.substring(0, 7)}\``,
-              `**Environment:** Production`,
-              `**URL:** [${deploymentUrl}](${deploymentUrl})`,
-              '',
-              `*Deployed at: ${new Date().toUTCString()}*`
-            ].join('\n');
-
-            const commits = await github.rest.repos.listCommits({
-              owner,
-              repo,
-              sha,
-              per_page: 1
-            });
-
-            if (commits.data.length > 0) {
-              await github.rest.repos.createCommitComment({
-                owner,
-                repo,
-                commit_sha: sha,
-                body: commentBody
-              });
-            }
