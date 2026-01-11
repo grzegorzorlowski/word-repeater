@@ -1,4 +1,15 @@
 # Cloudflare Pages configuration
+# This project uses Astro with @astrojs/cloudflare adapter
+# 
+# IMPORTANT: This is a Cloudflare PAGES project, not a Workers project
+# Do NOT use "wrangler versions upload" or "wrangler deploy"
+# Cloudflare Pages automatically handles deployment after build
+#
+# Build settings in Cloudflare Pages Dashboard:
+# - Build command: npm run build
+# - Build output directory: dist
+# - No deploy command needed (automatic)
+
 name = "word-repeater"
 compatibility_date = "2024-01-01"
 

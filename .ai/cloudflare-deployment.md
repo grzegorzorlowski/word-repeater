@@ -76,7 +76,10 @@ In the Cloudflare Pages project settings, configure:
 - **Framework preset**: Astro
 - **Build command**: `npm run build`
 - **Build output directory**: `dist`
+- **Deploy command**: **LEAVE EMPTY** (Cloudflare Pages deploys automatically)
 - **Node version**: `22.14.0` (matches `.nvmrc`)
+
+**IMPORTANT**: Do NOT set a deploy command. Cloudflare Pages automatically deploys the build output. Do NOT use `wrangler versions upload` or `wrangler deploy` (those are for Workers, not Pages).
 
 ### 3. Environment Variables
 
