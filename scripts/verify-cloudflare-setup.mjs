@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
-/* eslint-disable no-undef */
 
 /**
  * Verification script for Cloudflare Pages setup

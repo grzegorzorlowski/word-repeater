@@ -14,8 +14,8 @@ pages_build_output_dir = "dist"
 
 # Environment variables
 # Note: Sensitive values should be set in Cloudflare Pages dashboard
-# [vars]
-# NODE_VERSION = "22.14.0"
+[vars]
+PUBLIC_ENV_NAME = "prod"  # Default to production for Cloudflare deployments
 
 # D1 Databases (optional - if migrating from Supabase)
 # [[d1_databases]]

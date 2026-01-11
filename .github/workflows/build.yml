@@ -26,9 +26,13 @@ jobs:
         run: npm run lint
 
       - name: Run tests
+        env:
+          PUBLIC_ENV_NAME: local
         run: npm test
 
       - name: Build application
+        env:
+          PUBLIC_ENV_NAME: integration
         run: npm run build
 
       - name: Upload build artifacts

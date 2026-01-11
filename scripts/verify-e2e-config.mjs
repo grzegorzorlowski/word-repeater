@@ -5,9 +5,6 @@
  * Usage: node scripts/verify-e2e-config.mjs
  */
 
-/* eslint-disable no-console */
-/* eslint-disable no-undef */
-
 import * as dotenv from "dotenv";
 import * as path from "path";
 import { fileURLToPath } from "url";

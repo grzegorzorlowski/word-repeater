@@ -1,9 +1,14 @@
 ---
 import AuthLayout from "@/layouts/AuthLayout.astro";
 import { LoginForm } from "@/components/auth/LoginForm";
+import { isFeatureEnabled } from "@/features/index";
 
 // Get redirect parameter from URL
 const redirectTo = Astro.url.searchParams.get("redirect") || "/dashboard";
+
+// Check feature flags
+const isSignupEnabled = isFeatureEnabled("signup");
+const isResetPasswordEnabled = isFeatureEnabled("resetPassword");
 ---
 
 <AuthLayout title="Login - WordRepeater">
@@ -13,13 +18,20 @@ const redirectTo = Astro.url.searchParams.get("redirect") || "/dashboard";
       <p class="text-muted-foreground mt-2">Sign in to your account</p>
     </div>
 
-    <LoginForm client:load redirectTo={redirectTo} />
+    <LoginForm client:load redirectTo={redirectTo} isResetPasswordEnabled={isResetPasswordEnabled} />
 
-    <div class="text-center text-sm">
-      <p class="text-muted-foreground">
-        Don't have an account?{" "}
-        <a href="/register" class="text-primary hover:underline font-medium" data-testid="register-link"> Sign up </a>
-      </p>
-    </div>
+    {
+      isSignupEnabled && (
+        <div class="text-center text-sm">
+          <p class="text-muted-foreground">
+            Don't have an account?{" "}
+            <a href="/register" class="text-primary hover:underline font-medium" data-testid="register-link">
+              {" "}
+              Sign up{" "}
+            </a>
+          </p>
+        </div>
+      )
+    }
   </div>
 </AuthLayout>
