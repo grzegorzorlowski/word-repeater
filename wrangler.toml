@@ -1,0 +1,36 @@
+# Cloudflare Pages configuration
+# This project uses Astro with @astrojs/cloudflare adapter
+# 
+# IMPORTANT: This is a Cloudflare PAGES project, not a Workers project
+# Do NOT use "wrangler versions upload" or "wrangler deploy"
+# Cloudflare Pages automatically handles deployment after build
+#
+# Build settings in Cloudflare Pages Dashboard:
+# - Build command: npm run build
+# - Build output directory: dist
+# - No deploy command needed (automatic)
+
+name = "word-repeater"
+compatibility_date = "2024-01-01"
+
+# Pages-specific configuration
+pages_build_output_dir = "dist"
+
+# KV Namespaces (optional - for session storage)
+# Uncomment and configure if you want to use Cloudflare KV for sessions
+# [[kv_namespaces]]
+# binding = "SESSION"
+# id = "your-kv-namespace-id"
+# preview_id = "your-preview-kv-namespace-id"
+
+# Environment variables
+# Note: Sensitive values should be set in Cloudflare Pages dashboard
+[vars]
+PUBLIC_ENV_NAME = "prod"  # Default to production for Cloudflare deployments
+
+# D1 Databases (optional - if migrating from Supabase)
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "word-repeater-db"
+# database_id = "your-database-id"
+

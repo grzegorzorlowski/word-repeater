@@ -13,12 +13,14 @@ Three new POM classes have been created to support E2E testing of the manual fla
 ## Test Scenarios Covered
 
 ### 1. Invalid Flashcard Validation
+
 - Empty field detection and prevention
 - Character count validation (300 for question, 500 for answer)
 - Submit button disabled state with invalid data
 - Real-time validation feedback
 
 ### 2. Valid Flashcard Creation
+
 - Successful flashcard submission
 - Success message display
 - Navigation back to dashboard
@@ -26,6 +28,7 @@ Three new POM classes have been created to support E2E testing of the manual fla
 - Viewing created flashcards
 
 ### 3. Error Handling
+
 - API error display
 - Retry functionality
 - Form data preservation on error
@@ -79,6 +82,7 @@ Three new POM classes have been created to support E2E testing of the manual fla
 **Purpose**: Encapsulates all interactions with the manual flashcard creation form.
 
 **Key Features**:
+
 - Form input handling (question and answer)
 - Character count tracking
 - Validation error handling
@@ -124,6 +128,7 @@ await expect(flashcardPage.successMessage).toContainText("successfully");
 **Purpose**: Encapsulates interactions with dashboard navigation buttons.
 
 **Key Features**:
+
 - Navigation to all main features
 - Conditional pending flashcards button
 - Pending count display
@@ -154,6 +159,7 @@ if (hasReview) {
 **Purpose**: Reusable component for error toast interactions across multiple pages.
 
 **Key Features**:
+
 - Error message extraction
 - Retry functionality
 - Dismiss/close action
@@ -184,12 +190,7 @@ Here's a complete test demonstrating the full flow:
 
 ```typescript
 import { test, expect } from "@playwright/test";
-import {
-  LoginPage,
-  ManualFlashcardPage,
-  DashboardCTAButtons,
-  ErrorToastComponent
-} from "./page-objects";
+import { LoginPage, ManualFlashcardPage, DashboardCTAButtons, ErrorToastComponent } from "./page-objects";
 
 test.describe("Manual Flashcard Creation - Complete Flow", () => {
   let loginPage: LoginPage;
@@ -315,7 +316,7 @@ test("should navigate from dashboard to create flashcard", async ({ page }) => {
   await page.goto("/dashboard");
   await ctaButtons.waitForButtons();
   await ctaButtons.clickCreateManualFlashcard();
-  
+
   await flashcardPage.waitForForm();
   expect(flashcardPage.isOnCreatePage()).toBe(true);
 });
@@ -326,11 +327,12 @@ test("should navigate from dashboard to create flashcard", async ({ page }) => {
 ```typescript
 test("should handle success or error appropriately", async () => {
   await flashcardPage.createFlashcard("Q", "A");
-  
+
   // Wait for either success or error
   await flashcardPage.page.waitForFunction(() => {
-    return document.querySelector('[data-testid="success-message"]') ||
-           document.querySelector('[data-testid="error-toast"]');
+    return (
+      document.querySelector('[data-testid="success-message"]') || document.querySelector('[data-testid="error-toast"]')
+    );
   });
 
   if (await flashcardPage.isSuccessMessageVisible()) {
@@ -348,10 +350,10 @@ test("should handle success or error appropriately", async () => {
 ```typescript
 test("should wait for save to complete", async () => {
   await flashcardPage.createFlashcard("Question", "Answer");
-  
+
   // Custom wait function
   await flashcardPage.waitForSaveComplete();
-  
+
   // Now check result
   const success = await flashcardPage.isSuccessMessageVisible();
   const error = await errorToast.isVisible();
@@ -364,11 +366,13 @@ test("should wait for save to complete", async () => {
 ### 1. Use Helper Methods for Common Workflows
 
 ✅ **Good**:
+
 ```typescript
 await flashcardPage.createFlashcard("Q", "A");
 ```
 
 ❌ **Avoid**:
+
 ```typescript
 await flashcardPage.fillQuestion("Q");
 await flashcardPage.fillAnswer("A");
@@ -378,6 +382,7 @@ await flashcardPage.submit();
 ### 2. Expose Locators for Flexible Assertions
 
 ✅ **Good**:
+
 ```typescript
 await expect(flashcardPage.saveButton).toBeDisabled();
 await expect(flashcardPage.questionInput).toHaveAttribute("maxLength", "300");
@@ -386,6 +391,7 @@ await expect(flashcardPage.questionInput).toHaveAttribute("maxLength", "300");
 ### 3. Handle Async Operations Properly
 
 ✅ **Good**:
+
 ```typescript
 await flashcardPage.submit();
 await flashcardPage.waitForSuccess(); // Explicit wait
@@ -393,6 +399,7 @@ await flashcardPage.goToDashboardAfterSuccess();
 ```
 
 ❌ **Avoid**:
+
 ```typescript
 await flashcardPage.submit();
 // Navigating immediately without waiting for success
@@ -402,11 +409,13 @@ await flashcardPage.goToDashboardAfterSuccess();
 ### 4. Use Descriptive Test Names
 
 ✅ **Good**:
+
 ```typescript
 test("should prevent submission when question field is empty", async () => {
 ```
 
 ❌ **Avoid**:
+
 ```typescript
 test("test validation", async () => {
 ```
@@ -414,6 +423,7 @@ test("test validation", async () => {
 ### 5. Keep Tests Independent
 
 Each test should:
+
 - Set up its own state (use `beforeEach`)
 - Not depend on other tests
 - Clean up after itself if needed
@@ -490,4 +500,3 @@ When UI changes occur:
   - `src/components/ManualFlashcardForm.tsx`
   - `src/components/ErrorToast.tsx`
   - `src/components/DashboardCTAButtons.tsx`
-

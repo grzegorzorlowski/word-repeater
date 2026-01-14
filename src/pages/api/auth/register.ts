@@ -2,10 +2,15 @@ import type { APIRoute } from "astro";
 
 import { registerBackendSchema } from "@/lib/validation/authSchemas";
 import type { ErrorResponseDTO, RegisterUserResponseDTO } from "@/types";
+import { requireFeatureEnabled } from "@/features";
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, cookies }) => {
+  // Check if signup feature is enabled
+  const featureCheck = requireFeatureEnabled("signup", "User Registration");
+  if (featureCheck) return featureCheck;
+
   try {
     // Parse request body
     const body = await request.json();

@@ -48,7 +48,7 @@ WordRepeater AI is designed to lower the time barrier to creating high-quality f
 ### CI/CD and Hosting
 
 - **GitHub Actions** - Continuous integration and deployment
-- **DigitalOcean** - Hosting via Docker containers
+- **Cloudflare Pages** - Hosting with global CDN and edge network
 
 ## Getting Started Locally
 
@@ -199,6 +199,12 @@ E2E tests are automated using **Playwright**, providing multi-browser support (C
 - All E2E scenarios passing across supported browsers
 
 For detailed testing strategy, see [Test Plan](.ai/test-plan.md).
+
+## Deployment
+
+The application is configured for deployment to **Cloudflare Pages**. For detailed deployment instructions, see:
+
+- [Cloudflare Deployment Guide](.ai/cloudflare-deployment.md) - Complete guide for deploying to Cloudflare Pages
 
 ## Additional Documentation
 

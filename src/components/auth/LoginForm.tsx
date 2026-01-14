@@ -7,6 +7,7 @@ import type { ErrorResponseDTO } from "@/types";
 
 interface LoginFormProps {
   redirectTo?: string;
+  isResetPasswordEnabled?: boolean;
 }
 
 interface LoginFormState {
@@ -23,7 +24,7 @@ interface LoginFormState {
 /**
  * Login form component with email/password fields and validation
  */
-export function LoginForm({ redirectTo = "/dashboard" }: LoginFormProps) {
+export function LoginForm({ redirectTo = "/dashboard", isResetPasswordEnabled = true }: LoginFormProps) {
   const [state, setState] = React.useState<LoginFormState>({
     email: "",
     password: "",
@@ -162,16 +163,18 @@ export function LoginForm({ redirectTo = "/dashboard" }: LoginFormProps) {
           )}
         </Button>
 
-        <div className="text-center">
-          <a
-            href="/forgot-password"
-            className="text-sm text-primary hover:underline"
-            tabIndex={state.isSubmitting ? -1 : 0}
-            data-testid="forgot-password-link"
-          >
-            Forgot your password?
-          </a>
-        </div>
+        {isResetPasswordEnabled && (
+          <div className="text-center">
+            <a
+              href="/forgot-password"
+              className="text-sm text-primary hover:underline"
+              tabIndex={state.isSubmitting ? -1 : 0}
+              data-testid="forgot-password-link"
+            >
+              Forgot your password?
+            </a>
+          </div>
+        )}
       </div>
     </form>
   );

@@ -29,6 +29,7 @@ After all E2E tests run, the **teardown script** automatically cleans up test da
 ### What Gets Cleaned Up
 
 The teardown script deletes:
+
 - ✅ All flashcards created by the test user
 - ✅ Only data belonging to `E2E_USERNAME_ID`
 - ✅ Both AI-generated and manual flashcards
@@ -36,6 +37,7 @@ The teardown script deletes:
 ### What Stays
 
 The teardown script does NOT delete:
+
 - ❌ The test user account itself
 - ❌ Audit logs (immutable records)
 - ❌ Other users' data
@@ -58,11 +60,13 @@ E2E_USERNAME_ID=your-test-user-uuid-here
 ### How to Get `E2E_USERNAME_ID`
 
 1. **Start Supabase locally:**
+
    ```bash
    npx supabase start
    ```
 
 2. **Find the test user's UUID:**
+
    ```bash
    # Using Supabase Studio (http://localhost:54323)
    # Navigate to: Authentication > Users
@@ -71,6 +75,7 @@ E2E_USERNAME_ID=your-test-user-uuid-here
    ```
 
    Or using SQL:
+
    ```sql
    SELECT id FROM auth.users WHERE email = 'test@example.com';
    ```
@@ -83,6 +88,7 @@ E2E_USERNAME_ID=your-test-user-uuid-here
 ## Teardown Script
 
 ### Location
+
 `e2e/fixtures/global.teardown.ts`
 
 ### Code Breakdown
@@ -107,10 +113,7 @@ teardown("cleanup database", async ({}) => {
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // Delete all flashcards for test user
-  const { error, count } = await supabase
-    .from("flashcards")
-    .delete({ count: "exact" })
-    .eq("user_id", TEST_USER_ID);
+  const { error, count } = await supabase.from("flashcards").delete({ count: "exact" }).eq("user_id", TEST_USER_ID);
 
   if (error) throw error;
 
@@ -148,12 +151,13 @@ projects: [
     name: "teardown",
     testMatch: /.*\.teardown\.ts/,
   },
-]
+];
 ```
 
 ### Execution Order
 
 The `teardown: "teardown"` property ensures:
+
 1. Setup runs first
 2. Tests run second
 3. Teardown runs last (after all tests)
@@ -168,6 +172,7 @@ npx playwright test
 ```
 
 Output:
+
 ```
 Running 3 projects:
   setup ⚙️
@@ -197,6 +202,7 @@ npx playwright test --project=teardown
 ```
 
 Use cases:
+
 - Testing teardown script
 - Manual cleanup after failed test run
 - Debugging cleanup logic
@@ -210,7 +216,8 @@ Use cases:
 ⚠️  Skipping database cleanup
 ```
 
-**Solution**: 
+**Solution**:
+
 1. Check `.env.test` exists
 2. Verify `SUPABASE_ANON_KEY` is set
 3. Restart terminal/IDE to reload environment
@@ -223,6 +230,7 @@ Use cases:
 ```
 
 **Solution**:
+
 1. Get user UUID from Supabase Studio
 2. Add `E2E_USERNAME_ID=<uuid>` to `.env.test`
 3. Ensure test user exists in database
@@ -234,6 +242,7 @@ Use cases:
 ```
 
 **Solution**:
+
 1. Check Supabase RLS policies
 2. Ensure anon key has delete permissions
 3. For local dev, RLS can be disabled temporarily
@@ -241,6 +250,7 @@ Use cases:
 ### Issue: Flashcards not being deleted
 
 **Check:**
+
 1. Is `E2E_USERNAME_ID` correct?
 2. Are flashcards actually created during tests?
 3. Run with `--debug` to see what's happening:
@@ -253,11 +263,13 @@ Use cases:
 ### 1. Always Set E2E_USERNAME_ID
 
 ❌ **Don't** skip this:
+
 ```bash
 E2E_USERNAME_ID=  # Empty
 ```
 
 ✅ **Do** set properly:
+
 ```bash
 E2E_USERNAME_ID=abc12345-6789-0def-ghij-klmnopqrstuv
 ```
@@ -265,11 +277,13 @@ E2E_USERNAME_ID=abc12345-6789-0def-ghij-klmnopqrstuv
 ### 2. Use Dedicated Test User
 
 ❌ **Don't** use your personal account:
+
 ```bash
 E2E_USERNAME_ID=my-real-user-id  # BAD!
 ```
 
 ✅ **Do** create a dedicated test user:
+
 ```bash
 E2E_USERNAME_ID=test-user-uuid  # Good
 ```
@@ -277,6 +291,7 @@ E2E_USERNAME_ID=test-user-uuid  # Good
 ### 3. Verify Cleanup Worked
 
 After tests:
+
 ```sql
 -- Check if test flashcards exist
 SELECT COUNT(*) FROM flashcards WHERE user_id = '<test-user-uuid>';
@@ -286,6 +301,7 @@ SELECT COUNT(*) FROM flashcards WHERE user_id = '<test-user-uuid>';
 ### 4. Handle Cleanup Failures Gracefully
 
 The teardown script:
+
 - ✅ Warns if env vars missing (doesn't fail tests)
 - ✅ Throws errors for real failures
 - ✅ Reports deletion count
@@ -341,10 +357,7 @@ if (process.env.CI) {
 ### Multiple Test Users
 
 ```typescript
-const TEST_USER_IDS = [
-  process.env.E2E_USERNAME_ID,
-  process.env.E2E_ADMIN_ID,
-].filter(Boolean);
+const TEST_USER_IDS = [process.env.E2E_USERNAME_ID, process.env.E2E_ADMIN_ID].filter(Boolean);
 
 for (const userId of TEST_USER_IDS) {
   await supabase.from("flashcards").delete().eq("user_id", userId);
@@ -363,4 +376,3 @@ The teardown system provides:
 - ✅ Easy to extend for other tables
 
 This ensures your test database stays clean and tests remain reliable! 🧹✨
-

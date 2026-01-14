@@ -59,6 +59,7 @@ npx supabase start
 ```
 
 Create a test user in your Supabase database:
+
 - Email: `test@example.com`
 - Password: `SecurePass123!`
 
@@ -71,6 +72,7 @@ npm run test:e2e:verify
 ```
 
 This will:
+
 - ✅ Check if `.env.test` exists
 - ✅ Display loaded environment variables (hiding secrets)
 - ✅ Verify `playwright.config.ts` configuration
@@ -86,6 +88,7 @@ npm run test:e2e
 ```
 
 This command will:
+
 1. Load environment variables from `.env.test`
 2. Start Astro dev server on port 3000 (via `npm run dev:e2e`)
 3. Wait for server to be ready
@@ -141,6 +144,7 @@ npx playwright test --grep "login"
 ### Issue: Tests Hang on Startup
 
 **Symptoms:**
+
 - Command `npx playwright test` runs indefinitely
 - No output or progress
 - Have to Ctrl+C to stop
@@ -167,6 +171,7 @@ npx playwright test --grep "login"
 ### Issue: "Cannot find module 'dotenv'"
 
 **Solution:**
+
 ```bash
 npm install --save-dev dotenv
 ```
@@ -174,11 +179,13 @@ npm install --save-dev dotenv
 ### Issue: Tests Fail with Authentication Errors
 
 **Causes:**
+
 - Test user doesn't exist in database
 - Wrong credentials in `.env.test`
 - Supabase not running
 
 **Solutions:**
+
 1. Start Supabase: `npx supabase start`
 2. Create test user in Supabase dashboard
 3. Verify credentials match in `.env.test`
@@ -186,12 +193,14 @@ npm install --save-dev dotenv
 ### Issue: Port Already in Use
 
 **Solution:**
+
 1. Find and kill the process using port 3000:
+
    ```bash
    # Windows
    netstat -ano | findstr :3000
    taskkill /PID <PID> /F
-   
+
    # Linux/Mac
    lsof -ti:3000 | xargs kill -9
    ```
@@ -203,11 +212,13 @@ npm install --save-dev dotenv
 ### Issue: Tests Pass Locally But Fail in CI
 
 **Common Causes:**
+
 1. Different environment variables
 2. Timing issues (CI is slower)
 3. Missing test database setup
 
 **Solutions:**
+
 1. Set up environment variables in CI
 2. Increase timeouts in `playwright.config.ts`
 3. Use `retries: 2` in CI (already configured)
@@ -225,17 +236,17 @@ dotenv.config({ path: ".env.test" });
 export default defineConfig({
   // Tests are in e2e/ directory
   testDir: "./e2e",
-  
+
   // Base URL for page.goto('/')
   use: {
     baseURL: "http://localhost:3000",
   },
-  
+
   // Start dev server before tests
   webServer: {
-    command: "npm run dev:e2e",  // Uses --mode test
+    command: "npm run dev:e2e", // Uses --mode test
     url: "http://localhost:3000",
-    timeout: 120000,  // 2 minutes to start
+    timeout: 120000, // 2 minutes to start
   },
 });
 ```
@@ -259,10 +270,10 @@ import { LoginPage, DashboardPage } from "./page-objects";
 test("should login successfully", async ({ page }) => {
   const loginPage = new LoginPage(page);
   const dashboardPage = new DashboardPage(page);
-  
+
   await loginPage.goto();
   await loginPage.login("test@example.com", "SecurePass123!");
-  
+
   await expect(dashboardPage.dashboardTitle).toHaveText("Dashboard");
 });
 ```
@@ -293,6 +304,7 @@ e2e/
 ## CI/CD Integration
 
 Tests are configured to run in CI with:
+
 - Automatic retries (2 times)
 - Single worker (sequential tests)
 - GitHub Actions reporter
@@ -304,4 +316,3 @@ Tests are configured to run in CI with:
 - [Playwright Best Practices](https://playwright.dev/docs/best-practices)
 - [Debugging Tests](https://playwright.dev/docs/debug)
 - [Page Object Model](https://playwright.dev/docs/pom)
-

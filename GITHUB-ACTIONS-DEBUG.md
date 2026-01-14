@@ -3,6 +3,7 @@
 ## How to Check for More Information on Failed Jobs
 
 ### 1. **Via GitHub UI**
+
 1. Go to your repository on GitHub
 2. Click on the **Actions** tab
 3. Click on the failed workflow run
@@ -11,6 +12,7 @@
 6. Look for red ❌ marks indicating where it failed
 
 ### 2. **Check Artifacts**
+
 - Failed e2e tests will have artifacts uploaded (if they run long enough)
 - Download `e2e-test-results` artifact to see:
   - Screenshots of failures
@@ -20,12 +22,14 @@
 ### 3. **Common E2E Test Failure Reasons**
 
 #### Quick Failures (< 5 seconds):
+
 - **Missing secrets**: Environment variables not configured
 - **Syntax errors**: In test files or workflow
 - **Web server not starting**: Port conflicts or build issues
 - **Missing .env.test**: In CI, we use secrets instead of .env.test file
 
 #### Check this:
+
 ```bash
 # In the workflow logs, look for:
 - "Error: Environment variable BASE_URL is not set"
@@ -64,6 +68,7 @@ npm run test:e2e -- --project=chromium
 ### 6. **Understanding Coverage Failures**
 
 Before the fix, tests failed when code coverage was below 60%. Now:
+
 - Coverage is **monitored** but doesn't fail builds
 - View coverage reports in artifacts
 - Coverage thresholds are commented out in `vitest.config.ts`
@@ -71,31 +76,37 @@ Before the fix, tests failed when code coverage was below 60%. Now:
 ## Fixed Issues in This Update
 
 ### ✅ Coverage Thresholds
+
 - **Before**: Tests failed if coverage < 60%
 - **After**: Coverage monitored without failing builds
 - **File**: `vitest.config.ts` - thresholds commented out
 
 ### ✅ Build Workflow Tests
+
 - **Before**: `npm test -- --coverage` (with threshold checks)
 - **After**: `npm test` (simple test run)
 
 ### ✅ Action Versions
+
 - Updated to latest versions:
   - `actions/checkout@v6`
   - `actions/setup-node@v6`
 - Using `.nvmrc` file for consistent Node.js version
 
 ### ✅ E2E Environment Verification
+
 - Added step to verify environment variables are set
 - Helps debug missing secrets quickly
 
 ### ✅ CI Environment Detection
+
 - **Before**: Always tried to load `.env.test` file (causing errors in CI)
 - **After**: Detects CI environment and uses secrets instead
 - **Files**: `astro.config.mjs` and `playwright.config.ts`
 - Local development still uses `.env.test` file
 
 ### ✅ GitHub Actions Permissions
+
 - **Before**: Missing permissions caused "Resource not accessible by integration" error
 - **After**: Added proper permissions to workflow:
   - `contents: read` - Read repository contents
@@ -119,4 +130,3 @@ Before the fix, tests failed when code coverage was below 60%. Now:
 3. **Check the new logs** - especially the "Verify environment variables" step
 4. **Set up secrets** if the verification step shows "no" for any variable
 5. **Re-run the workflow** after adding secrets (click "Re-run all jobs")
-

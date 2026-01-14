@@ -11,6 +11,7 @@ Instead of logging in through the UI for every test, we use **API-based authenti
 3. Reuse that state across all tests
 
 This approach is:
+
 - ✅ **Faster** - No UI login for each test
 - ✅ **More reliable** - Fewer moving parts
 - ✅ **More maintainable** - Single auth logic
@@ -59,6 +60,7 @@ E2E_USERNAME_ID=your-test-user-uuid-here
 ```
 
 **Important Notes**:
+
 - This file should be in `.gitignore` to avoid committing credentials
 - Use `.env.test.example` as a template
 - The `E2E_USERNAME_ID` is the UUID of the test user in your Supabase database
@@ -113,12 +115,13 @@ setup("authenticate via API", async ({ request, baseURL }) => {
 
   // Save authenticated state
   await request.storageState({ path: authFile });
-  
+
   console.log(`✓ Authentication successful for ${TEST_EMAIL}`);
 });
 ```
 
 **Key Points**:
+
 - Uses `APIRequestContext` (not browser) for faster auth
 - Validates the API response
 - Saves cookies/storage to `user.json`
@@ -190,6 +193,7 @@ npx playwright test
 ```
 
 Playwright will:
+
 1. Run `auth.setup.ts` first (setup project)
 2. Generate `e2e/.auth/user.json`
 3. Run all tests using the auth state
@@ -202,6 +206,7 @@ npx playwright test --project=setup
 ```
 
 Useful for:
+
 - Regenerating auth state
 - Debugging authentication issues
 - CI/CD pipelines
@@ -278,7 +283,8 @@ Expected: truthy
 Received: false
 ```
 
-**Solution**: 
+**Solution**:
+
 1. Check that test database is running
 2. Verify `E2E_USERNAME` and `E2E_PASSWORD` in `.env.test`
 3. Ensure the test user exists in the database
@@ -287,6 +293,7 @@ Received: false
 ### Problem: Tests fail with 401 Unauthorized
 
 **Solution**:
+
 1. Delete `e2e/.auth/user.json`
 2. Run setup again: `npx playwright test --project=setup`
 3. Verify auth state was created
@@ -299,7 +306,7 @@ This is a **linter false positive**. The code is correct:
 ```typescript
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);  // Defined here
+const __dirname = path.dirname(__filename); // Defined here
 ```
 
 The error appears because the linter doesn't fully understand ES modules. The code will run fine.
@@ -311,6 +318,7 @@ Error: ENOENT: no such file or directory, open 'e2e/.auth/user.json'
 ```
 
 **Solution**:
+
 1. Ensure setup project runs first (check `playwright.config.ts`)
 2. Run manually: `npx playwright test --project=setup`
 3. Check that `e2e/.auth/` directory exists
@@ -320,11 +328,13 @@ Error: ENOENT: no such file or directory, open 'e2e/.auth/user.json'
 ### 1. Use Environment Variables
 
 ❌ **Don't** hardcode credentials:
+
 ```typescript
-const email = "test@example.com";  // BAD
+const email = "test@example.com"; // BAD
 ```
 
 ✅ **Do** use environment variables:
+
 ```typescript
 const email = process.env.E2E_USERNAME || "test@example.com";
 ```
@@ -332,6 +342,7 @@ const email = process.env.E2E_USERNAME || "test@example.com";
 ### 2. Separate Setup from Tests
 
 ❌ **Don't** login in every test:
+
 ```typescript
 test.beforeEach(async ({ page }) => {
   await page.goto("/login");
@@ -342,6 +353,7 @@ test.beforeEach(async ({ page }) => {
 ```
 
 ✅ **Do** use storage state:
+
 ```typescript
 test.use({ storageState: authFile });
 ```
@@ -349,6 +361,7 @@ test.use({ storageState: authFile });
 ### 3. Use API for Setup
 
 ❌ **Don't** use UI for authentication:
+
 ```typescript
 setup("auth", async ({ page }) => {
   await page.goto("/login");
@@ -357,6 +370,7 @@ setup("auth", async ({ page }) => {
 ```
 
 ✅ **Do** use API:
+
 ```typescript
 setup("auth", async ({ request }) => {
   await request.post("/api/auth/login", { ... });
@@ -366,6 +380,7 @@ setup("auth", async ({ request }) => {
 ### 4. Verify Auth State
 
 ✅ **Do** add assertions:
+
 ```typescript
 expect(response.ok()).toBeTruthy();
 expect(responseData.user.email).toBe(TEST_EMAIL);
@@ -405,6 +420,7 @@ test.describe("Admin Features", () => {
 ```
 
 **Key points**:
+
 - Store credentials as GitHub secrets
 - Setup runs automatically before tests
 - No special CI configuration needed
@@ -428,4 +444,3 @@ Our authentication setup provides:
 - ✅ Easy CI/CD integration
 
 The setup runs once, and all tests benefit from the authenticated state!
-

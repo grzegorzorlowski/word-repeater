@@ -1,6 +1,12 @@
 ---
 import AuthLayout from "@/layouts/AuthLayout.astro";
 import { RegisterForm } from "@/components/auth/RegisterForm";
+import { isFeatureEnabled } from "@/features";
+
+// Check if signup feature is enabled
+if (!isFeatureEnabled("signup")) {
+  return Astro.redirect("/login");
+}
 ---
 
 <AuthLayout title="Create Account - WordRepeater">
