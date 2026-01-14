@@ -88,7 +88,7 @@ Add the following environment variables in the Cloudflare Pages dashboard under 
 #### Required Variables
 
 - `SUPABASE_URL` - Your Supabase project URL
-- `SUPABASE_ANON_KEY` - Your Supabase anonymous/public key
+- `SUPABASE_KEY` - Your Supabase anonymous/public key
 - `OPENROUTER_API_KEY` - Your OpenRouter API key for AI functionality
 
 #### Optional Variables

@@ -11,13 +11,13 @@ import { createClient } from "@supabase/supabase-js";
 
 // Load environment variables
 const SUPABASE_URL = process.env.SUPABASE_URL || "http://127.0.0.1:54321";
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || "";
+const SUPABASE_KEY = process.env.SUPABASE_KEY || "";
 const TEST_USER_ID = process.env.E2E_USERNAME_ID || "";
 
 teardown("cleanup database", async () => {
-  if (!SUPABASE_ANON_KEY) {
+  if (!SUPABASE_KEY) {
     // eslint-disable-next-line no-console
-    console.warn("⚠️  SUPABASE_ANON_KEY not found in environment variables");
+    console.warn("⚠️  SUPABASE_KEY not found in environment variables");
     // eslint-disable-next-line no-console
     console.warn("⚠️  Skipping database cleanup");
     return;
@@ -36,7 +36,7 @@ teardown("cleanup database", async () => {
 
   try {
     // Create Supabase client
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // Delete all flashcards created by the test user
     const { error, count } = await supabase.from("flashcards").delete({ count: "exact" }).eq("user_id", TEST_USER_ID);
