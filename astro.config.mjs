@@ -50,5 +50,12 @@ export default defineConfig({
     platformProxy: {
       enabled: true,
     },
+    // Cloudflare Workers runtime configuration for React 19
+    runtime: {
+      mode: "local",
+      type: "pages",
+      bindings: {},
+    },
+    wasmModuleImports: true,
   }),
 });

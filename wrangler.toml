@@ -11,7 +11,8 @@
 # - No deploy command needed (automatic)
 
 name = "word-repeater"
-compatibility_date = "2024-01-01"
+# Using 2025-08-15 or later enables MessageChannel API by default (required for React 19 SSR)
+compatibility_date = "2025-08-15"
 
 # Pages-specific configuration
 pages_build_output_dir = "dist"
