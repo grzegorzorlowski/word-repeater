@@ -1,35 +1,35 @@
-Frontend - Astro z React dla komponentów interaktywnych:
+Frontend - Astro with React for interactive components:
 
-- Astro 5 pozwala na tworzenie szybkich, wydajnych stron i aplikacji z minimalną ilością JavaScript
-- React 19 zapewni interaktywność tam, gdzie jest potrzebna
-- TypeScript 5 dla statycznego typowania kodu i lepszego wsparcia IDE
-- Tailwind 4 pozwala na wygodne stylowanie aplikacji
-- Shadcn/ui zapewnia bibliotekę dostępnych komponentów React, na których oprzemy UI
+- Astro 5 allows you to create fast, efficient websites and applications with minimal JavaScript
+- React 19 will provide interactivity where needed
+- TypeScript 5 for static code typing and improved IDE support
+- Tailwind 4 allows for convenient application styling
+- Shadcn/ui provides a library of available React components on which we will base the UI
 
-Backend - Supabase jako kompleksowe rozwiązanie backendowe:
+Backend - Supabase as a comprehensive backend solution:
 
-- Zapewnia bazę danych PostgreSQL
-- Zapewnia SDK w wielu językach, które posłużą jako Backend-as-a-Service
-- Jest rozwiązaniem open source, które można hostować lokalnie lub na własnym serwerze
-- Posiada wbudowaną autentykację użytkowników
+- Provides a PostgreSQL database
+- Provides an SDK in multiple languages ​​that will serve as a Backend-as-a-Service
+- Is an open source solution that can be hosted locally or on your own server
+- Has built-in user authentication
 
-AI - Komunikacja z modelami przez usługę Openrouter.ai:
+AI - Communication with models via the Openrouter.ai service:
 
-- Dostęp do szerokiej gamy modeli (OpenAI, Anthropic, Google i wiele innych), które pozwolą nam znaleźć rozwiązanie zapewniające wysoką efektywność i niskie koszta
-- Pozwala na ustawianie limitów finansowych na klucze API
+- Access to a wide range of models (OpenAI, Anthropic, Google, and many others) that will allow us to find a solution that ensures high efficiency and low costs
+- Allows you to set Financial limits on API keys
 
-Testowanie:
+Testing:
 
-- Vitest jako główny framework do testów jednostkowych i integracyjnych (zoptymalizowany dla ekosystemu Vite/Astro)
-- React Testing Library do testowania komponentów z podejściem user-centric
-- MSW (Mock Service Worker) do mockowania API na poziomie sieciowym
-- Playwright do testów end-to-end z obsługą wielu przeglądarek (Chromium, Firefox, WebKit)
-- axe-core do automatycznych testów dostępności (zgodność z WCAG 2.1 AA)
-- k6 do testów obciążeniowych i wydajnościowych
-- Lighthouse do monitorowania Web Vitals i metryk wydajności
-- tsd do testowania poprawności typów TypeScript
+- Vitest as the primary framework for unit and integration testing (optimized for the Vite/Astro ecosystem)
+- React Testing Library for user-centric component testing
+- MSW (Mock Service Worker) for mocking APIs at the network level
+- Playwright for end-to-end testing with cross-browser support (Chromium, Firefox, WebKit)
+- axe-core for automated accessibility testing (WCAG 2.1 AA compliance)
+- k6 for load and performance testing
+- Lighthouse for monitoring Web Vitals and performance metrics
+- tsd for TypeScript type validation testing
 
-CI/CD i Hosting:
+CI/CD and Hosting:
 
-- Github Actions do tworzenia pipeline'ów CI/CD
-- Cloudflare Pages do hostowania aplikacji z globalnym CDN i siecią edge
+- Github Actions for creating CI/CD pipelines
+- Cloudflare Pages for hosting applications with a global CDN and edge network
