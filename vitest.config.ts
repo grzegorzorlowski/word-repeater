@@ -29,10 +29,11 @@ export default defineConfig({
       //   statements: 60,
       // },
     },
-  },
-  resolve: {
+    // IMPORTANT: Aliases here only apply during test execution
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // Mock astro:env/server for unit tests (virtual module not available in Vitest)
+      "astro:env/server": path.resolve(__dirname, "./src/test/mocks/astro-env.ts"),
     },
   },
 });

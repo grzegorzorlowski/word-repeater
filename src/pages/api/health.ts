@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { PUBLIC_ENV_NAME, SUPABASE_URL, SUPABASE_KEY, OPENROUTER_API_KEY } from "astro:env/server";
 
 /**
  * Health check endpoint to verify environment variables are configured
@@ -7,10 +8,10 @@ import type { APIRoute } from "astro";
 export const GET: APIRoute = async () => {
   const checks = {
     timestamp: new Date().toISOString(),
-    environment: import.meta.env.PUBLIC_ENV_NAME || "not set",
-    supabaseUrl: import.meta.env.SUPABASE_URL ? "✓ configured" : "✗ missing",
-    supabaseKey: import.meta.env.SUPABASE_KEY ? "✓ configured" : "✗ missing",
-    openRouterKey: import.meta.env.OPENROUTER_API_KEY ? "✓ configured" : "✗ missing",
+    environment: PUBLIC_ENV_NAME || "not set",
+    supabaseUrl: SUPABASE_URL ? "✓ configured" : "✗ missing",
+    supabaseKey: SUPABASE_KEY ? "✓ configured" : "✗ missing",
+    openRouterKey: OPENROUTER_API_KEY ? "✓ configured" : "✗ missing",
     runtime: "cloudflare-pages",
     nodeVersion: typeof process !== "undefined" ? process.version : "n/a",
   };

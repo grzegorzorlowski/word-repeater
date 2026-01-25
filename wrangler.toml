@@ -29,6 +29,12 @@ pages_build_output_dir = "dist"
 [vars]
 PUBLIC_ENV_NAME = "prod"  # Default to production for Cloudflare deployments
 
+# Test environment configuration
+# Used during local E2E testing (npm run dev:e2e)
+# Wrangler will load .env.test when this environment is active
+#[env.test]
+# No additional vars needed here - they come from .env.test
+
 # D1 Databases (optional - if migrating from Supabase)
 # [[d1_databases]]
 # binding = "DB"

@@ -1,5 +1,6 @@
 // src/lib/services/aiFlashcardGenerator.service.ts
 
+import { OPENROUTER_API_KEY, OPENROUTER_MODEL_NAME } from "astro:env/server";
 import { createOpenRouterService } from "./openrouter.service";
 import type { FlashcardSuggestionDTO } from "../../types";
 
@@ -39,8 +40,7 @@ export async function generateFlashcardsWithAI(
 
   try {
     // Validate API key
-    const apiKey = import.meta.env.OPENROUTER_API_KEY;
-    if (!apiKey) {
+    if (!OPENROUTER_API_KEY) {
       return {
         success: false,
         error: "OpenRouter API key is not configured",
@@ -50,8 +50,8 @@ export async function generateFlashcardsWithAI(
     // Create OpenRouter service with flashcard-specific configuration
     const openRouterService = createOpenRouterService({
       apiEndpoint: "https://openrouter.ai/api/v1/chat/completions",
-      modelName: import.meta.env.OPENROUTER_MODEL_NAME || "openai/gpt-4o-mini",
-      apiKey,
+      modelName: OPENROUTER_MODEL_NAME,
+      apiKey: OPENROUTER_API_KEY,
       modelParameters: {
         temperature: 0.5, // Lower temperature for faster, more focused responses
         max_tokens: 6000, // Optimized for ~20 flashcards (300 tokens each max)

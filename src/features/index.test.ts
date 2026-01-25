@@ -255,7 +255,19 @@ describe("Feature Flags System", () => {
     });
 
     it("should default to prod when PUBLIC_ENV_NAME is invalid", () => {
-      const invalidValues = ["development", "staging", "test", "invalid", "production", "dev"];
+      const invalidValues = [
+        "development",
+        "staging",
+        "test",
+        "invalid",
+        "production",
+        "dev",
+        "ppr", // typo of "prod"
+        "locl", // typo of "local"
+        "integrationn", // typo with extra letter
+        "PRODUCTION", // uppercase of invalid value
+        "prod123", // prod with suffix
+      ];
 
       invalidValues.forEach((invalidValue) => {
         process.env.PUBLIC_ENV_NAME = invalidValue;
