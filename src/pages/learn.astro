@@ -1,0 +1,17 @@
+---
+/**
+ * Learning Session Page
+ * Protected view for reviewing today's flashcards using spaced repetition.
+ * Requires authentication (middleware redirects unauthenticated users).
+ */
+import Layout from "@/layouts/Layout.astro";
+import LearningSessionView from "@/components/LearningSessionView";
+---
+
+<Layout title="Learning Session - WordRepeater">
+  <main class="min-h-screen flex flex-col items-center p-6 bg-background" data-testid="learn-page">
+    <div class="w-full max-w-2xl">
+      <LearningSessionView client:load />
+    </div>
+  </main>
+</Layout>

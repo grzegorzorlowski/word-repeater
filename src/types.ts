@@ -1,30 +1,26 @@
-// src/types.ts
-
-// Import the Database type from the database models
 import type { Database } from "./db/database.types";
 
-// Alias to the flashcard row type from the DB model for convenience.
+// Convenience aliases for database row types
 export type FlashcardRow = Database["public"]["Tables"]["flashcards"]["Row"];
+export type FlashcardScheduleRow = Database["public"]["Tables"]["flashcard_schedule"]["Row"];
+
+// Extract rating enum from the database model
+export type Rating = Database["public"]["Enums"]["rating"];
 
 /**
  * DTO for Generate AI Flashcards request.
  */
 export interface GenerateAIFlashcardsRequestDTO {
-  // User input text up to 5000 characters.
-  text: string;
-  // Limit for processing, may be used for character or flashcard generation limits.
-  limit: number;
+  text: string; // User input text up to 5000 characters.
+  limit: number; // Maximum text length or number of flashcards to generate.
 }
 
 /**
  * DTO representing an AI-generated flashcard suggestion.
  */
 export interface FlashcardSuggestionDTO {
-  // Temporary id from the suggestion, can be null if not yet persisted.
-  id?: string | null;
-  // Generated question.
+  id?: string | null; // Temporary id or null if not persisted yet.
   question: string;
-  // Generated answer.
   answer: string;
 }
 
@@ -32,15 +28,23 @@ export interface FlashcardSuggestionDTO {
  * DTO for Generate AI Flashcards response.
  */
 export interface GenerateAIFlashcardsResponseDTO {
-  // List of AI-generated flashcard suggestions.
   flashcards: FlashcardSuggestionDTO[];
-  // Status message.
   message: string;
 }
 
 /**
- * DTO summarizing a flashcard.
- * This is connected to the underlying database entity using Pick.
+ * DTO for List User Flashcards request (query parameters).
+ */
+export interface ListUserFlashcardsRequestDTO {
+  page?: number;
+  limit?: number;
+  source?: FlashcardRow["source"]; // "ai" | "manual"
+  status?: FlashcardRow["status"]; // e.g. "active" | "deleted"
+}
+
+/**
+ * DTO summarizing a flashcard for listings.
+ * Derived from the FlashcardRow type.
  */
 export type FlashcardSummaryDTO = Pick<FlashcardRow, "id" | "content" | "created_at">;
 
@@ -48,28 +52,19 @@ export type FlashcardSummaryDTO = Pick<FlashcardRow, "id" | "content" | "created
  * DTO for List User Flashcards response.
  */
 export interface ListUserFlashcardsResponseDTO {
-  // Array of flashcard summaries.
   data: FlashcardSummaryDTO[];
-  // Current page number.
   page: number;
-  // Limit, i.e. number of items per page.
   limit: number;
-  // Total number of flashcards.
   total: number;
 }
 
 /**
  * Command Model for creating a manual flashcard.
- * The command model captures the raw inputs from the API,
- * which will then be transformed (e.g. concatenating question and answer into content)
- * before storing in the database.
+ * Captures raw inputs; will be transformed into FlashcardRow.Insert for persistence.
  */
 export interface CreateManualFlashcardCommand {
-  // The question part of the flashcard.
   question: string;
-  // The answer part of the flashcard.
   answer: string;
-  // Optional metadata; may include tags or additional details.
   metadata?: Record<string, unknown>;
 }
 
@@ -77,26 +72,38 @@ export interface CreateManualFlashcardCommand {
  * DTO for Create Manual Flashcard response.
  */
 export interface CreateManualFlashcardResponseDTO {
-  // Status message indicating the flashcard was created.
   message: string;
-  // The created flashcard summary.
   flashcard: FlashcardSummaryDTO;
 }
 
 /**
  * Command Model for updating an existing flashcard.
- * Represents the fields that can be modified by the user.
  */
 export interface UpdateFlashcardCommand {
-  // Updated question.
   question: string;
-  // Updated answer.
   answer: string;
 }
 
 /**
+ * DTO for Update Flashcard response.
+ */
+export interface UpdateFlashcardResponseDTO {
+  message: string;
+  flashcard: FlashcardSummaryDTO;
+}
+
+/**
+ * DTO for Delete Flashcard response.
+ * Returns the id and updated status of the flashcard.
+ */
+export interface DeleteFlashcardResponseDTO {
+  message: string;
+  flashcardId: string;
+  status: FlashcardRow["status"]; // e.g. "deleted"
+}
+
+/**
  * Command Model for processing a decision on an AI-generated flashcard.
- * 'decision' must be either "accept" or "reject".
  */
 export interface AcceptRejectAIFlashcardCommand {
   decision: "accept" | "reject";
@@ -111,120 +118,127 @@ export interface AcceptRejectFlashcardResponseDTO {
   status: "active" | "deleted";
 }
 
+// ============================================================================
+// Learning (SRS) Types
+// ============================================================================
+
 /**
- * ViewModel for Dashboard view state management.
- * Used for managing loading and error states.
+ * DTO for Fetch Today's Cards request (query parameters).
  */
-export interface DashboardViewModel {
-  // True if any API call is in progress.
-  loading: boolean;
-  // Error message if applicable.
-  error: string | null;
+export interface FetchTodayCardsRequestDTO {
+  limit?: number; // Max cards to return (≤ 50)
+}
+
+/**
+ * DTO representing the schedule state of a flashcard.
+ * Derived from the FlashcardScheduleRow type.
+ */
+export type FlashcardScheduleDTO = Pick<
+  FlashcardScheduleRow,
+  "next_due" | "interval_days" | "repetition_count" | "ease_factor"
+>;
+
+/**
+ * DTO representing a card due for review, including content split into question/answer.
+ */
+export interface LearningCardDTO {
+  flashcardId: FlashcardRow["id"];
+  question: string;
+  answer: string;
+  schedule: FlashcardScheduleDTO;
+}
+
+/**
+ * DTO for Fetch Today's Cards response.
+ */
+export interface FetchTodayCardsResponseDTO {
+  cards: LearningCardDTO[];
+  count: number;
+}
+
+/**
+ * DTO for Record Review Rating request.
+ */
+export interface RecordReviewRatingRequestDTO {
+  flashcardId: string;
+  rating: Rating; // "again" | "hard" | "good" | "easy"
+}
+
+/**
+ * DTO describing the schedule change for a review.
+ */
+export interface ReviewScheduleChangeDTO {
+  flashcardId: string;
+  previous_schedule: FlashcardScheduleDTO;
+  new_schedule: FlashcardScheduleDTO;
+}
+
+/**
+ * DTO for Record Review Rating response.
+ */
+export interface RecordReviewResponseDTO {
+  reviewed: ReviewScheduleChangeDTO;
 }
 
 // ============================================================================
 // Authentication Types
 // ============================================================================
 
-/**
- * DTO for user registration request
- */
 export interface RegisterUserRequestDTO {
   email: string;
   password: string;
   acceptTerms: boolean;
 }
 
-/**
- * DTO for user registration response
- */
 export interface RegisterUserResponseDTO {
   message: string;
-  user: {
-    id: string;
-    email: string;
-  };
+  user: { id: string; email: string };
 }
 
-/**
- * DTO for user login request
- */
 export interface LoginUserRequestDTO {
   email: string;
   password: string;
 }
 
-/**
- * DTO for user login response
- */
 export interface LoginUserResponseDTO {
   message: string;
-  user: {
-    id: string;
-    email: string;
-  };
+  user: { id: string; email: string };
   redirectTo: string;
 }
 
-/**
- * DTO for password reset request
- */
 export interface ForgotPasswordRequestDTO {
   email: string;
 }
 
-/**
- * DTO for password reset response
- */
 export interface ForgotPasswordResponseDTO {
   message: string;
 }
 
-/**
- * DTO for password reset confirmation request
- */
 export interface ResetPasswordRequestDTO {
   token: string;
   password: string;
 }
 
-/**
- * DTO for password reset confirmation response
- */
 export interface ResetPasswordResponseDTO {
   message: string;
 }
 
-/**
- * DTO for account deletion request
- */
 export interface DeleteAccountRequestDTO {
   confirmationText: string;
 }
 
-/**
- * DTO for account deletion response
- */
 export interface DeleteAccountResponseDTO {
   message: string;
 }
 
-/**
- * Generic error response DTO
- */
 export interface ErrorResponseDTO {
   error: string;
   details?: Record<string, string[] | string>;
 }
 
-/**
- * User info extracted from session
- */
 export interface SessionUser {
   id: string;
   email: string;
   emailVerified: boolean;
   createdAt: string;
 }
-
-// Additional DTOs for other API endpoints (e.g. delete) can be added as needed.

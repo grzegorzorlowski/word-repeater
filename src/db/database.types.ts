@@ -41,6 +41,41 @@ export interface Database {
         };
         Relationships: [];
       };
+      flashcard_schedule: {
+        Row: {
+          ease_factor: number;
+          flashcard_id: string;
+          interval_days: number;
+          next_due: string;
+          repetition_count: number;
+          user_id: string;
+        };
+        Insert: {
+          ease_factor: number;
+          flashcard_id: string;
+          interval_days: number;
+          next_due: string;
+          repetition_count?: number;
+          user_id: string;
+        };
+        Update: {
+          ease_factor?: number;
+          flashcard_id?: string;
+          interval_days?: number;
+          next_due?: string;
+          repetition_count?: number;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "flashcard_schedule_flashcard_id_fkey";
+            columns: ["flashcard_id"];
+            isOneToOne: true;
+            referencedRelation: "flashcards";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       flashcards: {
         Row: {
           content: string;
@@ -77,10 +112,44 @@ export interface Database {
         };
         Relationships: [];
       };
+      review_logs: {
+        Row: {
+          flashcard_id: string;
+          id: string;
+          rating: Database["public"]["Enums"]["rating"];
+          reviewed_at: string;
+          user_id: string;
+        };
+        Insert: {
+          flashcard_id: string;
+          id?: string;
+          rating: Database["public"]["Enums"]["rating"];
+          reviewed_at?: string;
+          user_id: string;
+        };
+        Update: {
+          flashcard_id?: string;
+          id?: string;
+          rating?: Database["public"]["Enums"]["rating"];
+          reviewed_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "review_logs_flashcard_id_fkey";
+            columns: ["flashcard_id"];
+            isOneToOne: false;
+            referencedRelation: "flashcards";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<never, never>;
     Functions: Record<never, never>;
-    Enums: Record<never, never>;
+    Enums: {
+      rating: "again" | "hard" | "good" | "easy";
+    };
     CompositeTypes: Record<never, never>;
   };
 }
@@ -199,6 +268,8 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      rating: ["again", "hard", "good", "easy"],
+    },
   },
 } as const;
