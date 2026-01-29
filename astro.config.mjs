@@ -71,7 +71,7 @@ export default defineConfig({
       // Public variables (inlined at build time, available everywhere)
       // These can be safely committed to wrangler.toml or set via Dashboard
       PUBLIC_ENV_NAME: envField.string({
-        context: "server",
+        context: "client",
         access: "public",
         optional: false,
         default: "prod", // Default to most restrictive for safety

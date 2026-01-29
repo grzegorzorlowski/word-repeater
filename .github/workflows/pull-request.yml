@@ -94,6 +94,13 @@ jobs:
           echo "BASE_URL is set: $([[ -n "$BASE_URL" ]] && echo 'yes' || echo 'no')"
           echo "SUPABASE_URL is set: $([[ -n "$SUPABASE_URL" ]] && echo 'yes' || echo 'no')"
           echo "E2E_USERNAME is set: $([[ -n "$E2E_USERNAME" ]] && echo 'yes' || echo 'no')"
+          echo "PUBLIC_ENV_NAME is set: $([[ -n "$PUBLIC_ENV_NAME" ]] && echo 'yes' || echo 'no')"
+
+      # astro:env reads env when config loads; in CI there is no .env.test (gitignored).
+      # Creating .env.test here ensures astro.config.mjs loads PUBLIC_ENV_NAME=local
+      # before defineConfig() runs (same code path as local e2e with .env.test).
+      # - name: Create .env.test for astro:env (PUBLIC_ENV_NAME=local)
+      #  run: echo "PUBLIC_ENV_NAME=local" > .env.test
 
       - name: Run e2e tests
         run: npm run test:e2e -- --project=chromium
