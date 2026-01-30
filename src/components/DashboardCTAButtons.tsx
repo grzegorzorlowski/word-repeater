@@ -101,7 +101,7 @@ export function DashboardCTAButtons() {
       <Button
         onClick={() => handleNavigation("/learn")}
         size="lg"
-        variant="secondary"
+        variant="outline"
         className="w-full py-6 text-lg"
         aria-label="Start learning session"
         data-testid="start-learning-button"

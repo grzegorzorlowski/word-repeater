@@ -371,6 +371,299 @@ Content-Type: {{contentType}}
 {}
 
 ###############################################################################
+# 7. Learning/SRS Endpoints (Spaced Repetition System)
+###############################################################################
+
+### 7.1 Get Today's Cards (Default - 50 cards)
+# @name getTodayCardsDefault
+# Returns all due cards + new cards up to limit
+# Due cards: cards where next_due <= now
+# New cards: cards where repetition_count = 0
+# Daily new card cap: 50 per day (UTC timezone)
+GET {{baseUrl}}/api/v1/learning/today
+Content-Type: {{contentType}}
+
+### 7.2 Get Today's Cards (Custom Limit - 10 cards)
+# @name getTodayCards10
+GET {{baseUrl}}/api/v1/learning/today?limit=10
+Content-Type: {{contentType}}
+
+### 7.3 Get Today's Cards (Minimum - 1 card)
+# @name getTodayCards1
+GET {{baseUrl}}/api/v1/learning/today?limit=1
+Content-Type: {{contentType}}
+
+### 7.4 Get Today's Cards (Maximum - 50 cards)
+# @name getTodayCards50
+GET {{baseUrl}}/api/v1/learning/today?limit=50
+Content-Type: {{contentType}}
+
+### 7.5 Get Today's Cards - Validation Error (limit = 0)
+# @name getTodayCardsInvalidZero
+# Expected: 422 Unprocessable Entity
+# Error: "Number must be greater than or equal to 1"
+GET {{baseUrl}}/api/v1/learning/today?limit=0
+Content-Type: {{contentType}}
+
+### 7.6 Get Today's Cards - Validation Error (negative limit)
+# @name getTodayCardsInvalidNegative
+# Expected: 422 Unprocessable Entity
+GET {{baseUrl}}/api/v1/learning/today?limit=-5
+Content-Type: {{contentType}}
+
+### 7.7 Get Today's Cards - Validation Error (limit > 50)
+# @name getTodayCardsInvalidTooHigh
+# Expected: 422 Unprocessable Entity
+# Error: "Number must be less than or equal to 50"
+GET {{baseUrl}}/api/v1/learning/today?limit=100
+Content-Type: {{contentType}}
+
+### 7.8 Get Today's Cards - Unauthorized (no session)
+# @name getTodayCardsUnauthorized
+# Expected: 401 Unauthorized
+# Note: This will fail because REST Client sends cookies automatically
+# To test unauthorized, you would need to clear cookies or use a different tool
+# GET {{baseUrl}}/api/v1/learning/today
+# Content-Type: {{contentType}}
+
+###############################################################################
+# 7.9 Learning Endpoint - Expected Responses
+###############################################################################
+#
+# SUCCESS (200 OK):
+# {
+#   "cards": [
+#     {
+#       "flashcardId": "550e8400-e29b-41d4-a716-446655440000",
+#       "question": "What is the capital of France?",
+#       "answer": "Paris",
+#       "schedule": {
+#         "next_due": "2025-01-26T10:00:00.000Z",
+#         "interval_days": 1,
+#         "repetition_count": 2,
+#         "ease_factor": 2.5
+#       }
+#     }
+#   ],
+#   "count": 1
+# }
+#
+# EMPTY RESULT (200 OK):
+# {
+#   "cards": [],
+#   "count": 0
+# }
+#
+# VALIDATION ERROR (422):
+# {
+#   "error": "Invalid query parameter: limit",
+#   "details": [
+#     {
+#       "field": "limit",
+#       "message": "Number must be greater than or equal to 1"
+#     }
+#   ]
+# }
+#
+# UNAUTHORIZED (401):
+# {
+#   "error": "Unauthorized"
+# }
+#
+# NOTES:
+# - Daily cap: 50 new cards per user per day (UTC timezone)
+# - Due cards have no limit (all due cards are returned)
+# - New cards limited by: Min(50 - alreadyTakenToday, limit - dueCardsCount)
+# - Soft-deleted flashcards are automatically excluded
+# - Duplicate cards prevented (card won't appear in both due and new)
+# - Performance: typically 30-115ms, best case 10-50ms
+# - Full docs: src/pages/api/v1/learning/README.md
+###############################################################################
+
+###############################################################################
+# 8. Record Review Rating Endpoint
+###############################################################################
+# POST /api/v1/learning/review
+# Records a user's review rating for a flashcard, updates its SRS schedule,
+# logs the review, and returns the updated schedule.
+#
+# Prerequisites:
+# - Must be authenticated (run login first)
+# - Flashcard must exist and have a schedule entry
+# - Replace @flashcardId with an actual flashcard ID from your database
+###############################################################################
+
+### 8.1 Record Review Rating - Good
+# @name recordReviewGood
+# Expected: 200 OK
+# Records a "good" rating for a flashcard
+POST {{baseUrl}}/api/v1/learning/review
+Content-Type: {{contentType}}
+
+{
+  "flashcardId": "550e8400-e29b-41d4-a716-446655440000",
+  "rating": "good"
+}
+
+### 8.2 Record Review Rating - Again
+# @name recordReviewAgain
+# Expected: 200 OK
+# Records an "again" rating (card was forgotten)
+POST {{baseUrl}}/api/v1/learning/review
+Content-Type: {{contentType}}
+
+{
+  "flashcardId": "550e8400-e29b-41d4-a716-446655440000",
+  "rating": "again"
+}
+
+### 8.3 Record Review Rating - Hard
+# @name recordReviewHard
+# Expected: 200 OK
+# Records a "hard" rating
+POST {{baseUrl}}/api/v1/learning/review
+Content-Type: {{contentType}}
+
+{
+  "flashcardId": "550e8400-e29b-41d4-a716-446655440000",
+  "rating": "hard"
+}
+
+### 8.4 Record Review Rating - Easy
+# @name recordReviewEasy
+# Expected: 200 OK
+# Records an "easy" rating
+POST {{baseUrl}}/api/v1/learning/review
+Content-Type: {{contentType}}
+
+{
+  "flashcardId": "550e8400-e29b-41d4-a716-446655440000",
+  "rating": "easy"
+}
+
+### 8.5 Record Review Rating - Validation Error (invalid UUID)
+# @name recordReviewInvalidUUID
+# Expected: 400 Bad Request
+# Error: "flashcardId must be a valid UUID"
+POST {{baseUrl}}/api/v1/learning/review
+Content-Type: {{contentType}}
+
+{
+  "flashcardId": "not-a-uuid",
+  "rating": "good"
+}
+
+### 8.6 Record Review Rating - Validation Error (invalid rating)
+# @name recordReviewInvalidRating
+# Expected: 400 Bad Request
+# Error: "rating must be one of: \"again\", \"hard\", \"good\", \"easy\""
+POST {{baseUrl}}/api/v1/learning/review
+Content-Type: {{contentType}}
+
+{
+  "flashcardId": "550e8400-e29b-41d4-a716-446655440000",
+  "rating": "excellent"
+}
+
+### 8.7 Record Review Rating - Validation Error (missing flashcardId)
+# @name recordReviewMissingFlashcardId
+# Expected: 400 Bad Request
+# Error: Validation failed
+POST {{baseUrl}}/api/v1/learning/review
+Content-Type: {{contentType}}
+
+{
+  "rating": "good"
+}
+
+### 8.8 Record Review Rating - Validation Error (missing rating)
+# @name recordReviewMissingRating
+# Expected: 400 Bad Request
+# Error: Validation failed
+POST {{baseUrl}}/api/v1/learning/review
+Content-Type: {{contentType}}
+
+{
+  "flashcardId": "550e8400-e29b-41d4-a716-446655440000"
+}
+
+### 8.9 Record Review Rating - Not Found (non-existent flashcard)
+# @name recordReviewNotFound
+# Expected: 404 Not Found
+# Error: "Not Found"
+POST {{baseUrl}}/api/v1/learning/review
+Content-Type: {{contentType}}
+
+{
+  "flashcardId": "00000000-0000-0000-0000-000000000000",
+  "rating": "good"
+}
+
+### 8.10 Record Review Rating - Invalid JSON
+# @name recordReviewInvalidJSON
+# Expected: 400 Bad Request
+# Error: "Invalid JSON in request body"
+POST {{baseUrl}}/api/v1/learning/review
+Content-Type: {{contentType}}
+
+{
+  "flashcardId": "550e8400-e29b-41d4-a716-446655440000",
+  "rating": "good"
+  // Missing closing brace
+}
+
+###############################################################################
+# 8.11 Review Endpoint - Expected Responses
+###############################################################################
+#
+# SUCCESS (200 OK):
+# {
+#   "reviewed": {
+#     "flashcardId": "550e8400-e29b-41d4-a716-446655440000",
+#     "previous_schedule": {
+#       "next_due": "2025-01-26T10:00:00.000Z",
+#       "interval_days": 1,
+#       "repetition_count": 2,
+#       "ease_factor": 2.5
+#     },
+#     "new_schedule": {
+#       "next_due": "2025-01-28T10:00:00.000Z",
+#       "interval_days": 2,
+#       "repetition_count": 3,
+#       "ease_factor": 2.6
+#     }
+#   }
+# }
+#
+# VALIDATION ERROR (400):
+# {
+#   "error": "Validation failed",
+#   "details": {
+#     "flashcardId": ["flashcardId must be a valid UUID"],
+#     "rating": ["rating must be one of: \"again\", \"hard\", \"good\", \"easy\""]
+#   }
+# }
+#
+# NOT FOUND (404):
+# {
+#   "error": "Not Found"
+# }
+#
+# UNAUTHORIZED (401):
+# {
+#   "error": "Unauthorized"
+# }
+#
+# NOTES:
+# - The SRS algorithm updates interval_days, repetition_count, and ease_factor
+# - next_due is recalculated based on the new interval
+# - All ratings are logged in review_logs table
+# - Schedule updates and log inserts are atomic (rollback on failure)
+# - Rating values: "again", "hard", "good", "easy"
+# - Flashcard must have an existing schedule entry (created when card is added to learning)
+###############################################################################
+
+###############################################################################
 # Notes:
 #
 # AUTHENTICATION REQUIRED:

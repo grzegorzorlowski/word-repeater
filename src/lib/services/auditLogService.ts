@@ -244,3 +244,23 @@ export async function logFlashcardDecisionFailure(
     },
   });
 }
+
+/**
+ * Logs the end of a learning session (US-018, RF-025).
+ * Called when the user completes all cards in a session.
+ */
+export async function logLearningSessionEnd(
+  supabase: SupabaseClient,
+  userId: string,
+  cardsReviewed: number,
+  durationSeconds: number
+): Promise<void> {
+  await logAuditEntry(supabase, {
+    userId,
+    action: "learning_session_end",
+    details: {
+      cards_reviewed: cardsReviewed,
+      duration_seconds: durationSeconds,
+    },
+  });
+}
