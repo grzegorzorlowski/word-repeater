@@ -48,6 +48,13 @@ const currentPath = Astro.url.pathname;
           >
             My Flashcards
           </a>
+          <a
+            href="/learn"
+            class={`text-sm transition-colors ${currentPath === "/learn" ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"}`}
+            aria-current={currentPath === "/learn" ? "page" : undefined}
+          >
+            Start learning
+          </a>
         </nav>
       </div>
 

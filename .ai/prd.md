@@ -24,7 +24,11 @@ Creating flashcards manually is time-consuming and tedious, discouraging systema
 
 3.2. Manual creation and management of flashcards 8) RF-009: The user can manually create a flashcard (question, answer) in a supported language. 9) RF-010: The user can view a list of their own flashcards (filters: created by AI/manually; status in the schedule). 10) RF-011: The user can edit the content of the question and answer of an already saved flashcard. 11) RF-012: The user can delete a flashcard (with confirmation), which removes it from the review schedule.
 
-3.3. Learning and repetitions 12) RF-013: The system integrates with a simple, ready-made repetition algorithm (e.g., a simplified version of SM-2 without difficulty levels in the MVP) to schedule subsequent review dates. 13) RF-014: The user can start a learning session and view the flashcards scheduled for today in random order or in an order determined by the algorithm. 14) RF-015: After the question is displayed, the user can reveal the answer and mark the result (e.g., Remembered / Don't remember) – mapped to the algorithm parameters. 15) RF-016: After the session ends, the application saves the progress and updates the schedule for subsequent repetitions.
+3.3. Learning and repetitions
+12) RF-013: Use the SRS service abstraction (in `src/lib/srsService.ts`) wrapping the ts-fsrs library to schedule reviews with four rating options (`again`, `hard`, `good`, `easy`).
+13) RF-014: The user starts a learning session to review due cards and up to 50 new cards (where `repetition_count = 0`), with new-card selection capped at 50 per session; due reviews are unlimited.
+14) RF-015: After the question is displayed, the user can reveal the answer and select one of the four ratings.
+15) RF-016: After each review, the schedule is updated using the SRS service; after the session ends, progress is saved server-side.
 
 3.4. Accounts and Security 16) RF-017: Registration and login (email + password). Basic password and email validation. 17) RF-018: Password reset via email. 18) RF-019: Session authentication (token/cookie) and automatic logout after a period of inactivity. 19) RF-020: Basic privacy and compliance requirements (GDPR): acceptance of terms and conditions and privacy policy upon registration; ability to delete the account (right to be forgotten).
 
@@ -62,6 +66,9 @@ Creating flashcards manually is time-consuming and tedious, discouraging systema
 - One content language (EN) in MVP, possibility of expansion in the future.
 - Acceptance flow "one flashcard at a time", no return to rejected ones.
 - Pre-beta testing is exclusively internal (1-2 people).
+- Analytics/audit for SRS functionality are out of scope for MVP.
+- Global SRS parameters are hard-coded with no per-user settings.
+- Daily cap of 50 new cards applies only to flashcards with repetition_count = 0; reviews of due cards are unlimited.
 
 ## 5. User Stories
 
@@ -157,7 +164,7 @@ Acceptance Criteria:
 - After starting, the flashcards are displayed one by one. US-014 — Revealing the answer and evaluation
   Description: As a user, I want to reveal the answer and mark the result so that the algorithm determines the next review date.
   Acceptance criteria:
-- After clicking "Show answer," the options "Remembered" / "I don't remember" are available.
+- After clicking "Show answer," the options `again`, `hard`, `good`, and `easy` are available.
 - The selection updates the schedule according to the algorithm.
 
 US-015 — Ending the learning session
@@ -199,7 +206,7 @@ US-020 — Integration with Repetition Algorithm (Technical)
 Description: As a system, I want to schedule the next date based on the user's response result.
 Acceptance Criteria:
 
-- For each rating, the resulting date is calculated deterministically by an open-source library.
+- For each rating (`again`, `hard`, `good`, `easy`), the schedule is calculated deterministically by the ts-fsrs library via the SRS service abstraction; the underlying library can be swapped through the abstraction layer.
 - Changing the library is possible through an abstraction layer.
 
 US-021 — Network Error Handling
