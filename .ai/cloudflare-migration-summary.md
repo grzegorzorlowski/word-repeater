@@ -155,7 +155,7 @@ The `platformProxy.enabled: true` option ensures that local development closely 
 
 2. **Configure Environment Variables**:
    - Add `SUPABASE_URL`
-   - Add `SUPABASE_ANON_KEY`
+   - Add `SUPABASE_KEY`
    - Add `OPENROUTER_API_KEY`
 
 3. **Deploy**:

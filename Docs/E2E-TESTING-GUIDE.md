@@ -31,8 +31,8 @@ Create a `.env.test` file in the project root with the following variables:
 
 ```bash
 # Supabase Configuration
-PUBLIC_SUPABASE_URL=http://localhost:54321
-PUBLIC_SUPABASE_ANON_KEY=your-test-anon-key-here
+SUPABASE_URL=http://localhost:54321
+SUPABASE_KEY=your-test-anon-key-here
 
 # API Base URL
 BASE_URL=http://localhost:3000

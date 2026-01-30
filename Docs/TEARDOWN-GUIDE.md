@@ -51,7 +51,7 @@ In your `.env.test` file:
 ```bash
 # Supabase Configuration
 SUPABASE_URL=http://127.0.0.1:54321
-SUPABASE_ANON_KEY=your-supabase-anon-key-here
+SUPABASE_KEY=your-supabase-anon-key-here
 
 # Test User ID (UUID from database)
 E2E_USERNAME_ID=your-test-user-uuid-here
@@ -99,18 +99,18 @@ import { createClient } from "@supabase/supabase-js";
 
 // Load from .env.test
 const SUPABASE_URL = process.env.SUPABASE_URL || "http://127.0.0.1:54321";
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || "";
+const SUPABASE_KEY = process.env.SUPABASE_KEY || "";
 const TEST_USER_ID = process.env.E2E_USERNAME_ID || "";
 
 teardown("cleanup database", async ({}) => {
   // Safety checks
-  if (!SUPABASE_ANON_KEY || !TEST_USER_ID) {
+  if (!SUPABASE_KEY || !TEST_USER_ID) {
     console.warn("⚠️  Missing environment variables, skipping cleanup");
     return;
   }
 
   // Create Supabase client
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
   // Delete all flashcards for test user
   const { error, count } = await supabase.from("flashcards").delete({ count: "exact" }).eq("user_id", TEST_USER_ID);
@@ -212,14 +212,14 @@ Use cases:
 ### Issue: "Missing environment variables"
 
 ```
-⚠️  SUPABASE_ANON_KEY not found in environment variables
+⚠️  SUPABASE_KEY not found in environment variables
 ⚠️  Skipping database cleanup
 ```
 
 **Solution**:
 
 1. Check `.env.test` exists
-2. Verify `SUPABASE_ANON_KEY` is set
+2. Verify `SUPABASE_KEY` is set
 3. Restart terminal/IDE to reload environment
 
 ### Issue: "E2E_USERNAME_ID not found"
@@ -315,7 +315,7 @@ The teardown script:
   run: npx playwright test
   env:
     SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-    SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+    SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
     E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
 ```
 

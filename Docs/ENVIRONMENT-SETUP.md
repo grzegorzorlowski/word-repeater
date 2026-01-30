@@ -41,7 +41,7 @@ PUBLIC_ENV_NAME=local
 
 # Your other environment variables...
 SUPABASE_URL=your-supabase-url
-SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_KEY=your-supabase-anon-key
 OPENROUTER_API_KEY=your-openrouter-api-key
 ```
 
@@ -153,7 +153,7 @@ PUBLIC_ENV_NAME=local
 
 BASE_URL=http://localhost:3000
 SUPABASE_URL=http://127.0.0.1:54321
-SUPABASE_ANON_KEY=your-supabase-anon-key-here
+SUPABASE_KEY=your-supabase-anon-key-here
 OPENROUTER_API_KEY=your-test-api-key-here
 E2E_USERNAME=test@example.com
 E2E_PASSWORD=SecurePass123!

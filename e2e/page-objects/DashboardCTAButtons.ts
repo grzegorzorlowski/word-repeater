@@ -88,11 +88,11 @@ export class DashboardCTAButtons {
   }
 
   /**
-   * Click the create manual flashcard button
+   * Click the create manual flashcard button.
+   * Waits for navigation in parallel with the click so the navigation is not missed (important in CI).
    */
   async clickCreateManualFlashcard() {
-    await this.createManualFlashcardButton.click();
-    await this.page.waitForURL("**/flashcards/new");
+    await Promise.all([this.page.waitForURL("**/flashcards/new"), this.createManualFlashcardButton.click()]);
   }
 
   /**

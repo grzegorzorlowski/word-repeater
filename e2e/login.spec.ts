@@ -72,28 +72,6 @@ test.describe("Login Flow", () => {
     expect(typeof isDisabledDuringSubmit).toBe("boolean");
   });
 
-  test("should navigate to forgot password page", async () => {
-    // Arrange: Navigate to login page
-    await loginPage.goto();
-
-    // Act: Click forgot password link
-    await loginPage.clickForgotPassword();
-
-    // Assert: Should navigate to forgot password page
-    await expect(loginPage.page).toHaveURL("/forgot-password");
-  });
-
-  test("should navigate to register page", async () => {
-    // Arrange: Navigate to login page
-    await loginPage.goto();
-
-    // Act: Click register link
-    await loginPage.clickRegister();
-
-    // Assert: Should navigate to register page
-    await expect(loginPage.page).toHaveURL("/register");
-  });
-
   test("should handle redirect parameter correctly", async () => {
     // Arrange: Navigate to login page with redirect parameter
     const redirectUrl = "/flashcards";

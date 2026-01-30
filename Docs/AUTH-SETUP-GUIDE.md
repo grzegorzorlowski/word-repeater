@@ -48,7 +48,7 @@ BASE_URL=http://localhost:3000
 
 # Supabase Configuration
 SUPABASE_URL=http://127.0.0.1:54321
-SUPABASE_ANON_KEY=your-supabase-anon-key-here
+SUPABASE_KEY=your-supabase-anon-key-here
 
 # OpenRouter API (for AI flashcard generation)
 OPENROUTER_API_KEY=your-test-api-key-here

@@ -74,7 +74,7 @@ You need to update your Cloudflare Pages project settings to use the correct dep
 5. **Environment variables**: (should be set in the Environment variables section, not here)
    - `NODE_VERSION`: `22.14.0`
    - `SUPABASE_URL`: Your Supabase URL
-   - `SUPABASE_ANON_KEY`: Your Supabase anon key  
+   - `SUPABASE_KEY`: Your Supabase anon key  
    - `OPENROUTER_API_KEY`: Your OpenRouter API key
 
 6. Save the configuration

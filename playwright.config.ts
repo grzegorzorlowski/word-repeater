@@ -68,5 +68,10 @@ export default defineConfig({
     timeout: 120 * 1000,
     stdout: "pipe",
     stderr: "pipe",
+    // E2E runs with prod feature flags (all disabled). Astro config also sets PUBLIC_ENV_NAME=prod in test mode.
+    env: {
+      ...process.env,
+      PUBLIC_ENV_NAME: process.env.PUBLIC_ENV_NAME || "prod",
+    },
   },
 });

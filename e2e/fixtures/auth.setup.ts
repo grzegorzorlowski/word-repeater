@@ -30,7 +30,6 @@ setup("authenticate via API", async ({ request, baseURL }) => {
     },
   });
 
-  // Verify login was successful
   expect(response.ok()).toBeTruthy();
   expect(response.status()).toBe(200);
 

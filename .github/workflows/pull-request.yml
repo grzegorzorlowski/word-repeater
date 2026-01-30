@@ -64,11 +64,11 @@ jobs:
     needs: lint
     environment: local
     env:
-      PUBLIC_ENV_NAME: local
+      PUBLIC_ENV_NAME: prod
       BASE_URL: ${{ secrets.BASE_URL }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
       E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
       E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
@@ -94,6 +94,10 @@ jobs:
           echo "BASE_URL is set: $([[ -n "$BASE_URL" ]] && echo 'yes' || echo 'no')"
           echo "SUPABASE_URL is set: $([[ -n "$SUPABASE_URL" ]] && echo 'yes' || echo 'no')"
           echo "E2E_USERNAME is set: $([[ -n "$E2E_USERNAME" ]] && echo 'yes' || echo 'no')"
+          echo "PUBLIC_ENV_NAME is set: $([[ -n "$PUBLIC_ENV_NAME" ]] && echo 'yes' || echo 'no')"
+
+      # E2E runs with PUBLIC_ENV_NAME=prod (env above). In test mode astro.config.mjs sets
+      # PUBLIC_ENV_NAME=prod so feature flags match production (all disabled).
 
       - name: Run e2e tests
         run: npm run test:e2e -- --project=chromium

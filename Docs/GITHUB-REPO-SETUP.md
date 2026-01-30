@@ -28,7 +28,6 @@ Go to: **Settings** → **Environments** → **New environment**
 ```
 BASE_URL                 (e.g., http://localhost:3000)
 SUPABASE_URL             (your Supabase project URL)
-SUPABASE_ANON_KEY        (your Supabase anonymous key)
 SUPABASE_KEY             (your Supabase service role key)
 E2E_USERNAME             (test user email, e.g., test@example.com)
 E2E_PASSWORD             (test user password)

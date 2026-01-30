@@ -6,10 +6,12 @@
  *
  * Features:
  * - Type-safe flag names (only defined flags can be checked)
- * - Runtime evaluation based on ENV_NAME environment variable
+ * - Runtime evaluation based on PUBLIC_ENV_NAME environment variable
  * - Per-flag default values when not explicitly configured
  * - Environment-specific configuration (local, integration, prod)
  */
+
+import { PUBLIC_ENV_NAME } from "astro:env/server";
 
 // ============================================================================
 // Types
@@ -92,31 +94,16 @@ const featureFlagsConfig: FeatureFlagsConfig = {
  * feature leaks in production if PUBLIC_ENV_NAME is not configured.
  */
 function getCurrentEnvironment(): Environment {
-  // Try to get PUBLIC_ENV_NAME from different sources depending on the runtime
-  let envName: string | undefined;
+  // PUBLIC_ENV_NAME is loaded from astro:env with a default of "prod"
+  const envName = PUBLIC_ENV_NAME;
 
-  // Check if we're in an Astro/Vite environment (import.meta.env available)
-  if (typeof import.meta !== "undefined" && (import.meta as { env?: Record<string, string> }).env) {
-    envName = (import.meta as { env?: Record<string, string> }).env.PUBLIC_ENV_NAME;
-  }
-
-  // Fall back to Node.js process.env
-  if (!envName && typeof process !== "undefined" && process.env) {
-    envName = process.env.PUBLIC_ENV_NAME;
-  }
-
-  // SECURITY: Default to most restrictive environment if not set
-  if (!envName) {
-    // eslint-disable-next-line no-console
-    console.error(
-      "⚠️  SECURITY WARNING: PUBLIC_ENV_NAME environment variable not set!\n" +
-        "   Defaulting to 'prod' (most restrictive) for safety.\n" +
-        "   All feature flags will be disabled.\n" +
-        "   Please set PUBLIC_ENV_NAME to 'local', 'integration', or 'prod'."
-    );
+  // SECURITY: Default to most restrictive environment if not set or empty
+  if (!envName || envName.trim() === "") {
     return "prod";
   }
 
+  // Validate and normalize the environment name
+  // NOTE: We only lowercase, not trim - whitespace makes the value invalid for security
   const normalizedEnv = envName.toLowerCase();
 
   if (normalizedEnv === "local" || normalizedEnv === "integration" || normalizedEnv === "prod") {
