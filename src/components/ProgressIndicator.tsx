@@ -18,13 +18,7 @@ export default function ProgressIndicator({ current, total }: ProgressIndicatorP
   }, [current, total]);
 
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      className="space-y-2"
-      data-testid="progress-indicator"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" className="space-y-2" data-testid="progress-indicator">
       <p className="text-sm text-muted-foreground">
         Card {safeCurrent} of {safeTotal}
       </p>
@@ -37,10 +31,7 @@ export default function ProgressIndicator({ current, total }: ProgressIndicatorP
           aria-valuemax={safeTotal}
           aria-label={`Progress: card ${safeCurrent} of ${safeTotal}`}
         >
-          <div
-            className="h-full bg-primary transition-all duration-300 ease-out"
-            style={{ width: `${percentage}%` }}
-          />
+          <div className="h-full bg-primary transition-all duration-300 ease-out" style={{ width: `${percentage}%` }} />
         </div>
       )}
     </div>

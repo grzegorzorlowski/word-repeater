@@ -104,8 +104,7 @@ export function useLearningSession(): LearningSessionViewModel {
 
       setLoading(false);
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
       setError(errorMessage);
       setCards([]);
       setLoading(false);
@@ -166,8 +165,7 @@ export function useLearningSession(): LearningSessionViewModel {
         setShowAnswerState(false);
         setCurrentIndex((i) => i + 1);
       } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Could not save your rating. Try again.";
+        const errorMessage = err instanceof Error ? err.message : "Could not save your rating. Try again.";
         setError(errorMessage);
       } finally {
         setSubmitting(false);

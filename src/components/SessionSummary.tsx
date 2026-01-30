@@ -17,8 +17,12 @@ export default function SessionSummary({ cardsReviewed, durationMinutes }: Sessi
         Session complete
       </h2>
       <div className="mt-4 space-y-2 text-muted-foreground">
-        <p>You reviewed {cardsReviewed} {cardsReviewed === 1 ? "card" : "cards"}.</p>
-        <p>Duration: approximately {durationMinutes} {durationMinutes === 1 ? "min" : "mins"}.</p>
+        <p>
+          You reviewed {cardsReviewed} {cardsReviewed === 1 ? "card" : "cards"}.
+        </p>
+        <p>
+          Duration: approximately {durationMinutes} {durationMinutes === 1 ? "min" : "mins"}.
+        </p>
       </div>
       <div className="mt-6">
         <a

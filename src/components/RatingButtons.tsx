@@ -3,7 +3,12 @@ import type { Rating } from "@/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const RATING_OPTIONS: { rating: Rating; label: string; variant: "destructive" | "outline" | "default"; success?: boolean }[] = [
+const RATING_OPTIONS: {
+  rating: Rating;
+  label: string;
+  variant: "destructive" | "outline" | "default";
+  success?: boolean;
+}[] = [
   { rating: "again", label: "Again", variant: "destructive" },
   { rating: "hard", label: "Hard", variant: "outline" },
   { rating: "good", label: "Good", variant: "default" },
@@ -47,11 +52,7 @@ export default function RatingButtons({ onRate, disabled, answerVisible }: Ratin
   const buttonsEnabled = answerVisible && !disabled;
 
   return (
-    <div
-      role="group"
-      aria-label="Rate your recall"
-      className="flex flex-wrap gap-3 sm:gap-4 justify-center"
-    >
+    <div role="group" aria-label="Rate your recall" className="flex flex-wrap gap-3 sm:gap-4 justify-center">
       {RATING_OPTIONS.map(({ rating, label, variant, success }) => (
         <Button
           key={rating}
@@ -59,7 +60,8 @@ export default function RatingButtons({ onRate, disabled, answerVisible }: Ratin
           variant={variant}
           className={cn(
             "min-h-[44px] min-w-[44px]",
-            success && "bg-green-600 text-white hover:bg-green-700 focus-visible:ring-green-600/20 dark:bg-green-700 dark:hover:bg-green-800"
+            success &&
+              "bg-green-600 text-white hover:bg-green-700 focus-visible:ring-green-600/20 dark:bg-green-700 dark:hover:bg-green-800"
           )}
           disabled={!buttonsEnabled}
           onClick={() => onRate(rating)}

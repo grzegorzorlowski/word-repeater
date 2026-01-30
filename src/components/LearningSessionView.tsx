@@ -118,10 +118,7 @@ export default function LearningSessionView() {
   if (isSessionComplete) {
     return (
       <div className="w-full max-w-2xl mx-auto" data-testid="learning-summary">
-        <SessionSummary
-          cardsReviewed={reviewedCount}
-          durationMinutes={durationMinutes}
-        />
+        <SessionSummary cardsReviewed={reviewedCount} durationMinutes={durationMinutes} />
       </div>
     );
   }
@@ -149,7 +146,11 @@ export default function LearningSessionView() {
               stroke="currentColor"
               className="h-4 w-4"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12l7.5 7.5M20.25 4.5v15m0-15h-15" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12l7.5 7.5M20.25 4.5v15m0-15h-15"
+              />
             </svg>
             Dashboard
           </a>
@@ -174,13 +175,7 @@ export default function LearningSessionView() {
         />
       </div>
 
-      {showAnswer && (
-        <RatingButtons
-          onRate={submitRating}
-          disabled={submitting}
-          answerVisible={showAnswer}
-        />
-      )}
+      {showAnswer && <RatingButtons onRate={submitRating} disabled={submitting} answerVisible={showAnswer} />}
 
       {loading && currentCard && (
         <div className="flex justify-center">
@@ -188,9 +183,7 @@ export default function LearningSessionView() {
         </div>
       )}
 
-      {error && currentCard && (
-        <ErrorToast message={error} onDismiss={clearError} />
-      )}
+      {error && currentCard && <ErrorToast message={error} onDismiss={clearError} />}
 
       {cardRemovedToast && (
         <div

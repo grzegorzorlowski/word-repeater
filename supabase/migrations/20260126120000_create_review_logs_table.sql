@@ -7,7 +7,7 @@
 
 -- create table if not exists public.review_logs (
 create table if not exists public.review_logs (
-    id uuid not null primary key default uuid_generate_v4(),
+    id uuid not null primary key default gen_random_uuid(),
     user_id uuid not null references auth.users(id) on delete cascade,
     flashcard_id uuid not null references public.flashcards(id) on delete cascade,
     rating public.rating not null,

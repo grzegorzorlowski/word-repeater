@@ -63,7 +63,12 @@ describe("useLearningSession", () => {
 
   describe("Initial fetch", () => {
     it("should start with loading state", () => {
-      fetchMock.mockImplementation(() => new Promise(() => {}));
+      fetchMock.mockImplementation(
+        () =>
+          new Promise(() => {
+            /* never resolves to keep loading */
+          })
+      );
 
       const { result } = renderHook(() => useLearningSession());
 
@@ -208,9 +213,7 @@ describe("useLearningSession", () => {
         expect(result.current.loading).toBe(false);
       });
 
-      fetchMock.mockResolvedValueOnce(
-        createMockResponse({ error: "Invalid rating" }, false, 400)
-      );
+      fetchMock.mockResolvedValueOnce(createMockResponse({ error: "Invalid rating" }, false, 400));
 
       await act(async () => {
         await result.current.submitRating("good");
