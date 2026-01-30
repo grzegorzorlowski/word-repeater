@@ -27,6 +27,9 @@ if (mode === "test") {
     // eslint-disable-next-line no-undef, no-console
     console.log("✓ [Config] Loaded .env.test (overriding .env values for astro:env)");
   }
+  // E2E tests run with prod feature flags (all disabled) to match production behavior
+  // eslint-disable-next-line no-undef
+  process.env.PUBLIC_ENV_NAME = "prod";
 }
 
 // https://astro.build/config
@@ -71,7 +74,7 @@ export default defineConfig({
       // Public variables (inlined at build time, available everywhere)
       // These can be safely committed to wrangler.toml or set via Dashboard
       PUBLIC_ENV_NAME: envField.string({
-        context: "client",
+        context: "server",
         access: "public",
         optional: false,
         default: "prod", // Default to most restrictive for safety

@@ -64,7 +64,7 @@ jobs:
     needs: lint
     environment: local
     env:
-      PUBLIC_ENV_NAME: local
+      PUBLIC_ENV_NAME: prod
       BASE_URL: ${{ secrets.BASE_URL }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
@@ -96,11 +96,8 @@ jobs:
           echo "E2E_USERNAME is set: $([[ -n "$E2E_USERNAME" ]] && echo 'yes' || echo 'no')"
           echo "PUBLIC_ENV_NAME is set: $([[ -n "$PUBLIC_ENV_NAME" ]] && echo 'yes' || echo 'no')"
 
-      # astro:env reads env when config loads; in CI there is no .env.test (gitignored).
-      # Creating .env.test here ensures astro.config.mjs loads PUBLIC_ENV_NAME=local
-      # before defineConfig() runs (same code path as local e2e with .env.test).
-      # - name: Create .env.test for astro:env (PUBLIC_ENV_NAME=local)
-      #  run: echo "PUBLIC_ENV_NAME=local" > .env.test
+      # E2E runs with PUBLIC_ENV_NAME=prod (env above). In test mode astro.config.mjs sets
+      # PUBLIC_ENV_NAME=prod so feature flags match production (all disabled).
 
       - name: Run e2e tests
         run: npm run test:e2e -- --project=chromium

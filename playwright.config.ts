@@ -68,12 +68,10 @@ export default defineConfig({
     timeout: 120 * 1000,
     stdout: "pipe",
     stderr: "pipe",
-    // Ensure astro:env sees PUBLIC_ENV_NAME=local in the dev server process.
-    // In CI there is no .env.test, and subprocess env inheritance can be unreliable,
-    // so we explicitly pass env so feature flags (e.g. signup, resetPassword) are enabled for e2e.
+    // E2E runs with prod feature flags (all disabled). Astro config also sets PUBLIC_ENV_NAME=prod in test mode.
     env: {
       ...process.env,
-      PUBLIC_ENV_NAME: process.env.PUBLIC_ENV_NAME || "local",
+      PUBLIC_ENV_NAME: process.env.PUBLIC_ENV_NAME || "prod",
     },
   },
 });
